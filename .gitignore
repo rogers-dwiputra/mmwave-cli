@@ -12,3 +12,4 @@ mmwave
 /*.so
 /mmwcas.c
 /build
+.DS_Store

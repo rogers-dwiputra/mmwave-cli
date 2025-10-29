@@ -1,0 +1,68 @@
+parallels@ubuntu-linux-22-04-desktop:~/imrsl/mmwave$ ./run_mmwave_simultaneously.sh
+🚀 Memulai eksekusi mmwave secara simultan dengan NAME=nama_perangkat_anda
+--------------------------------------------------------
+Memulai Perintah 1 (IP 192.168.33.180)...
+Memulai Perintah 2 (IP 192.168.33.181)...
+
+⏳ Menunggu kedua proses mmwave (PID 29934 dan 29935) selesai...
+[2025-10-29 19:18:13.582] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2025-10-29 19:18:13.584] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2025-10-29 19:18:14.853] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2025-10-29 19:18:14.888] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2025-10-29 19:18:22.682] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2025-10-29 19:18:22.883] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2025-10-29 19:18:23.058] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2025-10-29 19:18:23.259] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2025-10-29 19:18:24.093] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2025-10-29 19:18:24.333] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2025-10-29 19:18:24.532] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2025-10-29 19:18:24.532] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2025-10-29 19:18:24.738] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2025-10-29 19:18:24.980] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2025-10-29 19:18:25.179] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2025-10-29 19:18:25.179] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2025-10-29 19:18:25.877] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2025-10-29 19:18:26.440] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2025-10-29 19:18:27.245] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2025-10-29 19:18:27.738] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2025-10-29 19:18:28.544] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2025-10-29 19:18:29.003] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2025-10-29 19:18:34.913] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2025-10-29 19:18:35.153] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2025-10-29 19:18:36.618] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2025-10-29 19:18:36.818] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2025-10-29 19:18:37.597] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2025-10-29 19:18:37.896] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2025-10-29 19:18:38.202] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2025-10-29 19:18:38.202] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2025-10-29 19:18:38.411] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2025-10-29 19:18:38.511] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2025-10-29 19:18:38.642] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2025-10-29 19:18:38.773] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2025-10-29 19:18:40.078] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2025-10-29 19:18:40.331] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2025-10-29 19:18:40.632] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2025-10-29 19:18:40.632] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2025-10-29 19:18:40.842] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2025-10-29 19:18:41.007] [IP: 192.168.33.180] STATUS   -8 | DEV MAP: 15 | [ALL] RF init failed!
+[2025-10-29 19:18:41.132] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2025-10-29 19:18:41.370] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2025-10-29 19:18:41.588] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2025-10-29 19:18:42.470] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2025-10-29 19:18:43.359] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2025-10-29 19:18:43.599] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2025-10-29 19:18:54.527] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2025-10-29 19:18:55.048] [IP: 192.168.33.181] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2025-10-29 19:18:55.464] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2025-10-29 19:18:55.464] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+[2025-10-29 19:18:57.758] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2025-10-29 19:19:01.581] [IP: 192.168.33.181] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2025-10-29 19:19:14.861] [IP: 192.168.33.181] STATUS   -1 | DEV MAP: 32 | [MMWCAS-RF] Failed to de-arm TDA board!
+
+
+✅ Kedua perintah mmwave telah selesai dieksekusi.

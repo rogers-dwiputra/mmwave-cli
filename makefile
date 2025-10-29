@@ -4,7 +4,7 @@ CFLAGS = -o
 FLAGS = -c -w
 
 ODIR = output
-PYTHON ?= python
+PYTHON ?= python3
 # Root directory
 ROOT_DIR = ti
 

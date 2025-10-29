@@ -22,11 +22,14 @@
  */
 #include "mimo.h"
 #include "toml/config.h"
+#include <time.h>
+#include <sys/time.h>
 
 /******************************
  *      CONFIGURATIONS
  ******************************/
-
+// Global variable to store IP address for logging
+static unsigned char g_ip_addr[32] = {0};
 /** Profile config */
 const rlProfileCfg_t profileCfgArgs = {
   .profileId = 0,
@@ -157,6 +160,23 @@ rlDevCsi2Cfg_t csi2LaneCfgArgs = {
 |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
 */
 
+/**
+ * @brief Get current timestamp string
+ * 
+ * @param buffer Buffer to store the timestamp string
+ * @param size Size of the buffer
+ */
+void get_timestamp(char *buffer, size_t size) {
+  struct timeval tv;
+  struct tm *tm_info;
+  
+  gettimeofday(&tv, NULL);
+  tm_info = localtime(&tv.tv_sec);
+  
+  // Format: YYYY-MM-DD HH:MM:SS.mmm
+  strftime(buffer, size, "%Y-%m-%d %H:%M:%S", tm_info);
+  sprintf(buffer + strlen(buffer), ".%03ld", tv.tv_usec / 1000);
+}
 
 /**
  * @brief Check if a value is in the table provided in argument
@@ -226,7 +246,9 @@ uint32_t configureMimoChirp(uint8_t devId, rlChirpCfg_t chirpCfg) {
 void check(int status, const char *success_msg, const char *error_msg,
       unsigned char deviceMap, uint8_t is_required) {
 #if DEV_ENV
-  printf("STATUS %4d | DEV MAP: %2u | ", status, deviceMap);
+  char timestamp[32];
+  get_timestamp(timestamp, sizeof(timestamp));
+  printf("[%s] [IP: %s] STATUS %4d | DEV MAP: %2u | ", timestamp, g_ip_addr, status, deviceMap);
 #endif
   if (status == RL_RET_CODE_OK) {
 #if DEV_ENV
@@ -582,6 +604,31 @@ int main (int argc, char *argv[]) {
   };
   add_arg(&parser, &opt_version);
 
+  option_t opt_armonly = {
+    .args = "-a",
+    .argl = "--arm-only",
+    .help = "Arm TDA for recording, without starting frame.",
+    .type = OPT_BOOL,
+  };
+  add_arg(&parser, &opt_armonly);
+
+  option_t opt_start = {
+    .args = "-s",
+    .argl = "--start",
+    .help = "Start frame capture on armed device.",
+    .type = OPT_BOOL,
+  };
+  add_arg(&parser, &opt_start);
+
+  option_t opt_stop = {
+    .args = "-x",
+    .argl = "--stop",
+    .help = "Stop frame capture on running device.",
+    .type = OPT_BOOL,
+  };
+  add_arg(&parser, &opt_stop);
+
+
   parse(&parser, argc, argv);
 
   // Print help
@@ -592,6 +639,9 @@ int main (int argc, char *argv[]) {
 
   unsigned char *ip_addr = (unsigned char*)get_option(&parser, "ip-addr");
   unsigned int port = *(unsigned int*)get_option(&parser, "port");
+  // Store IP address in global variable for logging
+  strncpy(g_ip_addr, ip_addr, sizeof(g_ip_addr) - 1);
+  g_ip_addr[sizeof(g_ip_addr) - 1] = '\0';
   unsigned char *capture_directory = (unsigned char*)get_option(&parser, "capture-dir");
   strcat(capture_path, capture_directory);
   /* Record CLI option possible values are:
@@ -693,5 +743,60 @@ int main (int argc, char *argv[]) {
       "[MMWCAS-RF] Failed to de-arm TDA board!\n", 32, TRUE);
     msleep(1000);
   }
+
+  /* ---------------------------------------------------
+ *  Arm only (prepare recording, do not start)
+ * --------------------------------------------------- */
+if ((unsigned char *)get_option(&parser, "arm-only") != NULL) {
+    status = MMWL_TDAInit(ip_addr, port, config.deviceMap);
+    check(status,
+      "[MMWCAS-DSP] TDA Connected!",
+      "[MMWCAS-DSP] Couldn't connect to TDA board!\n", 32, TRUE);
+
+    status = MMWL_ArmingTDA(tdaCfg);
+    check(status,
+      "[MMWCAS-DSP] TDA Armed (ready to start)",
+      "[MMWCAS-DSP] TDA Arming failed!\n", 32, TRUE);
+    exit(0);
+}
+
+/* ---------------------------------------------------
+ *  Start only (trigger frame start)
+ * --------------------------------------------------- */
+if ((unsigned char *)get_option(&parser, "start") != NULL) {
+    status = MMWL_TDAInit(ip_addr, port, config.deviceMap);
+    check(status,
+      "[MMWCAS-DSP] TDA Connected!",
+      "[MMWCAS-DSP] Couldn't connect to TDA board!\n", 32, TRUE);
+
+    // start framing for all devices (reverse order like original)
+    for (int i = 3; i >= 0; i--) {
+        status += MMWL_StartFrame(1U << i);
+    }
+    check(status,
+      "[MMWCAS-RF] StartFrame command sent",
+      "[MMWCAS-RF] Failed to start frame!\n", config.deviceMap, TRUE);
+    exit(0);
+}
+
+/* ---------------------------------------------------
+ *  Stop only (stop current frame capture)
+ * --------------------------------------------------- */
+if ((unsigned char *)get_option(&parser, "stop") != NULL) {
+    status = MMWL_TDAInit(ip_addr, port, config.deviceMap);
+    check(status,
+      "[MMWCAS-DSP] TDA Connected!",
+      "[MMWCAS-DSP] Couldn't connect to TDA board!\n", 32, TRUE);
+
+    for (int i = 3; i >= 0; i--) {
+        status += MMWL_StopFrame(1U << i);
+    }
+    status += MMWL_DeArmingTDA();
+    check(status,
+      "[MMWCAS-RF] StopFrame + DeArming done",
+      "[MMWCAS-RF] Stop failed!\n", config.deviceMap, TRUE);
+    exit(0);
+}
+
   return 0;
 }

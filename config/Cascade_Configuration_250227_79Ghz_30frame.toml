@@ -1,0 +1,35 @@
+#
+# Converted from Cascade_Configuration_250227_79Ghz_30frame.lua (profile/frame/channel)
+#
+
+[mimo]
+
+[mimo.profile]
+id = 0
+startFrequency = 79                             # GHz (lua: start_freq)
+frequencySlope = 65.854                         # MHz/us (lua: slope)
+idleTime = 3                                    # us (lua: idle_time)
+adcStartTime = 3                                # us (lua: adc_start_time)
+rampEndTime = 28                                # us (lua: ramp_end_time)
+numAdcSamples = 512                             # samples per chirp (lua: adc_samples)
+adcSamplingFrequency = 22500                    # ksps (lua: sample_freq)
+rxGain = 48                                     # dB (lua: rx_gain)
+# hpfCornerFreq1/hpfCornerFreq2 left default unless specified
+
+[mimo.frame]
+numFrames = 0                                  # lua: nframes_master (set to master)
+numLoops = 10                                   # chirps per frame (lua: nchirp_loops)
+framePeriodicity = 50                           # ms (lua: Inter_Frame_Interval)
+
+[mimo.channel]
+rxChannelEn = 15                                # bitmask, set to enable channels (example)
+txChannelEn = 7                                 # bitmask tx
+
+[dataFmt]
+iqSwapSel = 0
+
+# Optional: custom fields if you extended the driver (not standard)
+# capture:
+#  n_files_allocation = 0
+#  data_packaging = 0
+#  capture_directory = "Sapporo_custom_from_lua"

@@ -1,0 +1,100 @@
+#
+# mmWave Cascade configuration file
+# Converted from Cascade_Configuration_250227_79Ghz_30frame.lua
+# Equivalent to 79 GHz profile, 30 frames, 4 TX cascade, 512 ADC samples
+#
+
+[mimo]
+# Define which devices are active in the cascade (1 master + 3 slaves)
+devices = [1, 2, 4, 8]         # dev_list
+radar_enabled = [1, 1, 1, 1]   # RadarDevice
+
+[mimo.network]
+tda_ip = "192.168.33.180"
+tda_port = 5001
+
+[mimo.profile]
+id = 0
+startFrequency = 77.0          # GHz
+frequencySlope = 65.854        # MHz/us
+idleTime = 3                   # us
+adcStartTime = 3               # us
+rampEndTime = 28               # us
+numAdcSamples = 512
+adcSamplingFrequency = 22500   # ksps
+rxGain = 48                    # dB
+hpfCornerFreq1 = 0             # 175 kHz
+hpfCornerFreq2 = 0             # 350 kHz
+txStartTime = 0
+
+[mimo.tx]
+tx0OutPowerBackoffCode = 0
+tx1OutPowerBackoffCode = 0
+tx2OutPowerBackoffCode = 0
+tx0PhaseShifter = 0
+tx1PhaseShifter = 0
+tx2PhaseShifter = 0
+
+[mimo.chirp]
+# Chirp indices (common)
+startIdx = 0
+endIdx = 11
+numChirpsPerFrame = 12
+
+# Chirp allocation per device (TX enable pattern)
+# Format: chirp_id = [tx0, tx1, tx2]
+device1 = [
+    [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0],
+    [0,0,0], [0,0,1], [0,1,0], [1,0,0]
+]
+device2 = [
+    [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,1], [0,1,0],
+    [1,0,0], [0,0,0], [0,0,0], [0,0,0]
+]
+device3 = [
+    [0,0,0], [0,0,0], [0,0,0], [0,0,1], [0,1,0], [1,0,0], [0,0,0], [0,0,0],
+    [0,0,0], [0,0,0], [0,0,0], [0,0,0]
+]
+device4 = [
+    [0,0,1], [0,1,0], [1,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0], [0,0,0],
+    [0,0,0], [0,0,0], [0,0,0], [0,0,0]
+]
+
+[mimo.frame]
+startChirp = 0
+endChirp = 11
+numLoops = 10                  # chirps per frame
+numFrames = 30                 # frames per capture
+framePeriodicity = 50          # ms
+triggerDelay = 0               # us
+triggerModeMaster = 1          # software trigger
+triggerModeSlaves = 2          # hardware trigger
+
+[mimo.system]
+cascading = true
+cascadeMode = "4-chip"
+ldoBypass = true
+lowPowerMode = false
+testSourceEnable = false
+rfInitCalibrationMask = 65537
+
+[mimo.dataPath]
+interface = "CSI2"
+laneClkCfg = 1
+dataRate_Mbps = 600
+transferFmtPkt0 = "0x1"
+transferFmtPkt1 = "0x0"
+iqSwapSel = 0
+chInterleave = 0
+cqConfig = 0
+
+[mimo.capture]
+captureDirectory = "calib77Hamanasu"
+numFramesToCapture = 0         # 0 means continuous until stop
+dataPackaging = 0              # 0 = 16-bit
+numFilesAllocation = 0
+framingType = 1                # 1 = finite
+stopFrameMode = 0              # Frame boundary
+captureTimeoutMs = 30500
+interLoopTimeMs = 2000
+numLoops = 1

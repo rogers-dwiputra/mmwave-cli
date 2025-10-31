@@ -12,7 +12,7 @@ CONFIG_FILE="config/Cascade_Configuration_250227_79Ghz_30frame.toml"
 # Durasi rekaman yang sama
 TIME_DURATION="0.17"
 
-echo "🚀 Memulai eksekusi mmwave secara simultan dengan NAME=$NAME"
+echo "Memulai eksekusi mmwave secara simultan dengan NAME=$NAME"
 echo "--------------------------------------------------------"
 
 # --- Perintah 1 (Jalankan di Background) ---
@@ -36,4 +36,4 @@ wait $PID1
 wait $PID2
 
 echo ""
-echo "✅ Kedua perintah mmwave telah selesai dieksekusi."
+echo "Kedua perintah mmwave telah selesai dieksekusi."

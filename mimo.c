@@ -718,6 +718,5 @@ int main (int argc, char *argv[]) {
       "[MMWCAS-RF] Failed to de-arm TDA board!\n", 32, TRUE);
     msleep(1000);
   }
-
   return 0;
 }

@@ -604,31 +604,6 @@ int main (int argc, char *argv[]) {
   };
   add_arg(&parser, &opt_version);
 
-  option_t opt_armonly = {
-    .args = "-a",
-    .argl = "--arm-only",
-    .help = "Arm TDA for recording, without starting frame.",
-    .type = OPT_BOOL,
-  };
-  add_arg(&parser, &opt_armonly);
-
-  option_t opt_start = {
-    .args = "-s",
-    .argl = "--start",
-    .help = "Start frame capture on armed device.",
-    .type = OPT_BOOL,
-  };
-  add_arg(&parser, &opt_start);
-
-  option_t opt_stop = {
-    .args = "-x",
-    .argl = "--stop",
-    .help = "Stop frame capture on running device.",
-    .type = OPT_BOOL,
-  };
-  add_arg(&parser, &opt_stop);
-
-
   parse(&parser, argc, argv);
 
   // Print help
@@ -743,60 +718,6 @@ int main (int argc, char *argv[]) {
       "[MMWCAS-RF] Failed to de-arm TDA board!\n", 32, TRUE);
     msleep(1000);
   }
-
-  /* ---------------------------------------------------
- *  Arm only (prepare recording, do not start)
- * --------------------------------------------------- */
-if ((unsigned char *)get_option(&parser, "arm-only") != NULL) {
-    status = MMWL_TDAInit(ip_addr, port, config.deviceMap);
-    check(status,
-      "[MMWCAS-DSP] TDA Connected!",
-      "[MMWCAS-DSP] Couldn't connect to TDA board!\n", 32, TRUE);
-
-    status = MMWL_ArmingTDA(tdaCfg);
-    check(status,
-      "[MMWCAS-DSP] TDA Armed (ready to start)",
-      "[MMWCAS-DSP] TDA Arming failed!\n", 32, TRUE);
-    exit(0);
-}
-
-/* ---------------------------------------------------
- *  Start only (trigger frame start)
- * --------------------------------------------------- */
-if ((unsigned char *)get_option(&parser, "start") != NULL) {
-    status = MMWL_TDAInit(ip_addr, port, config.deviceMap);
-    check(status,
-      "[MMWCAS-DSP] TDA Connected!",
-      "[MMWCAS-DSP] Couldn't connect to TDA board!\n", 32, TRUE);
-
-    // start framing for all devices (reverse order like original)
-    for (int i = 3; i >= 0; i--) {
-        status += MMWL_StartFrame(1U << i);
-    }
-    check(status,
-      "[MMWCAS-RF] StartFrame command sent",
-      "[MMWCAS-RF] Failed to start frame!\n", config.deviceMap, TRUE);
-    exit(0);
-}
-
-/* ---------------------------------------------------
- *  Stop only (stop current frame capture)
- * --------------------------------------------------- */
-if ((unsigned char *)get_option(&parser, "stop") != NULL) {
-    status = MMWL_TDAInit(ip_addr, port, config.deviceMap);
-    check(status,
-      "[MMWCAS-DSP] TDA Connected!",
-      "[MMWCAS-DSP] Couldn't connect to TDA board!\n", 32, TRUE);
-
-    for (int i = 3; i >= 0; i--) {
-        status += MMWL_StopFrame(1U << i);
-    }
-    status += MMWL_DeArmingTDA();
-    check(status,
-      "[MMWCAS-RF] StopFrame + DeArming done",
-      "[MMWCAS-RF] Stop failed!\n", config.deviceMap, TRUE);
-    exit(0);
-}
 
   return 0;
 }

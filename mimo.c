@@ -496,6 +496,363 @@ void signal_handler () {
   exit(1);
 }
 
+/**
+ * @brief Helper function to convert hex string to integer
+ */
+static unsigned int hex_string_to_int(const char* hex_str) {
+    unsigned int value = 0;
+    sscanf(hex_str, "0x%x", &value);
+    return value;
+}
+
+/**
+ * @brief Export device configuration to mmwave.json format
+ * 
+ * @param config Device configuration structure
+ * @param filename Output JSON filename
+ * @param num_devices Number of cascade devices (1-4)
+ * @return int 0 on success, -1 on failure
+ */
+int export_config_to_json(devConfig_t config, const char* filename, int num_devices) {
+    FILE* fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Error: Cannot create file %s\n", filename);
+        return -1;
+    }
+
+    // Get current timestamp
+    time_t now = time(NULL);
+    struct tm* tm_info = localtime(&now);
+    char timestamp[64];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%dT%H:%M:%S", tm_info);
+
+    // Start JSON
+    fprintf(fp, "{\n");
+    
+    // Config Generator
+    fprintf(fp, "  \"configGenerator\": {\n");
+    fprintf(fp, "    \"createdBy\": \"mmwave-cli\",\n");
+    fprintf(fp, "    \"createdOn\": \"%s+09:00\",\n", timestamp);
+    fprintf(fp, "    \"isConfigIntermediate\": 1\n");
+    fprintf(fp, "  },\n");
+
+    // Versions
+    fprintf(fp, "  \"currentVersion\": {\n");
+    fprintf(fp, "    \"jsonCfgVersion\": {\n");
+    fprintf(fp, "      \"major\": 0,\n");
+    fprintf(fp, "      \"minor\": 4,\n");
+    fprintf(fp, "      \"patch\": 0\n");
+    fprintf(fp, "    },\n");
+    fprintf(fp, "    \"DFPVersion\": {\n");
+    fprintf(fp, "      \"major\": 2,\n");
+    fprintf(fp, "      \"minor\": 2,\n");
+    fprintf(fp, "      \"patch\": 0\n");
+    fprintf(fp, "    },\n");
+    fprintf(fp, "    \"SDKVersion\": {\n");
+    fprintf(fp, "      \"major\": 3,\n");
+    fprintf(fp, "      \"minor\": 3,\n");
+    fprintf(fp, "      \"patch\": 0\n");
+    fprintf(fp, "    },\n");
+    fprintf(fp, "    \"mmwavelinkVersion\": {\n");
+    fprintf(fp, "      \"major\": 2,\n");
+    fprintf(fp, "      \"minor\": 2,\n");
+    fprintf(fp, "      \"patch\": 0\n");
+    fprintf(fp, "    }\n");
+    fprintf(fp, "  },\n");
+
+    // Last Backward Compatible Version
+    fprintf(fp, "  \"lastBackwardCompatibleVersion\": {\n");
+    fprintf(fp, "    \"DFPVersion\": {\n");
+    fprintf(fp, "      \"major\": 2,\n");
+    fprintf(fp, "      \"minor\": 1,\n");
+    fprintf(fp, "      \"patch\": 0\n");
+    fprintf(fp, "    },\n");
+    fprintf(fp, "    \"SDKVersion\": {\n");
+    fprintf(fp, "      \"major\": 3,\n");
+    fprintf(fp, "      \"minor\": 0,\n");
+    fprintf(fp, "      \"patch\": 0\n");
+    fprintf(fp, "    },\n");
+    fprintf(fp, "    \"mmwavelinkVersion\": {\n");
+    fprintf(fp, "      \"major\": 2,\n");
+    fprintf(fp, "      \"minor\": 1,\n");
+    fprintf(fp, "      \"patch\": 0\n");
+    fprintf(fp, "    }\n");
+    fprintf(fp, "  },\n");
+
+    // Regulatory Restrictions
+    fprintf(fp, "  \"regulatoryRestrictions\": {\n");
+    fprintf(fp, "    \"frequencyRangeBegin_GHz\": 77,\n");
+    fprintf(fp, "    \"frequencyRangeEnd_GHz\": 81,\n");
+    fprintf(fp, "    \"maxBandwidthAllowed_MHz\": 4000,\n");
+    fprintf(fp, "    \"maxTransmitPowerAllowed_dBm\": 12\n");
+    fprintf(fp, "  },\n");
+
+    // System Config
+    fprintf(fp, "  \"systemConfig\": {\n");
+    fprintf(fp, "    \"summary\": \"Configuration exported from mmwave-cli\",\n");
+    fprintf(fp, "    \"sceneParameters\": {\n");
+    fprintf(fp, "      \"ambientTemperature_degC\": 20,\n");
+    fprintf(fp, "      \"maxDetectableRange_m\": 10,\n");
+    fprintf(fp, "      \"rangeResolution_cm\": 5,\n");
+    fprintf(fp, "      \"maxVelocity_kmph\": 26,\n");
+    fprintf(fp, "      \"velocityResolution_kmph\": 2,\n");
+    fprintf(fp, "      \"measurementRate\": 10,\n");
+    fprintf(fp, "      \"typicalDetectedObjectRCS\": 1.0\n");
+    fprintf(fp, "    }\n");
+    fprintf(fp, "  },\n");
+
+    // mmWave Devices Array
+    fprintf(fp, "  \"mmWaveDevices\": [\n");
+
+    // Calculate start frequency in GHz
+    float startFreq_GHz = (config.profileCfg.startFreqConst * 53.6441803) / (1000.0 * 1000.0 * 1000.0);
+    float freqSlope_MHz_usec = (config.profileCfg.freqSlopeConst * 48.2797623) / 1000.0;
+    float idleTime_usec = config.profileCfg.idleTimeConst * 0.01; // 1 LSB = 10ns
+    float adcStartTime_usec = config.profileCfg.adcStartTimeConst * 0.01;
+    float rampEndTime_usec = config.profileCfg.rampEndTime * 0.01;
+    float txStartTime_usec = config.profileCfg.txStartTime * 0.01;
+    float framePeriodicity_msec = (config.frameCfg.framePeriodicity * 5.0) / (1000.0 * 1000.0);
+
+    // Loop through devices
+    for (int devId = 0; devId < num_devices; devId++) {
+        fprintf(fp, "    {\n");
+        fprintf(fp, "      \"mmWaveDeviceId\": %d,\n", devId);
+        fprintf(fp, "      \"rfConfig\": {\n");
+        fprintf(fp, "        \"waveformType\": \"legacyFrameChirp\",\n");
+        fprintf(fp, "        \"MIMOScheme\": \"TDM\",\n");
+        fprintf(fp, "        \"rlCalibrationDataFile\": \"\",\n");
+
+        // Channel Config
+        fprintf(fp, "        \"rlChanCfg_t\": {\n");
+        fprintf(fp, "          \"rxChannelEn\": \"0x%X\",\n", config.channelCfg.rxChannelEn);
+        fprintf(fp, "          \"txChannelEn\": \"0x%X\",\n", config.channelCfg.txChannelEn);
+        fprintf(fp, "          \"cascading\": %d,\n", devId == 0 ? 1 : 2); // Master=1, Slave=2
+        fprintf(fp, "          \"cascadingPinoutCfg\": \"0x0\"\n");
+        fprintf(fp, "        },\n");
+
+        // ADC Out Config
+        fprintf(fp, "        \"rlAdcOutCfg_t\": {\n");
+        fprintf(fp, "          \"fmt\": {\n");
+        fprintf(fp, "            \"b2AdcBits\": %d,\n", config.adcOutCfg.fmt.b2AdcBits);
+        fprintf(fp, "            \"b8FullScaleReducFctr\": %d,\n", config.adcOutCfg.fmt.b8FullScaleReducFctr);
+        fprintf(fp, "            \"b2AdcOutFmt\": %d\n", config.adcOutCfg.fmt.b2AdcOutFmt);
+        fprintf(fp, "          }\n");
+        fprintf(fp, "        },\n");
+
+        // Low Power Mode Config
+        fprintf(fp, "        \"rlLowPowerModeCfg_t\": {\n");
+        fprintf(fp, "          \"lpAdcMode\": %d\n", config.lpmCfg.lpAdcMode);
+        fprintf(fp, "        },\n");
+
+        // Profile Config
+        fprintf(fp, "        \"rlProfiles\": [\n");
+        fprintf(fp, "          {\n");
+        fprintf(fp, "            \"rlProfileCfg_t\": {\n");
+        fprintf(fp, "              \"profileId\": %d,\n", config.profileCfg.profileId);
+        fprintf(fp, "              \"pfVcoSelect\": \"0x%X\",\n", config.profileCfg.pfVcoSelect);
+        fprintf(fp, "              \"pfCalLutUpdate\": \"0x0\",\n");
+        fprintf(fp, "              \"startFreqConst_GHz\": %.16f,\n", startFreq_GHz);
+        fprintf(fp, "              \"idleTimeConst_usec\": %.1f,\n", idleTime_usec);
+        fprintf(fp, "              \"adcStartTimeConst_usec\": %.16f,\n", adcStartTime_usec);
+        fprintf(fp, "              \"rampEndTime_usec\": %.15f,\n", rampEndTime_usec);
+        fprintf(fp, "              \"txOutPowerBackoffCode\": \"0x%X\",\n", config.profileCfg.txOutPowerBackoffCode);
+        fprintf(fp, "              \"txPhaseShifter\": \"0x%X\",\n", config.profileCfg.txPhaseShifter);
+        fprintf(fp, "              \"freqSlopeConst_MHz_usec\": %.15f,\n", freqSlope_MHz_usec);
+        fprintf(fp, "              \"txStartTime_usec\": %.1f,\n", txStartTime_usec);
+        fprintf(fp, "              \"numAdcSamples\": %d,\n", config.profileCfg.numAdcSamples);
+        fprintf(fp, "              \"digOutSampleRate\": %.1f,\n", (float)config.profileCfg.digOutSampleRate);
+        fprintf(fp, "              \"hpfCornerFreq1\": %d,\n", config.profileCfg.hpfCornerFreq1);
+        fprintf(fp, "              \"hpfCornerFreq2\": %d,\n", config.profileCfg.hpfCornerFreq2);
+        fprintf(fp, "              \"rxGain_dB\": \"0x%X\"\n", config.profileCfg.rxGain);
+        fprintf(fp, "            }\n");
+        fprintf(fp, "          }\n");
+        fprintf(fp, "        ],\n");
+
+        // Chirp Config - 12 chirps for MIMO
+        fprintf(fp, "        \"rlChirps\": [\n");
+        for (int chirpIdx = 0; chirpIdx < NUM_CHIRPS; chirpIdx++) {
+            // Determine TX enable based on device and chirp index
+            const uint8_t chirpTxTable[4][3] = {
+                {11, 10, 9},   // Dev0 - Master
+                {8, 7, 6},     // Dev1
+                {5, 4, 3},     // Dev2
+                {2, 1, 0},     // Dev3
+            };
+            
+            uint8_t txEnable = 0x0;
+            for (int tx = 0; tx < 3; tx++) {
+                if (chirpTxTable[devId][tx] == chirpIdx) {
+                    txEnable = (1 << tx);
+                    break;
+                }
+            }
+
+            fprintf(fp, "          {\n");
+            fprintf(fp, "            \"rlChirpCfg_t\": {\n");
+            fprintf(fp, "              \"chirpStartIdx\": %d,\n", chirpIdx);
+            fprintf(fp, "              \"chirpEndIdx\": %d,\n", chirpIdx);
+            fprintf(fp, "              \"profileId\": 0,\n");
+            fprintf(fp, "              \"startFreqVar_MHz\": 0.0,\n");
+            fprintf(fp, "              \"freqSlopeVar_KHz_usec\": 0.0,\n");
+            fprintf(fp, "              \"idleTimeVar_usec\": 0.0,\n");
+            fprintf(fp, "              \"adcStartTimeVar_usec\": 0.0,\n");
+            fprintf(fp, "              \"txEnable\": \"0x%X\"\n", txEnable);
+            fprintf(fp, "            }\n");
+            fprintf(fp, "          }%s\n", (chirpIdx < NUM_CHIRPS - 1) ? "," : "");
+        }
+        fprintf(fp, "        ],\n");
+
+        // RF Init Calib Config
+        fprintf(fp, "        \"rlRfInitCalConf_t\": {\n");
+        fprintf(fp, "          \"calibEnMask\": \"0x1FF0\"\n");
+        fprintf(fp, "        },\n");
+
+        // Frame Config
+        fprintf(fp, "        \"rlFrameCfg_t\": {\n");
+        fprintf(fp, "          \"chirpEndIdx\": %d,\n", config.frameCfg.chirpEndIdx);
+        fprintf(fp, "          \"chirpStartIdx\": %d,\n", config.frameCfg.chirpStartIdx);
+        fprintf(fp, "          \"numLoops\": %d,\n", config.frameCfg.numLoops);
+        fprintf(fp, "          \"numFrames\": %d,\n", config.frameCfg.numFrames);
+        fprintf(fp, "          \"framePeriodicity_msec\": %.1f,\n", framePeriodicity_msec);
+        fprintf(fp, "          \"triggerSelect\": %d,\n", devId == 0 ? 1 : 2); // SW trigger for master, HW for slaves
+        fprintf(fp, "          \"frameTriggerDelay\": 0.0\n");
+        fprintf(fp, "        },\n");
+
+        // Empty arrays
+        fprintf(fp, "        \"rlBpmChirps\": [],\n");
+        
+        // Misc Config
+        fprintf(fp, "        \"rlRfMiscConf_t\": {\n");
+        fprintf(fp, "          \"miscCtl\": \"%d\"\n", config.miscCfg.miscCtl);
+        fprintf(fp, "        },\n");
+
+        fprintf(fp, "        \"rlRfPhaseShiftCfgs\": [],\n");
+        fprintf(fp, "        \"rlRfProgFiltConfs\": [],\n");
+
+        // Test Source (empty template)
+        fprintf(fp, "        \"rlTestSource_t\": {\n");
+        fprintf(fp, "          \"rlTestSourceObjects\": [\n");
+        fprintf(fp, "            {\n");
+        fprintf(fp, "              \"rlTestSourceObject_t\": {\n");
+        fprintf(fp, "                \"posX_m\": %.1f,\n", 4.0 + devId * 3.0);
+        fprintf(fp, "                \"posY_m\": %.1f,\n", 3.0 + devId * 2.0);
+        fprintf(fp, "                \"posZ_m\": 0.0,\n");
+        fprintf(fp, "                \"velX_m_sec\": 0.0,\n");
+        fprintf(fp, "                \"velY_m_sec\": 0.0,\n");
+        fprintf(fp, "                \"velZ_m_sec\": 0.0,\n");
+        fprintf(fp, "                \"sigLvl_dBFS\": -2.5,\n");
+        fprintf(fp, "                \"posXMin_m\": -327.0,\n");
+        fprintf(fp, "                \"posYMin_m\": 0.0,\n");
+        fprintf(fp, "                \"posZMin_m\": -327.0,\n");
+        fprintf(fp, "                \"posXMax_m\": 327.0,\n");
+        fprintf(fp, "                \"posYMax_m\": 327.0,\n");
+        fprintf(fp, "                \"posZMax_m\": 327.0\n");
+        fprintf(fp, "              }\n");
+        fprintf(fp, "            },\n");
+        fprintf(fp, "            {\n");
+        fprintf(fp, "              \"rlTestSourceObject_t\": {\n");
+        fprintf(fp, "                \"posX_m\": 327.0,\n");
+        fprintf(fp, "                \"posY_m\": 327.0,\n");
+        fprintf(fp, "                \"posZ_m\": 0.0,\n");
+        fprintf(fp, "                \"velX_m_sec\": 0.0,\n");
+        fprintf(fp, "                \"velY_m_sec\": 0.0,\n");
+        fprintf(fp, "                \"velZ_m_sec\": 0.0,\n");
+        fprintf(fp, "                \"sigLvl_dBFS\": -95.0,\n");
+        fprintf(fp, "                \"posXMin_m\": -327.0,\n");
+        fprintf(fp, "                \"posYMin_m\": 0.0,\n");
+        fprintf(fp, "                \"posZMin_m\": -327.0,\n");
+        fprintf(fp, "                \"posXMax_m\": 327.0,\n");
+        fprintf(fp, "                \"posYMax_m\": 327.0,\n");
+        fprintf(fp, "                \"posZMax_m\": 327.0\n");
+        fprintf(fp, "              }\n");
+        fprintf(fp, "            }\n");
+        fprintf(fp, "          ],\n");
+        fprintf(fp, "          \"rlTestSourceRxAntPos\": [\n");
+        for (int rx = 0; rx < 4; rx++) {
+            fprintf(fp, "            {\n");
+            fprintf(fp, "              \"rlTestSourceAntPos_t\": {\n");
+            fprintf(fp, "                \"antPosX\": %.1f,\n", rx * 0.5);
+            fprintf(fp, "                \"antPosZ\": 0.0\n");
+            fprintf(fp, "              }\n");
+            fprintf(fp, "            }%s\n", (rx < 3) ? "," : "");
+        }
+        fprintf(fp, "          ],\n");
+        fprintf(fp, "          \"rlTestSourceTxAntPos\": [\n");
+        for (int tx = 0; tx < 3; tx++) {
+            fprintf(fp, "            {\n");
+            fprintf(fp, "              \"rlTestSourceAntPos_t\": {\n");
+            fprintf(fp, "                \"antPosX\": 0.0,\n");
+            fprintf(fp, "                \"antPosZ\": 0.0\n");
+            fprintf(fp, "              }\n");
+            fprintf(fp, "            }%s\n", (tx < 2) ? "," : "");
+        }
+        fprintf(fp, "          ],\n");
+        fprintf(fp, "          \"miscFunCtrl\": 0\n");
+        fprintf(fp, "        },\n");
+
+        // LDO Bypass Config
+        fprintf(fp, "        \"rlRfLdoBypassCfg_t\": {\n");
+        fprintf(fp, "          \"ldoBypassEnable\": %d,\n", config.ldoCfg.ldoBypassEnable);
+        fprintf(fp, "          \"supplyMonIrDrop\": %d,\n", config.ldoCfg.supplyMonIrDrop);
+        fprintf(fp, "          \"ioSupplyIndicator\": %d\n", config.ldoCfg.ioSupplyIndicator);
+        fprintf(fp, "        },\n");
+
+        fprintf(fp, "        \"rlLoopbackBursts\": [],\n");
+        fprintf(fp, "        \"rlDynChirpCfgs\": [],\n");
+        fprintf(fp, "        \"rlDynPerChirpPhShftCfgs\": []\n");
+        fprintf(fp, "      },\n");
+
+        // Raw Data Capture Config
+        fprintf(fp, "      \"rawDataCaptureConfig\": {\n");
+        fprintf(fp, "        \"rlDevDataFmtCfg_t\": {\n");
+        fprintf(fp, "          \"iqSwapSel\": %d,\n", config.dataFmtCfg.iqSwapSel);
+        fprintf(fp, "          \"chInterleave\": %d\n", config.dataFmtCfg.chInterleave);
+        fprintf(fp, "        },\n");
+        fprintf(fp, "        \"rlDevDataPathCfg_t\": {\n");
+        fprintf(fp, "          \"intfSel\": %d,\n", config.datapathCfg.intfSel);
+        fprintf(fp, "          \"transferFmtPkt0\": \"0x%X\",\n", config.datapathCfg.transferFmtPkt0);
+        fprintf(fp, "          \"transferFmtPkt1\": \"0x%X\",\n", config.datapathCfg.transferFmtPkt1);
+        fprintf(fp, "          \"cqConfig\": 0,\n");
+        fprintf(fp, "          \"cq0TransSize\": 0,\n");
+        fprintf(fp, "          \"cq1TransSize\": 0,\n");
+        fprintf(fp, "          \"cq2TransSize\": 0\n");
+        fprintf(fp, "        },\n");
+        fprintf(fp, "        \"rlDevDataPathClkCfg_t\": {\n");
+        fprintf(fp, "          \"laneClkCfg\": %d,\n", config.datapathClkCfg.laneClkCfg);
+        fprintf(fp, "          \"dataRate_Mbps\": %d\n", config.datapathClkCfg.dataRate == 1 ? 600 : 450);
+        fprintf(fp, "        },\n");
+        fprintf(fp, "        \"rlDevCsi2Cfg_t\": {\n");
+        fprintf(fp, "          \"lanePosPolSel\": \"0x%X\",\n", config.csi2LaneCfg.lanePosPolSel);
+        fprintf(fp, "          \"lineStartEndDis\": %d\n", config.csi2LaneCfg.lineStartEndDis);
+        fprintf(fp, "        }\n");
+        fprintf(fp, "      },\n");
+        fprintf(fp, "      \"monitoringConfig\": {\n");
+        fprintf(fp, "      }\n");
+        fprintf(fp, "    }%s\n", (devId < num_devices - 1) ? "," : "");
+    }
+
+    fprintf(fp, "  ],\n");
+
+    // Processing Chain Config
+    fprintf(fp, "  \"processingChainConfig\": {\n");
+    fprintf(fp, "    \"detectionChain\": {\n");
+    fprintf(fp, "      \"name\": \"TI_GenericChain\",\n");
+    fprintf(fp, "      \"detectionLoss\": 1,\n");
+    fprintf(fp, "      \"systemLoss\": 1,\n");
+    fprintf(fp, "      \"implementationMargin\": 2,\n");
+    fprintf(fp, "      \"detectionSNR\": 12,\n");
+    fprintf(fp, "      \"theoreticalRxAntennaGain\": 9,\n");
+    fprintf(fp, "      \"theoreticalTxAntennaGain\": 9\n");
+    fprintf(fp, "    }\n");
+    fprintf(fp, "  }\n");
+
+    fprintf(fp, "}\n");
+
+    fclose(fp);
+    printf("Successfully exported configuration to %s\n", filename);
+    return 0;
+}
+
 
 /**
  * @brief Application entry point
@@ -619,6 +976,9 @@ int main (int argc, char *argv[]) {
   g_ip_addr[sizeof(g_ip_addr) - 1] = '\0';
   unsigned char *capture_directory = (unsigned char*)get_option(&parser, "capture-dir");
   strcat(capture_path, capture_directory);
+  // Construct JSON filename with same name as capture directory
+  char json_filename[256];
+  sprintf(json_filename, "%s.mmwave.json", capture_directory);
   /* Record CLI option possible values are:
    *  - start: To start a recording and exit
    *  - stop: Stop a recording and exit
@@ -685,6 +1045,8 @@ int main (int argc, char *argv[]) {
 
     // Start configuration
     configure(config);
+    // Export to JSON
+    export_config_to_json(config, json_filename, 4);
     msleep(2000);
   }
 

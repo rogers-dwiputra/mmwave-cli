@@ -24,6 +24,8 @@
 #include "toml/config.h"
 #include <time.h>
 #include <sys/time.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 /******************************
  *      CONFIGURATIONS
@@ -159,6 +161,56 @@ rlDevCsi2Cfg_t csi2LaneCfgArgs = {
 |    11 |     1 |     0 |     0 |     0 |     0 |     0 |     0 |     0 |     0 |     0 |     0 |     0 |
 |-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
 */
+
+typedef struct {
+    char src_path[256];
+    char dst_path[256];
+    int capture_id;
+} transfer_task_t;
+
+// Thread for SCP transfer
+void* scp_transfer_thread(void* arg) {
+    transfer_task_t* task = (transfer_task_t*)arg;
+    
+    char cmd[512];
+    snprintf(cmd, sizeof(cmd),
+        "scp -O -oHostKeyAlgorithms=+ssh-rsa "
+        "-oPubkeyAcceptedAlgorithms=+ssh-rsa "
+        "-r root@192.168.33.180:%s %s &",
+        task->src_path, task->dst_path);
+    
+    printf("[TRANSFER %d] Starting: %s\n", task->capture_id, cmd);
+    int ret = system(cmd);
+    printf("[TRANSFER %d] Completed with status: %d\n", task->capture_id, ret);
+    
+    free(task);
+    return NULL;
+}
+
+// Non-blocking transfer
+int start_async_transfer(const char* capture_dir, int capture_id) {
+    transfer_task_t* task = malloc(sizeof(transfer_task_t));
+    if (!task) return -1;
+    
+    snprintf(task->src_path, sizeof(task->src_path), 
+             "/mnt/ssd/%s", capture_dir);
+    snprintf(task->dst_path, sizeof(task->dst_path),
+             "~/Documents/PHD-Muroran/PostProc/%s", capture_dir);
+    task->capture_id = capture_id;
+    
+    pthread_t thread;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    
+    if (pthread_create(&thread, &attr, scp_transfer_thread, task) != 0) {
+        free(task);
+        return -1;
+    }
+    
+    pthread_attr_destroy(&attr);
+    return 0;
+}
 
 /**
  * @brief Get current timestamp string
@@ -961,13 +1013,34 @@ int main (int argc, char *argv[]) {
   };
   add_arg(&parser, &opt_version);
 
-  parse(&parser, argc, argv);
+  // Parse command line for continuous mode
+    option_t opt_continuous = {
+        .args = "-m",
+        .argl = "--monitor",
+        .help = "Enable continuous monitoring mode",
+        .type = OPT_BOOL,
+    };
+    add_arg(&parser, &opt_continuous);
+    
+    option_t opt_interval = {
+        .args = "-n",
+        .argl = "--interval",
+        .help = "Monitoring interval in seconds (default: 10)",
+        .type = OPT_INT,
+        .default_value = &((int){10}),
+    };
+    add_arg(&parser, &opt_interval);
+    
+    parse(&parser, argc, argv);
 
   // Print help
   if ((unsigned char*)get_option(&parser, "help") != NULL) {
     print_help(&parser);
     exit(0);
   }
+
+  unsigned char *monitor_mode = (unsigned char*)get_option(&parser, "monitor");
+  int monitor_interval = *(int*)get_option(&parser, "interval");
 
   unsigned char *ip_addr = (unsigned char*)get_option(&parser, "ip-addr");
   unsigned int port = *(unsigned int*)get_option(&parser, "port");
@@ -1051,34 +1124,113 @@ int main (int argc, char *argv[]) {
   }
 
   if ((unsigned char *)get_option(&parser, "record") != NULL) {
-    // Arm TDA
-    status = MMWL_ArmingTDA(tdaCfg);
-    check(status,
-      "[MMWCAS-DSP] Arming TDA",
-      "[MMWCAS-DSP] TDA Arming failed!\n", 32, TRUE);
+    // CONTINUOUS MONITORING LOOP
+        if (monitor_mode != NULL) {
+            printf("[MONITOR] Starting continuous monitoring mode\n");
+            printf("[MONITOR] Interval: %d seconds\n", monitor_interval);
+            
+            int capture_count = 0;
+            time_t start_time = time(NULL);
+            
+            while (1) { // Infinite loop - use Ctrl+C to stop
+                capture_count++;
+                
+                // Generate unique capture directory
+                char capture_dir[128];
+                sprintf(capture_dir, "MMWL_Capture_%lu_%03d", 
+                        (unsigned long)start_time, capture_count);
+                
+                // Update capture path
+                char full_capture_path[256];
+                sprintf(full_capture_path, "%s%s", capture_path, capture_dir);
+                tdaCfg.captureDirectory = full_capture_path;
+                
+                printf("\n[MONITOR #%d] Starting capture: %s\n", 
+                       capture_count, capture_dir);
+                
+                // Arm TDA
+                status = MMWL_ArmingTDA(tdaCfg);
+                check(status, 
+                      "[MMWCAS-DSP] Arming TDA",
+                      "[MMWCAS-DSP] TDA Arming failed!", 32, FALSE);
+                
+                if (status != 0) {
+                    printf("[MONITOR] Warning: TDA arming failed, retrying...\n");
+                    msleep(2000);
+                    continue;
+                }
+                
+                msleep(2000);
+                
+                // Start framing
+                for (int i = 3; i >= 0; i--) {
+                    status += MMWL_StartFrame(1U << i);
+                }
+                check(status,
+                      "[MMWCAS-RF] Framing ...",
+                      "[MMWCAS-RF] Failed to initiate framing!", 
+                      config.deviceMap, FALSE);
+                
+                // Wait for capture duration
+                msleep((unsigned long int)monitor_interval * 1000);
+                
+                // Stop framing
+                for (int i = 3; i >= 0; i--) {
+                    status += MMWL_StopFrame(1U << i);
+                }
+                
+                status += MMWL_DeArmingTDA();
+                check(status,
+                      "[MMWCAS-RF] Stop recording",
+                      "[MMWCAS-RF] Failed to de-arm TDA board!", 32, FALSE);
+                
+                printf("[MONITOR #%d] Capture complete\n", capture_count);
+                
+                // Export JSON configuration
+                char json_filename[256];
+                sprintf(json_filename, "%s.mmwave.json", capture_dir);
+                export_config_to_json(config, json_filename, 4);
+                
+                // Start async transfer (non-blocking)
+                start_async_transfer(capture_dir, capture_count);
+                printf("[MONITOR #%d] Transfer started in background\n", 
+                       capture_count);
+                
+                // Small delay before next capture to ensure clean state
+                msleep(1000);
+                
+                printf("[MONITOR] Ready for next capture...\n");
+            }
+        } else {
+          // Arm TDA
+          status = MMWL_ArmingTDA(tdaCfg);
+          check(status,
+            "[MMWCAS-DSP] Arming TDA",
+            "[MMWCAS-DSP] TDA Arming failed!\n", 32, TRUE);
 
-    msleep(2000);
+          msleep(2000);
 
-    // Start framing
-    for (int i = 3; i >=0; i--) {
-      status += MMWL_StartFrame(1U << i);
-    }
-    check(status,
-      "[MMWCAS-RF] Framing ...",
-      "[MMWCAS-RF] Failed to initiate framing!\n", config.deviceMap, TRUE);
+          // Start framing
+          for (int i = 3; i >=0; i--) {
+            status += MMWL_StartFrame(1U << i);
+          }
+          check(status,
+            "[MMWCAS-RF] Framing ...",
+            "[MMWCAS-RF] Failed to initiate framing!\n", config.deviceMap, TRUE);
 
-    msleep((unsigned long int)record_duration);
+          msleep((unsigned long int)record_duration);
 
-    // Stop framing
-    for (int i = 3; i >= 0; i--) {
-      status += MMWL_StopFrame(1U << i);
-    }
+          // Stop framing
+          for (int i = 3; i >= 0; i--) {
+            status += MMWL_StopFrame(1U << i);
+          }
 
-    status += MMWL_DeArmingTDA();
-    check(status,
-      "[MMWCAS-RF] Stop recording",
-      "[MMWCAS-RF] Failed to de-arm TDA board!\n", 32, TRUE);
-    msleep(1000);
+          status += MMWL_DeArmingTDA();
+          check(status,
+            "[MMWCAS-RF] Stop recording",
+            "[MMWCAS-RF] Failed to de-arm TDA board!\n", 32, TRUE);
+          msleep(1000);
+        }
   }
   return 0;
 }

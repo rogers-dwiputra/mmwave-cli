@@ -1048,7 +1048,7 @@ int main (int argc, char *argv[]) {
   strncpy(g_ip_addr, ip_addr, sizeof(g_ip_addr) - 1);
   g_ip_addr[sizeof(g_ip_addr) - 1] = '\0';
   unsigned char *capture_directory = (unsigned char*)get_option(&parser, "capture-dir");
-  strcat(capture_path, capture_directory);
+  sprintf(capture_path, "/mnt/ssd/%s_", capture_directory);
   // Construct JSON filename with same name as capture directory
   char json_filename[256];
   sprintf(json_filename, "%s.mmwave.json", capture_directory);
@@ -1130,15 +1130,14 @@ int main (int argc, char *argv[]) {
             printf("[MONITOR] Interval: %d seconds\n", monitor_interval);
             
             int capture_count = 0;
-            time_t start_time = time(NULL);
             
             while (1) { // Infinite loop - use Ctrl+C to stop
                 capture_count++;
+                time_t start_time = time(NULL);
                 
                 // Generate unique capture directory
                 char capture_dir[128];
-                sprintf(capture_dir, "MMWL_Capture_%lu_%03d", 
-                        (unsigned long)start_time, capture_count);
+                sprintf(capture_dir, "MMWL_Capture_%lu", (unsigned long)now);
                 
                 // Update capture path
                 char full_capture_path[256];

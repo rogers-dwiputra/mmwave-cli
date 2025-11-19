@@ -195,7 +195,7 @@ int start_async_transfer(const char* capture_dir, int capture_id) {
     snprintf(task->src_path, sizeof(task->src_path), 
              "/mnt/ssd/%s", capture_dir);
     snprintf(task->dst_path, sizeof(task->dst_path),
-             "~/Documents/PHD-Muroran/PostProc/%s", capture_dir);
+             "~/mmwave-cli/PostProc/%s", capture_dir);
     task->capture_id = capture_id;
     
     pthread_t thread;

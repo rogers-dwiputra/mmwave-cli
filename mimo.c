@@ -1048,7 +1048,7 @@ int main (int argc, char *argv[]) {
   strncpy(g_ip_addr, ip_addr, sizeof(g_ip_addr) - 1);
   g_ip_addr[sizeof(g_ip_addr) - 1] = '\0';
   unsigned char *capture_directory = (unsigned char*)get_option(&parser, "capture-dir");
-  sprintf(capture_path, "/mnt/ssd/%s_", capture_directory);
+  sprintf(capture_path, "/mnt/ssd/");
   // Construct JSON filename with same name as capture directory
   char json_filename[256];
   sprintf(json_filename, "%s.mmwave.json", capture_directory);

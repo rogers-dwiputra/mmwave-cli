@@ -1133,7 +1133,7 @@ int main (int argc, char *argv[]) {
             
             while (1) { // Infinite loop - use Ctrl+C to stop
                 capture_count++;
-                time_t start_time = time(NULL);
+                time_t now = time(NULL);
                 
                 // Generate unique capture directory
                 char capture_dir[128];

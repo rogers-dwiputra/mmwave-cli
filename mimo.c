@@ -36,15 +36,15 @@ static unsigned char g_ip_addr[32] = {0};
 const rlProfileCfg_t profileCfgArgs = {
   .profileId = 0,
   .pfVcoSelect = 0x02,
-  .startFreqConst = 1435384036,   // 77GHz | 1 LSB = 53.644 Hz
-  .freqSlopeConst = 311,          // 15.0148 Mhz/us | 1LSB = 48.279 kHz/uS
-  .idleTimeConst = 500,           // 5us  | 1LSB = 10ns
-  .adcStartTimeConst = 600,       // 6us  | 1LSB = 10ns
-  .rampEndTime = 4000,            // 40us | 1LSB = 10ns
+  .startFreqConst = 1434000000,   // 77GHz | 1 LSB = 53.644 Hz
+  .freqSlopeConst = 518,          // 15.0148 Mhz/us | 1LSB = 48.279 kHz/uS
+  .idleTimeConst = 700,           // 5us  | 1LSB = 10ns
+  .adcStartTimeConst = 435,       // 6us  | 1LSB = 10ns
+  .rampEndTime = 6897,            // 40us | 1LSB = 10ns
   .txOutPowerBackoffCode = 0x0,
   .txPhaseShifter = 0x0,
   .txStartTime = 0x0,             // 0us | 1LSB = 10ns
-  .numAdcSamples = 256,           // 256 ADC samples per chirp
+  .numAdcSamples = 512,           // 256 ADC samples per chirp
   .digOutSampleRate = 8000,      // 8000 ksps (8 MHz) | 1LSB = 1 ksps
   .hpfCornerFreq1 = 0x0,          // 175kHz
   .hpfCornerFreq2 = 0x0,          // 350kHz
@@ -56,7 +56,7 @@ const rlFrameCfg_t frameCfgArgs = {
   .chirpStartIdx = 0,
   .chirpEndIdx = 11,
   .numFrames = 0,                 // (0 for infinite)
-  .numLoops = 16,
+  .numLoops = 10,
   .numAdcSamples = 2 * 256,       // Complex samples (for I and Q siganls)
   .frameTriggerDelay = 0x0,
   .framePeriodicity = 20000000,   // 100ms | 1LSB = 5ns

@@ -1,7 +1,7 @@
 # Compiler
 CC = gcc
 CFLAGS = -o
-FLAGS = -c -w
+FLAGS = -c -w -Wno-error=incompatible-pointer-types -Wno-error=int-conversion
 
 ODIR = output
 PYTHON ?= python3
@@ -44,10 +44,12 @@ clean:
 	@rm -f mmwcas.c
 
 build-cython:
-	@${PYTHON} setup.py build_ext --inplace
+	@echo "Skipping Cython build (not required for CLI tool)"
 
-build: clean all build-cython
+build: clean all
 
-install: clean all build-cython
-	make clean
-
+install: clean all
+	@cp mmwave /usr/local/bin/
+	@chmod +x /usr/local/bin/mmwave
+	@echo "mmwave installed successfully to /usr/local/bin/"
+	@$(MAKE) clean

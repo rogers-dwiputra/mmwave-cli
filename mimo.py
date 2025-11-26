@@ -43,7 +43,12 @@ default_radar_config = {
 }
 
 def export_config_to_json(config, filename, num_devices=4):
+    """
+    Membuat file mmwave.json dari dictionary konfigurasi radar.
+    Versi ini diformat ulang agar mudah dibaca dan memiliki struktur yang benar.
+    """
     print(f"  > Membuat file konfigurasi JSON: {filename}")
+    
     p_cfg = config['profileCfg']
     f_cfg = config['frameCfg']
     
@@ -61,8 +66,9 @@ def export_config_to_json(config, filename, num_devices=4):
             "createdOn": datetime.now().astimezone().isoformat(),
             "isConfigIntermediate": 1
         },
+        "mmWaveDevices": []
     }
-    json_output["mmWaveDevices"] = []
+
     for devId in range(num_devices):
         chirp_tx_table = {0: {11, 10, 9}, 1: {8, 7, 6}, 2: {5, 4, 3}, 3: {2, 1, 0}}
         chirps = []
@@ -71,9 +77,72 @@ def export_config_to_json(config, filename, num_devices=4):
             if chirpIdx in chirp_tx_table.get(devId, set()):
                 tx_map = {val: idx for idx, val in enumerate(sorted(list(chirp_tx_table[devId]), reverse=True))}
                 tx_enable = 1 << tx_map[chirpIdx]
-            chirps.append({"rlChirpCfg_t": {"chirpStartIdx": chirpIdx, "chirpEndIdx": chirpIdx, "profileId": 0, "startFreqVar_MHz": 0.0, "freqSlopeVar_KHz_usec": 0.0, "idleTimeVar_usec": 0.0, "adcStartTimeVar_usec": 0.0, "txEnable": f"0x{tx_enable:X}"}})
-        device_config = {"mmWaveDeviceId": devId, "rfConfig": {"rlChanCfg_t": {"rxChannelEn": f"0x{config['channelCfg']['rxChannelEn']:X}", "txChannelEn": f"0x{config['channelCfg']['txChannelEn']:X}", "cascading": 1 if devId == 0 else 2, "cascadingPinoutCfg": "0x0"}, "rlAdcOutCfg_t": {"fmt": config['adcOutCfg']['fmt']}, "rlLowPowerModeCfg_t": config['lpmCfg']}, "rlProfiles": [{"rlProfileCfg_t": {"profileId": p_cfg['profileId'], "pfVcoSelect": f"0x{p_cfg['pfVcoSelect']:X}", "startFreqConst_GHz": startFreq_GHz, "idleTimeConst_usec": idleTime_usec, "adcStartTimeConst_usec": adcStartTime_usec, "rampEndTime_usec": rampEndTime_usec, "txOutPowerBackoffCode": f"0x{p_cfg['txOutPowerBackoffCode']:X}", "txPhaseShifter": f"0x{p_cfg['txPhaseShifter']:X}", "freqSlopeConst_MHz_usec": freqSlope_MHz_usec, "txStartTime_usec": txStartTime_usec, "numAdcSamples": p_cfg['numAdcSamples'], "digOutSampleRate": float(p_cfg['digOutSampleRate']), "hpfCornerFreq1": p_cfg['hpfCornerFreq1'], "hpfCornerFreq2": p_cfg['hpfCornerFreq2'], "rxGain_dB": f"0x{p_cfg['rxGain']:X}"}}], "rlChirps": chirps, "rlFrameCfg_t": {"chirpEndIdx": f_cfg['chirpEndIdx'], "chirpStartIdx": f_cfg['chirpStartIdx'], "numLoops": f_cfg['numLoops'], "numFrames": f_cfg['numFrames'], "framePeriodicity_msec": framePeriodicity_msec, "triggerSelect": 1 if devId == 0 else 2, "frameTriggerDelay": 0.0}}, "rawDataCaptureConfig": {"rlDevDataFmtCfg_t": {"iqSwapSel": config['dataFmtCfg']['iqSwapSel'], "chInterleave": config['dataFmtCfg']['chInterleave']}, "rlDevDataPathCfg_t": {"intfSel": config['datapathCfg']['intfSel'], "transferFmtPkt0": f"0x{config['datapathCfg']['transferFmtPkt0']:X}", "transferFmtPkt1": f"0x{config['datapathCfg']['transferFmtPkt1']:X}"}}
+            chirps.append({
+                "rlChirpCfg_t": {
+                    "chirpStartIdx": chirpIdx, "chirpEndIdx": chirpIdx, "profileId": 0,
+                    "startFreqVar_MHz": 0.0, "freqSlopeVar_KHz_usec": 0.0,
+                    "idleTimeVar_usec": 0.0, "adcStartTimeVar_usec": 0.0,
+                    "txEnable": f"0x{tx_enable:X}"
+                }
+            })
+
+        device_config = {
+            "mmWaveDeviceId": devId,
+            "rfConfig": {
+                "rlChanCfg_t": {
+                    "rxChannelEn": f"0x{config['channelCfg']['rxChannelEn']:X}",
+                    "txChannelEn": f"0x{config['channelCfg']['txChannelEn']:X}",
+                    "cascading": 1 if devId == 0 else 2,
+                    "cascadingPinoutCfg": "0x0"
+                },
+                "rlAdcOutCfg_t": {
+                    "fmt": config['adcOutCfg']['fmt']
+                },
+                "rlLowPowerModeCfg_t": config['lpmCfg'],
+                "rlProfiles": [{
+                    "rlProfileCfg_t": {
+                        "profileId": p_cfg['profileId'],
+                        "pfVcoSelect": f"0x{p_cfg['pfVcoSelect']:X}",
+                        "startFreqConst_GHz": startFreq_GHz,
+                        "idleTimeConst_usec": idleTime_usec,
+                        "adcStartTimeConst_usec": adcStartTime_usec,
+                        "rampEndTime_usec": rampEndTime_usec,
+                        "txOutPowerBackoffCode": f"0x{p_cfg['txOutPowerBackoffCode']:X}",
+                        "txPhaseShifter": f"0x{p_cfg['txPhaseShifter']:X}",
+                        "freqSlopeConst_MHz_usec": freqSlope_MHz_usec,
+                        "txStartTime_usec": txStartTime_usec,
+                        "numAdcSamples": p_cfg['numAdcSamples'],
+                        "digOutSampleRate": float(p_cfg['digOutSampleRate']),
+                        "hpfCornerFreq1": p_cfg['hpfCornerFreq1'],
+                        "hpfCornerFreq2": p_cfg['hpfCornerFreq2'],
+                        "rxGain_dB": f"0x{p_cfg['rxGain']:X}"
+                    }
+                }],
+                "rlChirps": chirps,
+                "rlFrameCfg_t": {
+                    "chirpEndIdx": f_cfg['chirpEndIdx'],
+                    "chirpStartIdx": f_cfg['chirpStartIdx'],
+                    "numLoops": f_cfg['numLoops'],
+                    "numFrames": f_cfg['numFrames'],
+                    "framePeriodicity_msec": framePeriodicity_msec,
+                    "triggerSelect": 1 if devId == 0 else 2,
+                    "frameTriggerDelay": 0.0
+                }
+            },
+            "rawDataCaptureConfig": {
+                "rlDevDataFmtCfg_t": {
+                    "iqSwapSel": config['dataFmtCfg']['iqSwapSel'],
+                    "chInterleave": config['dataFmtCfg']['chInterleave']
+                },
+                "rlDevDataPathCfg_t": {
+                    "intfSel": config['datapathCfg']['intfSel'],
+                    "transferFmtPkt0": f"0x{config['datapathCfg']['transferFmtPkt0']:X}",
+                    "transferFktPkt1": f"0x{config['datapathCfg']['transferFmtPkt1']:X}",
+                }
+            }
+        }
         json_output["mmWaveDevices"].append(device_config)
+
     try:
         with open(filename, 'w') as f:
             json.dump(json_output, f, indent=2)

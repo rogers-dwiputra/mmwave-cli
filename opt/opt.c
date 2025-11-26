@@ -77,7 +77,9 @@ int add_arg(parser_t* parser, option_t *option) {
 void free_parser(parser_t *parser) {
   while(parser->last_arg != NULL) {
     arg_t *previous = (arg_t*) parser->last_arg->previous;
-    free(parser->last_arg->opt->value);
+    if (parser->last_arg->is_set) {
+      free(parser->last_arg->opt->value);
+    }
     free(parser->last_arg);
     parser->last_arg = previous;
   }

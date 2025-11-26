@@ -44,11 +44,11 @@ clean:
 	@rm -f mmwcas.c
 
 build-cython:
-	@echo "Skipping Cython build (not required for CLI tool)"
+	@${PYTHON} setup.py build_ext --inplace
 
-build: clean all
+build: clean all build-cython
 
-install: clean all
+install: clean all build-cython
 	@cp mmwave /usr/local/bin/
 	@chmod +x /usr/local/bin/mmwave
 	@echo "mmwave installed successfully to /usr/local/bin/"

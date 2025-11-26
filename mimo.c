@@ -1201,7 +1201,12 @@ int main (int argc, char *argv[]) {
                 printf("[MONITOR] Ready for next capture...\n");
             }
         } else {
-          // Arm TDA
+          // Construct the full capture path for single-run mode
+          char full_capture_path_single[256];
+          sprintf(full_capture_path_single, "%s%s", capture_path, capture_directory);
+          tdaCfg.captureDirectory = full_capture_path_single;
+
+	  // Arm TDA
           status = MMWL_ArmingTDA(tdaCfg);
           check(status,
             "[MMWCAS-DSP] Arming TDA",
@@ -1229,6 +1234,14 @@ int main (int argc, char *argv[]) {
             "[MMWCAS-RF] Stop recording",
             "[MMWCAS-RF] Failed to de-arm TDA board!\n", 32, TRUE);
           msleep(1000);
+          // Export JSON configuration to match monitor mode behavior
+          char json_filename_single[256];
+          sprintf(json_filename_single, "%s.mmwave.json", capture_directory);
+          export_config_to_json(config, json_filename_single, 4);
+
+          // Start async transfer (non-blocking)
+          printf("[SINGLE-RUN] Starting background SCP transfer...\n");
+          start_async_transfer((const char*)capture_directory, 1);
         }
   }
   return 0;

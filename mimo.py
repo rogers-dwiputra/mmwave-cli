@@ -191,7 +191,8 @@ def main():
         print("\nInterupsi diterima (Ctrl+C). Menghentikan program...")
     finally:
         print("Menutup koneksi MMWave...")
-        mmwcas.mmw_close()
+        # Panggilan mmwcas.mmw_close() dihapus karena menyebabkan AttributeError.
+        # Koneksi socket kemungkinan ditutup secara otomatis saat program berakhir.
         print("Selesai.")
 
 if __name__ == "__main__":

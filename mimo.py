@@ -45,13 +45,14 @@ default_radar_config = {
 def export_config_to_json(config, filename, num_devices=4):
     """
     Membuat file mmwave.json dari dictionary konfigurasi radar.
-    Versi ini diformat ulang agar mudah dibaca dan memiliki struktur yang benar.
+    Versi ini diformat ulang agar sesuai dengan struktur mmWave Studio.
     """
     print(f"  > Membuat file konfigurasi JSON: {filename}")
     
     p_cfg = config['profileCfg']
     f_cfg = config['frameCfg']
     
+    # Konversi nilai fisik ke unit yang sesuai untuk JSON
     startFreq_GHz = (p_cfg['startFreqConst'] * 53.6441803) / 1e9
     freqSlope_MHz_usec = (p_cfg['freqSlopeConst'] * 48.2797623) / 1000.0
     idleTime_usec = p_cfg['idleTimeConst'] * 0.01
@@ -59,6 +60,11 @@ def export_config_to_json(config, filename, num_devices=4):
     rampEndTime_usec = p_cfg['rampEndTime'] * 0.01
     txStartTime_usec = p_cfg['txStartTime'] * 0.01
     framePeriodicity_msec = (f_cfg['framePeriodicity'] * 5.0) / 1e6
+    
+    # Tentukan data rate berdasarkan nilai di config
+    data_rate_map = {0: 150, 1: 300, 2: 450, 3: 600} # Mapping dari enum ke Mbps
+    dataRate_Mbps = data_rate_map.get(config['datapathClkCfg']['dataRate'], 600)
+
 
     json_output = {
         "configGenerator": {
@@ -70,11 +76,14 @@ def export_config_to_json(config, filename, num_devices=4):
     }
 
     for devId in range(num_devices):
+        # Tabel definisi TX mana yang aktif untuk setiap chirp per device
         chirp_tx_table = {0: {11, 10, 9}, 1: {8, 7, 6}, 2: {5, 4, 3}, 3: {2, 1, 0}}
         chirps = []
         for chirpIdx in range(12):
             tx_enable = 0
+            # Cek apakah chirp ini harus aktif untuk device saat ini
             if chirpIdx in chirp_tx_table.get(devId, set()):
+                # Urutkan TX enable bit sesuai urutan (MSB first)
                 tx_map = {val: idx for idx, val in enumerate(sorted(list(chirp_tx_table[devId]), reverse=True))}
                 tx_enable = 1 << tx_map[chirpIdx]
             chirps.append({
@@ -119,6 +128,9 @@ def export_config_to_json(config, filename, num_devices=4):
                     }
                 }],
                 "rlChirps": chirps,
+                "rlRfInitCalConf_t": {
+                    "calibEnMask": "0x1FF0"
+                },
                 "rlFrameCfg_t": {
                     "chirpEndIdx": f_cfg['chirpEndIdx'],
                     "chirpStartIdx": f_cfg['chirpStartIdx'],
@@ -127,7 +139,11 @@ def export_config_to_json(config, filename, num_devices=4):
                     "framePeriodicity_msec": framePeriodicity_msec,
                     "triggerSelect": 1 if devId == 0 else 2,
                     "frameTriggerDelay": 0.0
-                }
+                },
+                "rlRfMiscConf_t": {
+                    "miscCtl": f"{config['miscCfg']['miscCtl']}"
+                },
+                "rlRfLdoBypassCfg_t": config['ldoCfg']
             },
             "rawDataCaptureConfig": {
                 "rlDevDataFmtCfg_t": {
@@ -137,7 +153,19 @@ def export_config_to_json(config, filename, num_devices=4):
                 "rlDevDataPathCfg_t": {
                     "intfSel": config['datapathCfg']['intfSel'],
                     "transferFmtPkt0": f"0x{config['datapathCfg']['transferFmtPkt0']:X}",
-                    "transferFktPkt1": f"0x{config['datapathCfg']['transferFmtPkt1']:X}",
+                    "transferFmtPkt1": f"0x{config['datapathCfg']['transferFmtPkt1']:X}",
+                    "cqConfig": 0,
+                    "cq0TransSize": 0,
+                    "cq1TransSize": 0,
+                    "cq2TransSize": 0
+                },
+                "rlDevDataPathClkCfg_t": {
+                    "laneClkCfg": config['datapathClkCfg']['laneClkCfg'],
+                    "dataRate_Mbps": dataRate_Mbps
+                },
+                "rlDevCsi2Cfg_t": {
+                    "lanePosPolSel": f"0x{config['csi2LaneCfg']['lanePosPolSel']:X}",
+                    "lineStartEndDis": config['csi2LaneCfg']['lineStartEndDis']
                 }
             }
         }

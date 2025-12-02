@@ -42,7 +42,7 @@ extensions = Extension(
 #            CLI_OPT_IDIR,       # cliopt 目录
 #            TOML_CONFIG_IDIR    # tomlconfig 目录
         ],
-        extra_compile_args=["-w"],  # 添加编译选项（如禁用警告）
+        extra_compile_args=["-w", "-Wno-error=incompatible-pointer-types", "-Wno-error=int-conversion"],  # 添加编译选项（如禁用警告）
         libraries=["pthread", "m"]  # 链接 pthread 和数学库
     )
 

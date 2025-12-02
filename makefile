@@ -1,7 +1,7 @@
 # Compiler
 CC = gcc
 CFLAGS = -o
-FLAGS = -c -w
+FLAGS = -c -w -Wno-error=incompatible-pointer-types -Wno-error=int-conversion
 
 ODIR = output
 PYTHON ?= python3

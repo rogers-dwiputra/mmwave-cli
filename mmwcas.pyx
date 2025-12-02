@@ -742,7 +742,7 @@ cpdef int mmw_arming_tda(str capture_path):
     status = MMWL_ArmingTDA(tdaCfg)
     check(status,
         b"[MMWCAS-DSP] Arming TDA",
-        b"[MMWCAS-DSP] TDA Arming failed!", 32, TRUE)
+        b"[MMWCAS-DSP] TDA Arming failed!", 32, 0)
     return status
 
 cpdef int mmw_start_frame():
@@ -750,7 +750,7 @@ cpdef int mmw_start_frame():
     status += MMWL_StartFrame(config.deviceMap)
     check(status,
         b"[MMWCAS-RF] Framing ...",
-        b"[MMWCAS-RF] Failed to initiate framing!", config.deviceMap, TRUE)
+        b"[MMWCAS-RF] Failed to initiate framing!", config.deviceMap, 0)
     return status
 
 cpdef int mmw_stop_frame():
@@ -758,7 +758,7 @@ cpdef int mmw_stop_frame():
     status += MMWL_StopFrame(config.deviceMap)
     check(status,
         b"[MMWCAS-RF] Stoped Frame ...",
-        b"[MMWCAS-RF] Failed to stoped frame!", config.deviceMap, TRUE)
+        b"[MMWCAS-RF] Failed to stoped frame!", config.deviceMap, 0)
     return status
 
 cpdef int mmw_dearming_tda():
@@ -766,5 +766,5 @@ cpdef int mmw_dearming_tda():
     status = MMWL_DeArmingTDA()
     check(status,
         b"[MMWCAS-RF] Stop recording",
-        b"[MMWCAS-RF] Failed to de-arm TDA board!", 32, TRUE)
+        b"[MMWCAS-RF] Failed to de-arm TDA board!", 32, 0)
     return status

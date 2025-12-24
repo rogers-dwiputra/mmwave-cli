@@ -7,13 +7,13 @@ config_dict = {
         "profile": {
             "id": 0,
             "startFrequency": 77,           # GHz
-            "frequencySlope": 15,           # MHz/us
-            "idleTime": 5,                # us
-            "adcStartTime": 6,           # us
-            "rampEndTime": 40,           # us
+            "frequencySlope": 35.003,           # MHz/us
+            "idleTime": 3.5,                # us
+            "adcStartTime": 3.2,           # us
+            "rampEndTime": 60,           # us
             "txStartTime": 0,               # us
-            "numAdcSamples": 256,           # samples per chirp
-            "adcSamplingFrequency": 8000,   # ksps
+            "numAdcSamples": 250,           # samples per chirp
+            "adcSamplingFrequency": 5000,   # ksps
             "rxGain": 48,                   # dB
             "hpfCornerFreq1": 0,            # 0: 175kHz
             "hpfCornerFreq2": 0,            # 0: 350kHz
@@ -21,7 +21,7 @@ config_dict = {
         "frame": {
             "numFrames": 0,                # 0 for infinite, 10 in Lua script
             "numLoops": 16,                 # chirps per frame
-            "framePeriodicity": 100,        # ms
+            "framePeriodicity": 20,        # ms
         },
         "channel": {
             "rxChannelEn": 0x0F,            # Enable all 4 RX channels

@@ -9,25 +9,25 @@ config_dict = {
         "profile": {
             "id": 0,
             "startFrequency": 79,           # GHz
-            "frequencySlope": 33,           # MHz/us
-            "idleTime": 5,                  # us
-            "adcStartTime": 4.21,           # us
-            "rampEndTime": 30.06,           # us
+            "frequencySlope": 15,           # MHz/us (TI MRR reference)
+            "idleTime": 4,                  # us (TI MRR reference)
+            "adcStartTime": 5,              # us (TI MRR reference)
+            "rampEndTime": 23,              # us (TI MRR reference)
             "txStartTime": 0,               # us
-            "numAdcSamples": 512,           # samples per chirp
-            "adcSamplingFrequency": 20000,  # ksps
+            "numAdcSamples": 256,           # samples (TI validated value)
+            "adcSamplingFrequency": 15000,  # ksps (TI MRR reference)
             "rxGain": 48,                   # dB
             "hpfCornerFreq1": 0,
             "hpfCornerFreq2": 0,
         },
         "frame": {
-            "numFrames": 0,           # 0 = continuous, batasi via software
-            "numLoops": 16,           # boleh 8–32, ini contoh
-            "framePeriodicity": 20,   # ms → 50 Hz sampling → bisa OMA sampai ~20 Hz
+            "numFrames": 0,                 # 0 for infinite
+            "numLoops": 16,                 # chirps per frame (adjust as needed)
+            "framePeriodicity": 50,         # ms (safe value, can try 20ms)
         },
         "channel": {
-            "rxChannelEn": 0x0F,
-            "txChannelEn": 0x07,
+            "rxChannelEn": 0x0F,            # Enable all 4 RX channels
+            "txChannelEn": 0x07,            # Enable all 3 TX channels
         }
     }
 }

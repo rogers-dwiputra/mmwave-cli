@@ -6,21 +6,21 @@ config_dict = {
     "mimo": {
         "profile": {
             "id": 0,
-            "startFrequency": 77,           # GHz
-            "frequencySlope": 35.003,           # MHz/us
-            "idleTime": 3.5,                # us
-            "adcStartTime": 3.2,           # us
-            "rampEndTime": 60,           # us
+            "startFrequency": 79,           # GHz
+            "frequencySlope": 33,           # MHz/us
+            "idleTime": 5,                # us
+            "adcStartTime": 4.21,           # us
+            "rampEndTime": 30.06,           # us
             "txStartTime": 0,               # us
-            "numAdcSamples": 250,           # samples per chirp
-            "adcSamplingFrequency": 5000,   # ksps
+            "numAdcSamples": 512,           # samples per chirp
+            "adcSamplingFrequency": 20000,   # ksps
             "rxGain": 48,                   # dB
             "hpfCornerFreq1": 0,            # 0: 175kHz
             "hpfCornerFreq2": 0,            # 0: 350kHz
         },
         "frame": {
             "numFrames": 0,                # 0 for infinite, 10 in Lua script
-            "numLoops": 16,                 # chirps per frame
+            "numLoops": 10,                 # chirps per frame
             "framePeriodicity": 20,        # ms
         },
         "channel": {

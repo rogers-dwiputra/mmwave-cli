@@ -8,22 +8,22 @@ config_dict = {
     "mimo": {
         "profile": {
             "id": 0,
-            "startFrequency": 79,           # GHz
-            "frequencySlope": 15,           # MHz/us (TI MRR reference)
-            "idleTime": 4,                  # us (TI MRR reference)
-            "adcStartTime": 5,              # us (TI MRR reference)
-            "rampEndTime": 23,              # us (TI MRR reference)
-            "txStartTime": 0,               # us
-            "numAdcSamples": 256,           # samples (TI validated value)
-            "adcSamplingFrequency": 15000,  # ksps (TI MRR reference)
+            "startFrequency": 79,           # Chirp start frequency in GHz
+            "frequencySlope": 33,           # Frequency slope in MHz/us
+            "idleTime": 4,                  # Chrip Idle time in us
+            "adcStartTime": 5,              # ADC start time in us
+            "numAdcSamples": 256,           # Number of ADC samples per chirp
+            "adcSamplingFrequency": 15000,  # ADC sampling frequency in ksps
+            "rampEndTime": 23,              # Chirp ramp end time in us
             "rxGain": 48,                   # dB
-            "hpfCornerFreq1": 0,
-            "hpfCornerFreq2": 0,
+            "txStartTime": 0,               # TX starttime in us
+            "hpfCornerFreq1": 0,            # 0: 175kHz
+            "hpfCornerFreq2": 0,            # 0: 350kHz
         },
         "frame": {
-            "numFrames": 0,                 # 0 for infinite
-            "numLoops": 16,                 # chirps per frame (adjust as needed)
-            "framePeriodicity": 50,         # ms (safe value, can try 20ms)
+            "numLoops": 16,                 # Number of chirp loop per frame
+            "numFrames": 0,                 # Number of frames to record
+            "framePeriodicity": 50,         # Frame periodicity in ms (Inter_Frame_Interval)
         },
         "channel": {
             "rxChannelEn": 0x0F,            # Enable all 4 RX channels
@@ -100,7 +100,7 @@ full_config = {
     }
 }
 
-record_duration = 2
+record_duration = 10
 max_retries = 3  # Maximum number of retries per recording attempt
 
 def export_config_to_json(config, filename, num_devices=4):

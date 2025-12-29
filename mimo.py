@@ -54,10 +54,10 @@ full_config = {
     'frameCfg': {
         'chirpStartIdx': 0,
         'chirpEndIdx': 11,
-        'numFrames': config_dict["mimo"]["profile"]["numFrames"],
-        'numLoops': config_dict["mimo"]["profile"]["numLoops"],
+        'numFrames': config_dict["mimo"]["frame"]["numFrames"],
+        'numLoops': config_dict["mimo"]["frame"]["numLoops"],
         'numAdcSamples': config_dict["mimo"]["profile"]["numAdcSamples"],
-        'framePeriodicity': config_dict["mimo"]["profile"]["framePeriodicity"],
+        'framePeriodicity': config_dict["mimo"]["frame"]["framePeriodicity"],
     },
     'channelCfg': {
         'rxChannelEn': 0x0F,

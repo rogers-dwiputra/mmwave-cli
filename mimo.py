@@ -57,11 +57,17 @@ status = mmwcas.mmw_init()
 assert status == 0, ValueError
 time.sleep(2)
 
-# Generate JSON configuration file once before starting recordings
-json_filename = f"Continuous_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mmwave.json"
+# Generate JSON configuration file and log file once at start
+session_timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+json_filename = f"Continuous_{session_timestamp}.mmwave.json"
+log_filename = f"Continuous_{session_timestamp}.log"
+
 try:
     export_config_to_json(config_dict, json_filename)
     print(f"Configuration JSON saved: {json_filename}")
+    log_message(log_filename, f"=== Session Started ===")
+    log_message(log_filename, f"Configuration JSON: {json_filename}")
+    log_message(log_filename, f"Record duration: {record_duration} seconds")
 except Exception as e:
     print(f"ERROR: Failed to create JSON config: {e}")
 
@@ -69,18 +75,10 @@ recording_count = 0
 try:
     while True:
         recording_count += 1
-        print(f"\n=== Recording {recording_count} ===")
+        log_message(log_filename, f"\n=== Recording {recording_count} Started ===")
         dirName = datetime.now().strftime("Continuous_%Y%m%d_%H%M%S")
-        print(f"dirName: {dirName}")
-        
-        # Create log file name
-        log_filename = f"{dirName}.txt"
-        
-        # Write initial log entry
-        log_message(log_filename, f"=== Recording {recording_count} Started ===")
         log_message(log_filename, f"Directory: {dirName}")
-        log_message(log_filename, f"Record duration: {record_duration} seconds")
-        log_message(log_filename, f"Using configuration: {json_filename}")
+        print(f"\n=== Recording {recording_count}: {dirName} ===")
         
         try:
             status = mmwcas.mmw_arming_tda(dirName)
@@ -116,7 +114,7 @@ try:
             error_msg = f"Recording {recording_count} failed: {e}"
             log_message(log_filename, f"ERROR: {error_msg}")
             log_message(log_filename, f"*** DO NOT USE FOR ANALYSIS: {dirName} ***")
-            print(error_msg)
+            print(f"✗ {error_msg}")
             print(f"*** Flagged as corrupted: {dirName} ***")
             
             # Cleanup
@@ -139,9 +137,14 @@ try:
         time.sleep(1)
 
 except KeyboardInterrupt:
+    log_message(log_filename, f"\n=== Session Stopped by user (Ctrl+C) ===")
+    log_message(log_filename, f"Total recordings attempted: {recording_count}")
     print("\n\n=== Stopped by user (Ctrl+C) ===")
     print(f"Total recordings attempted: {recording_count}")
 except Exception as e:
+    log_message(log_filename, f"\n=== Unexpected error occurred ===")
+    log_message(log_filename, f"Error: {e}")
+    log_message(log_filename, f"Total recordings attempted: {recording_count}")
     print(f"\n\n=== Unexpected error occurred ===")
     print(f"Error: {e}")
     print(f"Total recordings attempted: {recording_count}")
@@ -150,5 +153,6 @@ finally:
     try:
         mmwcas.mmw_stop_frame()
         mmwcas.mmw_dearming_tda()
+        log_message(log_filename, "Final cleanup completed")
     except:
         pass

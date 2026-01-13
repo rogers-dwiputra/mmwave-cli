@@ -666,24 +666,24 @@ cpdef mmw_set_config(dict configdict):
             profile = mimo["profile"]
             if "id" in profile:
                 config.profileCfg.profileId = <uint16_t>(profile["id"])
-            if "startFrequency" in profile: # Chirp start frequency in GHz
-                config.profileCfg.startFreqConst = <uint32_t>(ceil(profile["startFrequency"]*1e9/53.644)) # 1LSB = 53.644 Hz
-            if "frequencySlope" in profile: # Frequency slope in MHz/us
-                config.profileCfg.freqSlopeConst = <int16_t>(ceil(profile["frequencySlope"]*1e3/48.279)) # 1LSB = 48.279 kHz/us
-            if "idleTime" in profile:# Chrip Idle time in us
-                config.profileCfg.idleTimeConst = <uint32_t>(ceil(profile["idleTime"]*1e2)) # 1LSB = 10ns
-            if "adcStartTime" in profile:# ADC start time in us
-                config.profileCfg.adcStartTimeConst = <uint32_t>(ceil(profile["adcStartTime"]*1e2)) # 1LSB = 10ns
-            if "rampEndTime" in profile:# Chirp ramp end time in us
-                config.profileCfg.rampEndTime = <uint32_t>(ceil(profile["rampEndTime"]*1e2)) # 1LSB = 10ns
-            if "txStartTIme" in profile:# TX starttime in us
-                config.profileCfg.txStartTime = <uint16_t>(ceil(profile["txStartTIme"]*1e2)) # 1LSB = 10ns
-            if "numAdcSamples" in profile:# Number of ADC samples per chirp
-                config.profileCfg.numAdcSamples = <uint16_t>(profile["numAdcSamples"])
-            if "adcSamplingFrequency" in profile:# ADC sampling frequency in ksps
-                config.profileCfg.digOutSampleRate = <uint16_t>(profile["adcSamplingFrequency"])
-            if "rxGain" in profile:# rxGain in dB
-                config.profileCfg.rxGain = <uint16_t>(profile["rxGain"])
+            if "start_freq" in profile: # Chirp start frequency in GHz
+                config.profileCfg.startFreqConst = <uint32_t>(ceil(profile["start_freq"]*1e9/53.644)) # 1LSB = 53.644 Hz
+            if "slope" in profile: # Frequency slope in MHz/us
+                config.profileCfg.freqSlopeConst = <int16_t>(ceil(profile["slope"]*1e3/48.279)) # 1LSB = 48.279 kHz/us
+            if "idle_time" in profile:# Chrip Idle time in us
+                config.profileCfg.idleTimeConst = <uint32_t>(ceil(profile["idle_time"]*1e2)) # 1LSB = 10ns
+            if "adc_start_time" in profile:# ADC start time in us
+                config.profileCfg.adcStartTimeConst = <uint32_t>(ceil(profile["adc_start_time"]*1e2)) # 1LSB = 10ns
+            if "ramp_end_time" in profile:# Chirp ramp end time in us
+                config.profileCfg.rampEndTime = <uint32_t>(ceil(profile["ramp_end_time"]*1e2)) # 1LSB = 10ns
+            if "txStartTimeUSec" in profile:# TX starttime in us
+                config.profileCfg.txStartTime = <uint16_t>(ceil(profile["txStartTimeUSec"]*1e2)) # 1LSB = 10ns
+            if "adc_samples" in profile:# Number of ADC samples per chirp
+                config.profileCfg.numAdcSamples = <uint16_t>(profile["adc_samples"])
+            if "sample_freq" in profile:# ADC sampling frequency in ksps
+                config.profileCfg.digOutSampleRate = <uint16_t>(profile["sample_freq"])
+            if "rx_gain" in profile:# rxGain in dB
+                config.profileCfg.rxGain = <uint16_t>(profile["rx_gain"])
             if "hpfCornerFreq1" in profile: # hpfCornerFreq1
                 config.profileCfg.hpfCornerFreq1 = <uint8_t>(profile["hpfCornerFreq1"])
             if "hpfCornerFreq2" in profile: # hpfCornerFreq2
@@ -691,12 +691,12 @@ cpdef mmw_set_config(dict configdict):
             
         if "frame" in mimo: # [FRAME CONFIGURATION]
             frame = mimo["frame"]
-            if "numFrames" in frame: # Number of frames to record
-                config.frameCfg.numFrames = <uint16_t>(frame["numFrames"])
-            if "numLoops" in frame: # Number of chirp loop per frame
-                config.frameCfg.numLoops = <uint16_t>(frame["numLoops"])
-            if "framePeriodicity" in frame: # Frame periodicity in ms
-                config.frameCfg.framePeriodicity = <uint32_t>(ceil(frame["framePeriodicity"]*2e5)) # 1LSB = 5ns
+            if "nframes_master" in frame: # Number of frames to record
+                config.frameCfg.numFrames = <uint16_t>(frame["nframes_master"])
+            if "nchirp_loops" in frame: # Number of chirp loop per frame
+                config.frameCfg.numLoops = <uint16_t>(frame["nchirp_loops"])
+            if "Inter_Frame_Interval" in frame: # Frame periodicity in ms
+                config.frameCfg.framePeriodicity = <uint32_t>(ceil(frame["Inter_Frame_Interval"]*2e5)) # 1LSB = 5ns
         if "channel" in mimo:# [CHANNEL CONFIGURATION]
             channel = mimo["channel"]
             if "rxChannelEn" in channel: # RX Channel configuration

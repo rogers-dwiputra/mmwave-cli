@@ -9,22 +9,22 @@ config_dict = {
     "mimo": {
         "profile": {
             "id": 0,
-            "startFrequency": 79,           # Chirp start frequency in GHz
-            "frequencySlope": 33,           # Frequency slope in MHz/us
-            "idleTime": 4,                  # Chrip Idle time in us
-            "adcStartTime": 5,              # ADC start time in us
-            "numAdcSamples": 256,           # Number of ADC samples per chirp
-            "adcSamplingFrequency": 15000,  # ADC sampling frequency in ksps
-            "rampEndTime": 23,              # Chirp ramp end time in us
-            "rxGain": 48,                   # dB
-            "txStartTime": 0,               # TX starttime in us
+            "start_freq": 79,           # Chirp start frequency in GHz
+            "slope": 33,           # Frequency slope in MHz/us
+            "idle_time": 4,                  # Chrip Idle time in us
+            "adc_start_time": 5,              # ADC start time in us
+            "adc_samples": 256,           # Number of ADC samples per chirp
+            "sample_freq": 15000,  # ADC sampling frequency in ksps
+            "ramp_end_time": 23,              # Chirp ramp end time in us
+            "rx_gain": 48,                   # dB
+            "txStartTimeUSec": 0,               # TX starttime in us
             "hpfCornerFreq1": 0,            # 0: 175kHz
             "hpfCornerFreq2": 0,            # 0: 350kHz
         },
         "frame": {
-            "numLoops": 16,                 # Number of chirp loop per frame
-            "numFrames": 0,                 # Number of frames to record
-            "framePeriodicity": 50,         # Frame periodicity in ms (Inter_Frame_Interval)
+            "nchirp_loops": 16,                 # Number of chirp loop per frame
+            "nframes_master": 0,                 # Number of frames to record
+            "Inter_Frame_Interval": 50,         # Frame periodicity in ms (Inter_Frame_Interval)
         },
         "channel": {
             "rxChannelEn": 0x0F,            # Enable all 4 RX channels
@@ -58,7 +58,7 @@ assert status == 0, ValueError
 time.sleep(2)
 
 # Generate JSON configuration file once before starting recordings
-json_filename = "radar_config.mmwave.json"
+json_filename = f"Continuous_{datetime.now().strftime('%Y%m%d_%H%M%S')}.mmwave.json"
 try:
     export_config_to_json(config_dict, json_filename)
     print(f"Configuration JSON saved: {json_filename}")
@@ -82,75 +82,58 @@ try:
         log_message(log_filename, f"Record duration: {record_duration} seconds")
         log_message(log_filename, f"Using configuration: {json_filename}")
         
-        retry_count = 0
-        success = False
-        
-        while retry_count < max_retries and not success:
+        try:
+            status = mmwcas.mmw_arming_tda(dirName)
+            if status != 0:
+                raise Exception(f"Arming TDA failed with status {status}")
+            log_message(log_filename, "TDA armed successfully")
+            
+            time.sleep(2)
+            
+            status = mmwcas.mmw_start_frame()
+            if status != 0:
+                raise Exception(f"Start frame failed with status {status}")
+            log_message(log_filename, "Frame started successfully")
+
+            time.sleep(record_duration)
+            log_message(log_filename, f"Recording completed ({record_duration}s)")
+
+            status = mmwcas.mmw_stop_frame()
+            if status != 0:
+                raise Exception(f"Stop frame failed with status {status}")
+            log_message(log_filename, "Frame stopped successfully")
+            
+            status = mmwcas.mmw_dearming_tda()
+            if status != 0:
+                raise Exception(f"Dearming TDA failed with status {status}")
+            log_message(log_filename, "TDA de-armed successfully")
+            
+            time.sleep(2)
+            log_message(log_filename, f"Recording {recording_count} completed successfully")
+            print(f"Recording {recording_count} completed successfully")
+            
+        except Exception as e:
+            error_msg = f"Recording {recording_count} failed: {e}"
+            log_message(log_filename, f"ERROR: {error_msg}")
+            log_message(log_filename, f"*** DO NOT USE FOR ANALYSIS: {dirName} ***")
+            print(error_msg)
+            print(f"*** Flagged as corrupted: {dirName} ***")
+            
+            # Cleanup
             try:
-                log_message(log_filename, f"Attempt {retry_count + 1}/{max_retries}")
-                
-                status = mmwcas.mmw_arming_tda(dirName)
-                if status != 0:
-                    raise Exception(f"Arming TDA failed with status {status}")
-                log_message(log_filename, "TDA armed successfully")
-                
-                time.sleep(2)
-                
-                status = mmwcas.mmw_start_frame()
-                if status != 0:
-                    raise Exception(f"Start frame failed with status {status}")
-                log_message(log_filename, "Frame started successfully")
-
-                time.sleep(record_duration)
-                log_message(log_filename, f"Recording completed ({record_duration}s)")
-
-                status = mmwcas.mmw_stop_frame()
-                if status != 0:
-                    log_message(log_filename, f"Warning: Stop frame returned status {status}")
-                else:
-                    log_message(log_filename, "Frame stopped successfully")
-                
-                status = mmwcas.mmw_dearming_tda()
-                if status != 0:
-                    log_message(log_filename, f"Warning: Dearming TDA returned status {status}")
-                else:
-                    log_message(log_filename, "TDA de-armed successfully")
-                
-                time.sleep(2)
-                log_message(log_filename, f"Recording {recording_count} completed successfully")
-                print(f"Recording {recording_count} completed successfully")
-                success = True
-                
-            except Exception as e:
-                retry_count += 1
-                error_msg = f"Recording {recording_count} failed on attempt {retry_count}/{max_retries}: {e}"
-                log_message(log_filename, f"ERROR: {error_msg}")
-                print(error_msg)
-                
-                # Cleanup before retry
-                try:
-                    mmwcas.mmw_stop_frame()
-                    log_message(log_filename, "Cleanup: Frame stopped")
-                except:
-                    pass
-                
-                try:
-                    mmwcas.mmw_dearming_tda()
-                    log_message(log_filename, "Cleanup: TDA de-armed")
-                except:
-                    pass
-                
-                if retry_count < max_retries:
-                    log_message(log_filename, f"Waiting 3 seconds before retry...")
-                    print(f"Waiting 3 seconds before retry...")
-                    time.sleep(3)
-                    # Generate new directory name for retry
-                    dirName = datetime.now().strftime("Continuous_%Y%m%d_%H%M%S")
-                    log_message(log_filename, f"Retrying with new dirName: {dirName}")
-                    print(f"Retrying with new dirName: {dirName}")
-                else:
-                    log_message(log_filename, f"Recording {recording_count} failed after {max_retries} attempts")
-                    print(f"Recording {recording_count} failed after {max_retries} attempts. Moving to next recording.")
+                mmwcas.mmw_stop_frame()
+                log_message(log_filename, "Cleanup: Frame stopped")
+            except:
+                pass
+            
+            try:
+                mmwcas.mmw_dearming_tda()
+                log_message(log_filename, "Cleanup: TDA de-armed")
+            except:
+                pass
+            
+            log_message(log_filename, "Moving to next recording")
+            print("Moving to next recording...")
         
         # Small delay between recordings
         time.sleep(1)

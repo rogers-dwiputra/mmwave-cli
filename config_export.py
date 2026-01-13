@@ -20,23 +20,23 @@ def export_config_to_json(config_dict, filename, num_devices=4):
     channel = config_dict["mimo"]["channel"]
     
     # Profile values
-    startFreq_GHz = profile["startFrequency"]
-    freqSlope_MHz_usec = profile["frequencySlope"]
-    idleTime_usec = profile["idleTime"]
-    adcStartTime_usec = profile["adcStartTime"]
-    rampEndTime_usec = profile["rampEndTime"]
-    txStartTime_usec = profile.get("txStartTime", 0)
-    numAdcSamples = profile["numAdcSamples"]
-    digOutSampleRate = profile["adcSamplingFrequency"]
+    startFreq_GHz = profile["start_freq"]
+    freqSlope_MHz_usec = profile["slope"]
+    idleTime_usec = profile["idle_time"]
+    adcStartTime_usec = profile["adc_start_time"]
+    rampEndTime_usec = profile["ramp_end_time"]
+    txStartTime_usec = profile.get("txStartTimeUSec", 0)
+    numAdcSamples = profile["adc_samples"]
+    digOutSampleRate = profile["sample_freq"]
     hpfCornerFreq1 = profile["hpfCornerFreq1"]
     hpfCornerFreq2 = profile["hpfCornerFreq2"]
-    rxGain = profile["rxGain"]
+    rxGain = profile["rx_gain"]
     profileId = profile["id"]
     
     # Frame values
-    numLoops = frame["numLoops"]
-    numFrames = frame["numFrames"]
-    framePeriodicity_msec = frame["framePeriodicity"]
+    numLoops = frame["nchirp_loops"]
+    numFrames = frame["nframes_master"]
+    framePeriodicity_msec = frame["Inter_Frame_Interval"]
     
     # Channel values
     rxChannelEn = channel["rxChannelEn"]
@@ -68,7 +68,7 @@ def export_config_to_json(config_dict, filename, num_devices=4):
 
     json_output = {
         "configGenerator": {
-            "createdBy": "mmWaveStudio",
+            "createdBy": "mmWavel CLI Python Script",
             "createdOn": datetime.now().astimezone().isoformat(),
             "isConfigIntermediate": 1
         },

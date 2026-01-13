@@ -10,21 +10,21 @@ config_dict = {
         "profile": {
             "id": 0,
             "start_freq": 79,           # Chirp start frequency in GHz
-            "slope": 33,           # Frequency slope in MHz/us
+            "slope": 25.009000778198242,           # Frequency slope in MHz/us
             "idle_time": 4,                  # Chrip Idle time in us
-            "adc_start_time": 5,              # ADC start time in us
-            "adc_samples": 256,           # Number of ADC samples per chirp
-            "sample_freq": 15000,  # ADC sampling frequency in ksps
-            "ramp_end_time": 23,              # Chirp ramp end time in us
+            "adc_start_time": 4.3400001525878906,              # ADC start time in us
+            "adc_samples": 512,           # Number of ADC samples per chirp
+            "sample_freq": 8000,  # ADC sampling frequency in ksps
+            "ramp_end_time": 68.970001220703125,              # Chirp ramp end time in us
             "rx_gain": 48,                   # dB
             "txStartTimeUSec": 0,               # TX starttime in us
             "hpfCornerFreq1": 0,            # 0: 175kHz
             "hpfCornerFreq2": 0,            # 0: 350kHz
         },
         "frame": {
-            "nchirp_loops": 16,                 # Number of chirp loop per frame
-            "nframes_master": 0,                 # Number of frames to record
-            "Inter_Frame_Interval": 50,         # Frame periodicity in ms (Inter_Frame_Interval)
+            "nchirp_loops": 10,                 # Number of chirp loop per frame
+            "nframes_master": 2,                 # Number of frames to record
+            "Inter_Frame_Interval": 10,         # Frame periodicity in ms (Inter_Frame_Interval)
         },
         "channel": {
             "rxChannelEn": 0x0F,            # Enable all 4 RX channels

@@ -9,9 +9,9 @@ config_dict = {
     "mimo": {
         "profile": {
             "id": 0,
-            "start_freq": 79,           # Chirp start frequency in GHz
+            "start_freq": 77,           # Chirp start frequency in GHz
             "slope": 25.009000778198242,           # Frequency slope in MHz/us
-            "idle_time": 4,                  # Chrip Idle time in us
+            "idle_time": 7,                  # Chrip Idle time in us
             "adc_start_time": 4.3400001525878906,              # ADC start time in us
             "adc_samples": 512,           # Number of ADC samples per chirp
             "sample_freq": 8000,  # ADC sampling frequency in ksps

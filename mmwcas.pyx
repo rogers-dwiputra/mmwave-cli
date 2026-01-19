@@ -197,38 +197,44 @@ ctypedef struct devConfig_t:
 
 """! \brief
 * Profile config API parameters - UPDATED FOR TDM-MIMO
-* These are DEFAULT values that will be overridden by Python config
+* IMPORTANT: These are DEFAULT values that WILL BE OVERRIDDEN by mmw_set_config()
+* The values here match Windows .lua for safety, but Python config takes precedence
 """
 cdef rlProfileCfg_t profileCfgArgs=rlProfileCfg_t(
     profileId = 0,
     pfVcoSelect = 0x02,            # VCO2 for 77-81 GHz
-    startFreqConst = 1435384036,   # ~77 GHz (will be overridden)
-    freqSlopeConst = 311,          # ~15 MHz/us (will be overridden)
-    idleTimeConst = 700,           # 7 us (will be overridden)
-    adcStartTimeConst = 434,       # 4.34 us (will be overridden)
-    rampEndTime = 6897,            # 68.97 us (will be overridden)
+    pfCalLutUpdate = 0,            # Reserved field
+    startFreqConst = 1435384036,   # 77 GHz | 1 LSB = 53.644 Hz
+    freqSlopeConst = 311,          # 15.0148 MHz/us | 1 LSB = 48.279 kHz/us
+    idleTimeConst = 700,           # 7 us | 1 LSB = 10 ns
+    adcStartTimeConst = 435,       # 4.35 us | 1 LSB = 10 ns (CORRECTED from 434)
+    rampEndTime = 6897,            # 68.97 us | 1 LSB = 10 ns
     txOutPowerBackoffCode = 0x0,
     txPhaseShifter = 0x0,
-    txStartTime = 0x0,
-    numAdcSamples = 512,           # Will be overridden
-    digOutSampleRate = 8000,       # 8 MHz
-    hpfCornerFreq1 = 0x0,          # 175kHz
-    hpfCornerFreq2 = 0x0,          # 350kHz
-    rxGain = 48,                   # 48 dB
+    txStartTime = 0x0,             # 0 us | 1 LSB = 10 ns
+    numAdcSamples = 512,           # 512 samples per chirp
+    digOutSampleRate = 8000,       # 8000 ksps (8 MHz)
+    hpfCornerFreq1 = 0x0,          # 175 kHz
+    hpfCornerFreq2 = 0x0,          # 350 kHz
+    txCalibEnCfg = 0,              # Reserved field
+    rxGain = 48,                   # 48 dB | 1 LSB = 1 dB
+    reserved = 0,                  # Reserved field
 )
 
 """! \brief
 * Frame config API parameters - UPDATED FOR TDM-MIMO
 """
 cdef rlFrameCfg_t frameCfgArgs=rlFrameCfg_t(
+    reserved0 = 0,                 # Reserved field
     chirpStartIdx = 0,
     chirpEndIdx = 11,              # 12 chirps (0-11) for TDM-MIMO
-    numFrames = 20,                # Default 20 frames (will be overridden)
     numLoops = 10,                 # 10 chirp loops per frame
+    numFrames = 0,                 # 0 = infinite (will be overridden)
     numAdcSamples = 2 * 512,       # Complex samples
-    frameTriggerDelay = 0x0,
     framePeriodicity = 2000000,    # 10ms (will be overridden)
     triggerSelect = 1,             # Default: Software trigger (Master)
+    reserved1 = 0,                 # Reserved field
+    frameTriggerDelay = 0x0,
 )
 
 """! \brief
@@ -238,11 +244,12 @@ cdef rlChirpCfg_t chirpCfgArgs = rlChirpCfg_t(
     chirpStartIdx = 0,
     chirpEndIdx = 0,
     profileId = 0,
-    txEnable = 0x00,
-    adcStartTimeVar = 0,
-    idleTimeVar = 0,
+    reserved = 0,                  # Reserved field
     startFreqVar = 0,
     freqSlopeVar = 0,
+    idleTimeVar = 0,
+    adcStartTimeVar = 0,
+    txEnable = 0x00,
 )
 
 """! \brief
@@ -252,6 +259,7 @@ cdef rlChanCfg_t channelCfgArgs = rlChanCfg_t(
     rxChannelEn = 0x0F,      # Enable all 4 RX Channels
     txChannelEn = 0x07,      # Enable all 3 TX Channels
     cascading = 0x02,        # Slave (will be set to 1 for Master)
+    cascadingPinoutCfg = 0,  # Reserved field
 )
 
 cdef rlAdcBitFormat_t adcBitFmtArgs = rlAdcBitFormat_t(
@@ -471,6 +479,7 @@ cdef int32_t initSlaves(rlChanCfg_t channelCfg, rlAdcOutCfg_t adcOutCfg):
     cdef int status = 0
     cdef uint8_t slavesMap = (1 << 1) | (1 << 2) | (1 << 3)
     cdef unsigned int slaveMap
+    cdef unsigned int slaveId  # Changed from Python int to C unsigned int
 
     printf(b"\n[SLAVES INIT] Starting...\n")
     
@@ -480,7 +489,7 @@ cdef int32_t initSlaves(rlChanCfg_t channelCfg, rlAdcOutCfg_t adcOutCfg):
     # Power up each slave individually
     for slaveId in range(1, 4):
         slaveMap = 1 << slaveId
-        printf(b"[SLAVE %u] Powering up...\n", slaveId)
+        printf(b"[SLAVE %u] Powering up...\n", <unsigned int>slaveId)  # Cast to C type
         status += MMWL_DevicePowerUp(slaveMap, 1000, 1000)
         check(status,
             b"[SLAVE] Power up successful!",
@@ -525,14 +534,12 @@ cdef int32_t initSlaves(rlChanCfg_t channelCfg, rlAdcOutCfg_t adcOutCfg):
 cdef uint32_t configure(devConfig_t config):
     """@brief Complete TDM-MIMO configuration sequence"""
     cdef int status = 0
-    cdef int devId = 0
+    cdef unsigned int devId = 0  # Changed to C unsigned int
     
     printf(b"\n")
-    printf(b"=" * 80)
-    printf(b"\n")
+    printf(b"================================================================================\n")
     printf(b"TDM-MIMO CASCADE CONFIGURATION\n")
-    printf(b"=" * 80)
-    printf(b"\n")
+    printf(b"================================================================================\n")
     
     # Step 1: Initialize Master and Slaves
     status += initMaster(config.channelCfg, config.adcOutCfg)
@@ -585,7 +592,7 @@ cdef uint32_t configure(devConfig_t config):
     # Step 4: TDM-MIMO Chirp configuration (device-specific)
     printf(b"\n[TDM-MIMO CHIRP CONFIG] Starting...\n")
     for devId in range(4):
-        status += configureMimoChirp(devId, config.chirpCfg)
+        status += configureMimoChirp(<uint8_t>devId, config.chirpCfg)  # Cast to uint8_t
 
     check(status,
         b"[ALL] TDM-MIMO Chirp configuration successful!",
@@ -623,11 +630,9 @@ cdef uint32_t configure(devConfig_t config):
         b"[SLAVES] Frame configuration failed!", config.slavesMap, TRUE)
 
     printf(b"\n")
-    printf(b"=" * 80)
-    printf(b"\n")
+    printf(b"================================================================================\n")
     printf(b"TDM-MIMO CONFIGURATION COMPLETE\n")
-    printf(b"=" * 80)
-    printf(b"\n\n")
+    printf(b"================================================================================\n\n")
     
     return status
 
@@ -638,14 +643,19 @@ cdef devConfig_t config
 cpdef mmw_set_config(dict configdict):
     """@brief Set configuration from Python dictionary
     This function parses the config dict and sets up TDM-MIMO parameters
+    
+    CRITICAL: This function MUST be called BEFORE mmw_init()
+    It overrides the default C-level configuration with Python values
     """
     global config
+    
+    printf(b"\n[CONFIG PARSER] Starting configuration parsing...\n")
     
     # Initialize device map (all 4 devices)
     config.deviceMap = 1|(1<<1)|(1<<2)|(1<<3)
     MMWL_AssignDeviceMap(config.deviceMap, &config.masterMap, &config.slavesMap)
     
-    # Initialize with default configs
+    # Initialize with default configs (these will be overridden by Python config)
     config.frameCfg = frameCfgArgs
     config.frameCfgSlave = frameCfgArgs  # Copy for slaves
     config.profileCfg = profileCfgArgs
@@ -667,33 +677,45 @@ cpdef mmw_set_config(dict configdict):
         # [PROFILE CONFIGURATION]
         if "profile" in mimo:
             profile = mimo["profile"]
+            printf(b"\n[PROFILE CONFIG] Parsing profile parameters...\n")
             
             if "id" in profile:
                 config.profileCfg.profileId = <uint16_t>(profile["id"])
+                printf(b"  Profile ID: %u\n", config.profileCfg.profileId)
                 
             if "start_freq" in profile:
                 # Convert GHz to register value (1 LSB = 53.644 Hz)
                 config.profileCfg.startFreqConst = <uint32_t>(ceil(profile["start_freq"]*1e9/53.644))
-                printf(b"[CONFIG] Start frequency: %.2f GHz (reg: %u)\n", 
+                printf(b"  Start frequency: %.2f GHz -> reg value: %u\n", 
                        <double>profile["start_freq"], config.profileCfg.startFreqConst)
                 
             if "slope" in profile:
                 # Convert MHz/us to register value (1 LSB = 48.279 kHz/us)
                 config.profileCfg.freqSlopeConst = <int16_t>(ceil(profile["slope"]*1e3/48.279))
-                printf(b"[CONFIG] Slope: %.3f MHz/us (reg: %d)\n",
+                printf(b"  Slope: %.4f MHz/us -> reg value: %d\n",
                        <double>profile["slope"], config.profileCfg.freqSlopeConst)
+                # Verify calculation
+                cdef double slope_verify = config.profileCfg.freqSlopeConst * 48.279e-3
+                printf(b"  Slope verification: %d * 48.279e-3 = %.4f MHz/us\n",
+                       config.profileCfg.freqSlopeConst, slope_verify)
                 
             if "idle_time" in profile:
                 # Convert us to register value (1 LSB = 10 ns)
                 config.profileCfg.idleTimeConst = <uint32_t>(ceil(profile["idle_time"]*1e2))
+                printf(b"  Idle time: %.2f us -> reg value: %u\n",
+                       <double>profile["idle_time"], config.profileCfg.idleTimeConst)
                 
             if "adc_start_time" in profile:
                 # Convert us to register value (1 LSB = 10 ns)
                 config.profileCfg.adcStartTimeConst = <uint32_t>(ceil(profile["adc_start_time"]*1e2))
+                printf(b"  ADC start time: %.2f us -> reg value: %u\n",
+                       <double>profile["adc_start_time"], config.profileCfg.adcStartTimeConst)
                 
             if "ramp_end_time" in profile:
                 # Convert us to register value (1 LSB = 10 ns)
                 config.profileCfg.rampEndTime = <uint32_t>(ceil(profile["ramp_end_time"]*1e2))
+                printf(b"  Ramp end time: %.2f us -> reg value: %u\n",
+                       <double>profile["ramp_end_time"], config.profileCfg.rampEndTime)
                 
             if "txStartTimeUSec" in profile:
                 # Convert us to register value (1 LSB = 10 ns)
@@ -701,13 +723,15 @@ cpdef mmw_set_config(dict configdict):
                 
             if "adc_samples" in profile:
                 config.profileCfg.numAdcSamples = <uint16_t>(profile["adc_samples"])
-                printf(b"[CONFIG] ADC samples: %u\n", config.profileCfg.numAdcSamples)
+                printf(b"  ADC samples: %u\n", config.profileCfg.numAdcSamples)
                 
             if "sample_freq" in profile:
                 config.profileCfg.digOutSampleRate = <uint16_t>(profile["sample_freq"])
+                printf(b"  Sample frequency: %u ksps\n", config.profileCfg.digOutSampleRate)
                 
             if "rx_gain" in profile:
                 config.profileCfg.rxGain = <uint16_t>(profile["rx_gain"])
+                printf(b"  RX gain: %u dB\n", config.profileCfg.rxGain)
                 
             if "hpfCornerFreq1" in profile:
                 config.profileCfg.hpfCornerFreq1 = <uint8_t>(profile["hpfCornerFreq1"])
@@ -715,17 +739,36 @@ cpdef mmw_set_config(dict configdict):
             if "hpfCornerFreq2" in profile:
                 config.profileCfg.hpfCornerFreq2 = <uint8_t>(profile["hpfCornerFreq2"])
             
+            # VERIFICATION: Calculate bandwidth and range resolution
+            cdef double chirp_duration_us = (config.profileCfg.rampEndTime - config.profileCfg.adcStartTimeConst) * 1e-2
+            cdef double slope_actual = config.profileCfg.freqSlopeConst * 48.279e-3
+            cdef double bandwidth_MHz = slope_actual * chirp_duration_us
+            cdef double range_res_cm = (3e8 / (2 * bandwidth_MHz * 1e6)) * 100
+            printf(b"\n[VERIFICATION]\n")
+            printf(b"  Chirp duration: %.2f us\n", chirp_duration_us)
+            printf(b"  Bandwidth: %.2f MHz\n", bandwidth_MHz)
+            printf(b"  Range resolution: %.2f cm\n", range_res_cm)
+            
         # [FRAME CONFIGURATION]
         if "frame" in mimo:
             frame = mimo["frame"]
+            printf(b"\n[FRAME CONFIG] Parsing frame parameters...\n")
             
             if "nframes_master" in frame:
                 config.frameCfg.numFrames = <uint16_t>(frame["nframes_master"])
-                printf(b"[CONFIG] Master frames: %u\n", config.frameCfg.numFrames)
+                printf(b"  Master frames: %u", config.frameCfg.numFrames)
+                if config.frameCfg.numFrames == 0:
+                    printf(b" (INFINITE MODE)\n")
+                else:
+                    printf(b"\n")
                 
             if "nframes_slave" in frame:
                 config.frameCfgSlave.numFrames = <uint16_t>(frame["nframes_slave"])
-                printf(b"[CONFIG] Slave frames: %u\n", config.frameCfgSlave.numFrames)
+                printf(b"  Slave frames: %u", config.frameCfgSlave.numFrames)
+                if config.frameCfgSlave.numFrames == 0:
+                    printf(b" (INFINITE MODE)\n")
+                else:
+                    printf(b"\n")
             else:
                 # If not specified, use same as master
                 config.frameCfgSlave.numFrames = config.frameCfg.numFrames
@@ -733,41 +776,56 @@ cpdef mmw_set_config(dict configdict):
             if "nchirp_loops" in frame:
                 config.frameCfg.numLoops = <uint16_t>(frame["nchirp_loops"])
                 config.frameCfgSlave.numLoops = <uint16_t>(frame["nchirp_loops"])
-                printf(b"[CONFIG] Chirp loops per frame: %u\n", config.frameCfg.numLoops)
+                printf(b"  Chirp loops per frame: %u\n", config.frameCfg.numLoops)
+                printf(b"  Total chirps per frame: %u (12 chirps x %u loops)\n",
+                       12 * config.frameCfg.numLoops, config.frameCfg.numLoops)
                 
             if "Inter_Frame_Interval" in frame:
                 # Convert ms to register value (1 LSB = 5 ns)
                 config.frameCfg.framePeriodicity = <uint32_t>(ceil(frame["Inter_Frame_Interval"]*2e5))
                 config.frameCfgSlave.framePeriodicity = config.frameCfg.framePeriodicity
-                printf(b"[CONFIG] Frame interval: %u ms (reg: %u)\n",
+                printf(b"  Frame interval: %u ms -> reg value: %u\n",
                        <uint32_t>frame["Inter_Frame_Interval"], config.frameCfg.framePeriodicity)
             
             # CRITICAL: Set trigger modes for TDM-MIMO
             if "trigger_mode_master" in frame:
                 config.frameCfg.triggerSelect = <uint16_t>(frame["trigger_mode_master"])
-                printf(b"[CONFIG] Master trigger mode: %u (1=SW, 2=HW)\n", 
-                       config.frameCfg.triggerSelect)
+                printf(b"  Master trigger mode: %u ", config.frameCfg.triggerSelect)
+                if config.frameCfg.triggerSelect == 1:
+                    printf(b"(SOFTWARE)\n")
+                elif config.frameCfg.triggerSelect == 2:
+                    printf(b"(HARDWARE)\n")
+                else:
+                    printf(b"(UNKNOWN)\n")
             else:
                 config.frameCfg.triggerSelect = 1  # Default: Software trigger
-                printf(b"[CONFIG] Master trigger mode: 1 (Software - default)\n")
+                printf(b"  Master trigger mode: 1 (SOFTWARE - default)\n")
                 
             if "trigger_mode_slave" in frame:
                 config.frameCfgSlave.triggerSelect = <uint16_t>(frame["trigger_mode_slave"])
-                printf(b"[CONFIG] Slave trigger mode: %u (1=SW, 2=HW)\n",
-                       config.frameCfgSlave.triggerSelect)
+                printf(b"  Slave trigger mode: %u ", config.frameCfgSlave.triggerSelect)
+                if config.frameCfgSlave.triggerSelect == 1:
+                    printf(b"(SOFTWARE)\n")
+                elif config.frameCfgSlave.triggerSelect == 2:
+                    printf(b"(HARDWARE)\n")
+                else:
+                    printf(b"(UNKNOWN)\n")
             else:
                 config.frameCfgSlave.triggerSelect = 2  # Default: Hardware trigger
-                printf(b"[CONFIG] Slave trigger mode: 2 (Hardware - default)\n")
+                printf(b"  Slave trigger mode: 2 (HARDWARE - default)\n")
         
         # [CHANNEL CONFIGURATION]
         if "channel" in mimo:
             channel = mimo["channel"]
+            printf(b"\n[CHANNEL CONFIG] Parsing channel parameters...\n")
             
             if "rxChannelEn" in channel:
                 config.channelCfg.rxChannelEn = <uint16_t>(channel["rxChannelEn"])
+                printf(b"  RX channels enabled: 0x%02X\n", config.channelCfg.rxChannelEn)
                 
             if "txChannelEn" in channel:
                 config.channelCfg.txChannelEn = <uint16_t>(channel["txChannelEn"])
+                printf(b"  TX channels enabled: 0x%02X\n", config.channelCfg.txChannelEn)
     
     # Update dependent parameters
     config.frameCfg.numAdcSamples = 2 * config.profileCfg.numAdcSamples  # Complex samples
@@ -777,7 +835,8 @@ cpdef mmw_set_config(dict configdict):
     config.dataFmtCfg.adcBits = adcOutCfgArgs.fmt.b2AdcBits
     config.dataFmtCfg.adcFmt = adcOutCfgArgs.fmt.b2AdcOutFmt
     
-    printf(b"\n[CONFIG] Configuration parsing complete!\n")
+    printf(b"\n[CONFIG PARSER] Configuration parsing complete!\n")
+    printf(b"[CONFIG PARSER] *** Python config values have been applied ***\n\n")
     return 0
 
 

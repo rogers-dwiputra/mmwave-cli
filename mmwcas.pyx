@@ -229,6 +229,7 @@ ctypedef struct devConfig_t:
 cdef rlProfileCfg_t profileCfgArgs=rlProfileCfg_t(
     profileId = 0,                 # Profile index (0-3)
     pfVcoSelect = 0x02,            # VCO2 (77G:77 - 81 GHz or 60G:60 - 64 GHz) 77-81GHz use only VCO2
+    pfCalLutUpdate = 0,
     startFreqConst = 1435384036,   # 77GHz | 1 LSB = 53.644 Hz Valid range: 0x5471C71B to 0x5A000000 
     freqSlopeConst = 311,          # 15.0148 Mhz/us | 1LSB = 48.279 kHz/uS AWR2243 device: -5510 to 5510 (266MHz/uS)
     idleTimeConst = 500,           # 5us  | 1LSB = 10ns Valid range: 0 to 524287
@@ -241,7 +242,9 @@ cdef rlProfileCfg_t profileCfgArgs=rlProfileCfg_t(
     digOutSampleRate = 8000,       # 8000 ksps (8 MHz) | 1LSB = 1 ksps
     hpfCornerFreq1 = 0x0,          # 175kHz
     hpfCornerFreq2 = 0x0,          # 350kHz
+    pfCalLutUpdate = 0,
     rxGain = 48,                   # 48 dB | 1LSB = 1dB
+    pfCalLutUpdate = 0,
 )
 
 """! \brief
@@ -284,19 +287,15 @@ cdef rlChanCfg_t channelCfgArgs = rlChanCfg_t(
     cascading = 0x02,        # Slave
 )
 
-cdef rlAdcBitFormat_t adcBitFmtArgs = rlAdcBitFormat_t(
-    b2AdcBits = 2,           # 16-bit ADC
-    b2AdcOutFmt = 1,         # Complex values
-    b8FullScaleReducFctr = 0,
-)
-
-
-"""! \brief
-* ADC format and payload justification Configuration
-"""
-cdef rlAdcOutCfg_t adcOutCfgArgs = rlAdcOutCfg_t(
-    fmt = adcBitFmtArgs,
-)
+# Manual initialization to ensure correct values
+cdef rlAdcOutCfg_t adcOutCfgArgs
+adcOutCfgArgs.fmt.b2AdcBits = 2           # 16-bit
+adcOutCfgArgs.fmt.b6Reserved0 = 0
+adcOutCfgArgs.fmt.b8FullScaleReducFctr = 0
+adcOutCfgArgs.fmt.b2AdcOutFmt = 1         # Complex
+adcOutCfgArgs.fmt.b14Reserved1 = 0
+adcOutCfgArgs.reserved0 = 0
+adcOutCfgArgs.reserved1 = 0
 
 """! \brief
 * mmwave radar data format config
@@ -658,6 +657,7 @@ cpdef mmw_set_config(dict configdict):
     config.ldoCfg = ldoCfgArgs
     config.lpmCfg = lpmCfgArgs
     config.miscCfg = miscCfgArgs
+    config.adcOutCfg = adcOutCfgArgs
 
     cdef dict mimo,profile,frame,channel
     if "mimo" in configdict:
@@ -747,18 +747,30 @@ cpdef int mmw_arming_tda(str capture_path):
 
 cpdef int mmw_start_frame():
     cdef int status = 0
-    status += MMWL_StartFrame(config.deviceMap)
+    cdef int i
+    # Start devices sequentially (3, 2, 1, 0)
+    for i in range(3, -1, -1):
+        status += MMWL_StartFrame(1 << i)
+    
     check(status,
         b"[MMWCAS-RF] Framing ...",
-        b"[MMWCAS-RF] Failed to initiate framing!", config.deviceMap, TRUE)
+        b"[MMWCAS-RF] Failed to initiate framing!", 
+        config.deviceMap, 
+        TRUE)
     return status
 
 cpdef int mmw_stop_frame():
     cdef int status = 0
-    status += MMWL_StopFrame(config.deviceMap)
+    cdef int i
+    # Stop devices sequentially (3, 2, 1, 0)
+    for i in range(3, -1, -1):
+        status += MMWL_StopFrame(1 << i)
+    
     check(status,
-        b"[MMWCAS-RF] Stoped Frame ...",
-        b"[MMWCAS-RF] Failed to stoped frame!", config.deviceMap, TRUE)
+        b"[MMWCAS-RF] Stopped Frame ...",
+        b"[MMWCAS-RF] Failed to stop frame!", 
+        config.deviceMap, 
+        TRUE)
     return status
 
 cpdef int mmw_dearming_tda():

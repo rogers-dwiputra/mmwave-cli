@@ -48,6 +48,8 @@ build-cython:
 
 build: clean all build-cython
 
-install: clean all build-cython
-	make clean
-
+install: all build-cython
+	@echo "Installing mmwave to /usr/local/bin..."
+	@sudo cp mmwave /usr/local/bin/
+	@sudo chmod +x /usr/local/bin/mmwave
+	@echo "Installation complete."

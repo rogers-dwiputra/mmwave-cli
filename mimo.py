@@ -126,22 +126,34 @@ def main():
             
             # Arm TDA for capture
             status = mmwcas.mmw_arming_tda(capture_dir)
-            assert status == 0, ValueError("mmw_arming_tda failed")
+            if status != 0:
+                print(f"mmw_arming_tda failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
             time.sleep(2)
             
             # Start frame capture
             status = mmwcas.mmw_start_frame()
-            assert status == 0, ValueError("mmw_start_frame failed")
+            if status != 0:
+                print(f"mmw_start_frame failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
             
             print(f"\n Capturing... ({args.duration}s)")
             
             # Stop frame capture
             status = mmwcas.mmw_stop_frame()
-            assert status == 0, ValueError("mmw_stop_frame failed")
+            if status != 0:
+                print(f"mmw_stop_frame failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
             
             # De-arm TDA
             status = mmwcas.mmw_dearming_tda()
-            assert status == 0, ValueError("mmw_dearming_tda failed")
+            if status != 0:
+                print(f"mmw_dearming_tda failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
     
             # Check if files were actually captured
             print("\n" + "="*60)
@@ -153,7 +165,7 @@ def main():
             if not success:
                 print("\n  WARNING: No files found in capture directory!")
                 print("\n  Skipping .mmwave.json generation.")
-                sys.exit(1)
+                #sys.exit(1)
             
             # Generate configuration JSON file only if capture was successful
             json_filename = f"{capture_dir}.mmwave.json"

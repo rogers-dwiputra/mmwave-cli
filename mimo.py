@@ -7,6 +7,7 @@ import signal
 from utility import export_config_to_json
 from utility import check_captured_files
 from utility import signal_handler
+import os
 
 config_dict = {
     "mimo": {
@@ -94,6 +95,7 @@ def main():
     assert status == 0, ValueError("mmw_init failed")
     time.sleep(2)
 
+    os.makedirs("mmwave_json_files", exist_ok=True)
     # Capture loop
     loop_count = 0
     infinite_mode = (args.num_loops == 0)
@@ -112,10 +114,7 @@ def main():
             
             # Generate capture directory name with timestamp
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            if args.num_loops == 1:
-                capture_dir = f"{args.directory}_{timestamp}"
-            else:
-                capture_dir = f"{args.directory}_{timestamp}_loop{loop_count:03d}"
+            capture_dir = f"{args.directory}_{timestamp}"
             
             print("\n" + "="*60)
             print(f"CAPTURE LOOP {loop_count}" + (" (INFINITE MODE)" if infinite_mode else f" of {args.num_loops}"))
@@ -168,7 +167,7 @@ def main():
                 #sys.exit(1)
             
             # Generate configuration JSON file only if capture was successful
-            json_filename = f"{capture_dir}.mmwave.json"
+            json_filename = os.path.join("mmwave_json_files", f"{capture_dir}.mmwave.json")
             print(f"\nGenerating configuration file: {json_filename}")
             export_config_to_json(config_dict, json_filename)
             

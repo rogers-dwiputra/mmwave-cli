@@ -26,6 +26,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <sys/stat.h>
 
 /******************************
  *      CONFIGURATIONS
@@ -1048,10 +1049,11 @@ int main (int argc, char *argv[]) {
   strncpy(g_ip_addr, ip_addr, sizeof(g_ip_addr) - 1);
   g_ip_addr[sizeof(g_ip_addr) - 1] = '\0';
   unsigned char *capture_directory = (unsigned char*)get_option(&parser, "capture-dir");
-  sprintf(capture_path, "/mnt/ssd/");
+  sprintf(capture_path, "/mnt/ssd/%s", capture_directory);
   // Construct JSON filename with same name as capture directory
+  mkdir("mmwave_json_files", 0755);
   char json_filename[256];
-  sprintf(json_filename, "%s.mmwave.json", capture_directory);
+  sprintf(json_filename, "mmwave_json_files/%s.mmwave.json", capture_directory);
   /* Record CLI option possible values are:
    *  - start: To start a recording and exit
    *  - stop: Stop a recording and exit
@@ -1187,7 +1189,7 @@ int main (int argc, char *argv[]) {
                 
                 // Export JSON configuration
                 char json_filename[256];
-                sprintf(json_filename, "%s.mmwave.json", capture_dir);
+                sprintf(json_filename, "mmwave_json_files/%s.mmwave.json", capture_dir);
                 export_config_to_json(config, json_filename, 4);
                 
                 // Start async transfer (non-blocking)

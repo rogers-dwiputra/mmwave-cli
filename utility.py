@@ -95,7 +95,7 @@ def export_config_to_json(config_dict, filename, num_devices=4):
         filename: Output JSON filename
         num_devices: Number of devices in cascade (default: 4)
     """
-    print(f"  > Creating JSON configuration file: {filename}")
+    #print(f"  > Creating JSON configuration file: {filename}")
     
     # Extract configuration from config_dict
     profile = config_dict["mimo"]["profile"]

@@ -2,6 +2,7 @@
 from libc.stdio cimport printf
 from libc.stdint cimport uint8_t, int8_t,int16_t,uint16_t, int32_t, uint32_t
 from libc.math cimport ceil
+from libc.string cimport strncpy
 
 cdef extern from "ti/mmwave/mmwave.h":
     '''
@@ -676,8 +677,8 @@ cpdef mmw_set_config(dict configdict):
                 config.profileCfg.adcStartTimeConst = <uint32_t>(ceil(profile["adcStartTime"]*1e2)) # 1LSB = 10ns
             if "rampEndTime" in profile:# Chirp ramp end time in us
                 config.profileCfg.rampEndTime = <uint32_t>(ceil(profile["rampEndTime"]*1e2)) # 1LSB = 10ns
-            if "txStartTIme" in profile:# TX starttime in us
-                config.profileCfg.txStartTime = <uint16_t>(ceil(profile["txStartTIme"]*1e2)) # 1LSB = 10ns
+            if "txStartTime" in profile:# TX starttime in us
+                config.profileCfg.txStartTime = <uint16_t>(ceil(profile["txStartTime"]*1e2)) # 1LSB = 10ns
             if "numAdcSamples" in profile:# Number of ADC samples per chirp
                 config.profileCfg.numAdcSamples = <uint16_t>(profile["numAdcSamples"])
             if "adcSamplingFrequency" in profile:# ADC sampling frequency in ksps
@@ -731,14 +732,23 @@ cpdef int mmw_arming_tda(str capture_path):
     * @return int 
     """
     cdef int status = 0
+    cdef char capture_path_buf[256]
     cdef bytes capture_path_bytes = f"/mnt/ssd/{capture_path}".encode('utf-8')
-    cdef rlTdaArmCfg_t tdaCfg = rlTdaArmCfg_t(
-        captureDirectory = capture_path_bytes,
-        framePeriodicity = (frameCfgArgs.framePeriodicity * 5)//(1000 * 1000),
-        numberOfFilesToAllocate = 0,
-        numberOfFramesToCapture = 0, # config.frameCfg.numFrames,
-        dataPacking = 0, # 0: 16-bit | 1: 12-bit
-    )
+    if len(capture_path_bytes) >= sizeof(capture_path_buf):
+        printf(b"[MMWCAS] ERROR: capture_path too long!\n")
+        return -1
+    strncpy(capture_path_buf, capture_path_bytes, sizeof(capture_path_buf) - 1)
+    capture_path_buf[sizeof(capture_path_buf) - 1] = b'\0'
+
+    cdef unsigned int frame_period_ms = (config.frameCfg.framePeriodicity * 5) // (1000 * 1000)
+
+    cdef rlTdaArmCfg_t tdaCfg
+    tdaCfg.captureDirectory = capture_path_buf
+    tdaCfg.framePeriodicity = frame_period_ms
+    tdaCfg.numberOfFilesToAllocate = 0
+    tdaCfg.numberOfFramesToCapture = 0  # config.frameCfg.numFrames
+    tdaCfg.dataPacking = 0              # 0: 16-bit | 1: 12-bit
+
     status = MMWL_ArmingTDA(tdaCfg)
     check(status,
         b"[MMWCAS-DSP] Arming TDA",

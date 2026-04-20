@@ -1,206 +1,188 @@
 import time
-import mmwcas
-import sys
+import argparse
 from datetime import datetime
-from config_export import export_config_to_json
+import sys
+import mmwcas
+import signal
+from utility import export_config_to_json
+from utility import check_captured_files
+from utility import signal_handler
+import os
 
-# Configuration dictionary - EXACTLY MATCHES WINDOWS .LUA CONFIG
 config_dict = {
     "mimo": {
         "profile": {
             "id": 0,
-            "start_freq": 77,           # EXACT MATCH: 77 GHz
-            "slope": 15.0148,           # EXACT MATCH: 15.0148 MHz/us (was 25 in old lua)
-            "idle_time": 7,             # EXACT MATCH: 7 us
-            "adc_start_time": 4.35,     # EXACT MATCH: 4.35 us (was 4.34)
-            "adc_samples": 512,         # EXACT MATCH: 512 samples
-            "sample_freq": 8000,        # EXACT MATCH: 8000 ksps
-            "ramp_end_time": 68.97,     # EXACT MATCH: 68.97 us
-            "rx_gain": 48,              # EXACT MATCH: 48 dB
-            "txStartTimeUSec": 0,       # EXACT MATCH: 0 us
-            "hpfCornerFreq1": 0,        # EXACT MATCH: 0 (175kHz)
-            "hpfCornerFreq2": 0,        # EXACT MATCH: 0 (350kHz)
+            "startFrequency": 77,           # Chirp start frequency in GHz
+            "frequencySlope": 79.0327,      # Frequency slope in MHz/us
+            "idleTime": 5,                  # Chrip Idle time in us
+            "adcStartTime": 6,              # ADC start time in us
+            "numAdcSamples": 256,           # Number of ADC samples per chirp
+            "adcSamplingFrequency": 8000,   # ADC sampling frequency in ksps
+            "rampEndTime": 40,              # Chirp ramp end time in us
+            "rxGain": 48,                   # dB
+            "txStartTime": 0,               # TX starttime in us
+            "hpfCornerFreq1": 0,            # 0: 175kHz
+            "hpfCornerFreq2": 0,            # 0: 350kHz
         },
         "frame": {
-            "nchirp_loops": 10,         # EXACT MATCH: 10 chirp loops per frame
-            "nframes_master": 0,        # EXACT MATCH: 0 (infinite frames)
-            "nframes_slave": 0,         # EXACT MATCH: 0 (infinite frames)
-            "Inter_Frame_Interval": 10, # EXACT MATCH: 10 ms frame periodicity
-            "trigger_mode_master": 1,   # EXACT MATCH: Software trigger for master
-            "trigger_mode_slave": 2,    # EXACT MATCH: Hardware trigger for slaves
+            "numLoops": 16,                 # Number of chirp loop per frame
+            "numFrames": 0,                 # Number of frames to record
+            "framePeriodicity": 100,        # Frame periodicity in ms (Inter_Frame_Interval)
         },
         "channel": {
-            "rxChannelEn": 0x0F,        # Enable all 4 RX channels
-            "txChannelEn": 0x07,        # Enable all 3 TX channels
+            "rxChannelEn": 0x0F,            # Enable all 4 RX channels
+            "txChannelEn": 0x07,            # Enable all 3 TX channels
         }
     }
 }
 
-record_duration = 2
-max_retries = 3  # Maximum number of retries per recording attempt
+# Global flag for graceful shutdown
+shutdown_flag = False
 
-def log_message(log_file, message):
-    """Write a timestamped message to log file and print to console"""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-    log_line = f"[{timestamp}] {message}"
-    print(log_line)
+def main():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='TIDEP-01012 MIMO Cascade Radar Control IMRSL')
+    parser.add_argument('-d', '--directory', 
+                        type=str, 
+                        default='mmwave_python',
+                        help='Base directory name for data capture (default: mmwave_python)')
+    parser.add_argument('-t', '--duration', 
+                        type=float, 
+                        default=10.0,
+                        help='Recording duration in seconds (default: 10.0)')
+    parser.add_argument('--tda-ip',
+                        type=str,
+                        default='192.168.33.180',
+                        help='TDA board IP address (default: 192.168.33.180)')
+    parser.add_argument('-n', '--num-loops',
+                        type=int,
+                        default=1,
+                        help='Number of capture loops (default: 1, 0 = infinite until Ctrl+C)')
+    parser.add_argument('-i', '--inter-loop-time',
+                        type=float,
+                        default=60.0,
+                        help='Delay between capture loops in seconds (default: 60.0)')
+    
+    args = parser.parse_args()
+
+    # Register signal handler for Ctrl+C
+    signal.signal(signal.SIGINT, signal_handler)
+    
+    # Validate arguments
+    if args.num_loops < 0:
+        print("Error: --num-loops must be >= 0")
+        sys.exit(1)
+    
+    # Generate capture directory name with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    capture_dir = f"{args.directory}_{timestamp}"
+    
+    print(f"Capture directory: {capture_dir}")
+    print(f"Capture duration: {args.duration} seconds")
+    print(f"Number of loops  : {'Infinite (until Ctrl+C)' if args.num_loops == 0 else args.num_loops}")
+    if args.num_loops != 1:
+        print(f"Inter-loop delay : {args.inter_loop_time} seconds")
+    
+    # Configure radar
+    status = mmwcas.mmw_set_config(config_dict)
+    if status != 0:
+        print(f"Configuration error: {status}")
+        raise ValueError(f"mmw_set_config failed with status {status}")
+    
+    # Initialize radar
+    status = mmwcas.mmw_init()
+    assert status == 0, ValueError("mmw_init failed")
+    time.sleep(2)
+
+    os.makedirs("mmwave_json_files", exist_ok=True)
+    # Capture loop
+    loop_count = 0
+    infinite_mode = (args.num_loops == 0)
+    
     try:
-        with open(log_file, 'a') as f:
-            f.write(log_line + '\n')
-    except IOError as e:
-        print(f"WARNING: Failed to write to log file: {e}")
-
-# Initialize the system
-print("=" * 80)
-print("TDM-MIMO CASCADE RADAR INITIALIZATION")
-print("=" * 80)
-print(f"Start Frequency: {config_dict['mimo']['profile']['start_freq']} GHz")
-print(f"Chirp Slope: {config_dict['mimo']['profile']['slope']} MHz/us")
-print(f"ADC Start Time: {config_dict['mimo']['profile']['adc_start_time']} us")
-print(f"Chirp Loops per Frame: {config_dict['mimo']['frame']['nchirp_loops']}")
-print(f"Number of Frames: {config_dict['mimo']['frame']['nframes_master']} (0=infinite)")
-print(f"Frame Interval: {config_dict['mimo']['frame']['Inter_Frame_Interval']} ms")
-print(f"ADC Samples: {config_dict['mimo']['profile']['adc_samples']}")
-print("=" * 80)
-
-status = mmwcas.mmw_set_config(config_dict)
-if status != 0:
-    print(f"ERROR: Configuration failed with status {status}")
-    raise ValueError(f"Configuration error: {status}")
-
-print("\nInitializing mmWave cascade system...")
-status = mmwcas.mmw_init()
-if status != 0:
-    print(f"ERROR: Initialization failed with status {status}")
-    raise ValueError(f"Initialization error: {status}")
-
-print("✓ Initialization successful!")
-time.sleep(2)
-
-# Generate JSON configuration file and log file once at start
-session_timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-json_filename = f"TDM_MIMO_{session_timestamp}.mmwave.json"
-log_filename = f"TDM_MIMO_{session_timestamp}.log"
-
-try:
-    export_config_to_json(config_dict, json_filename)
-    print(f"✓ Configuration JSON saved: {json_filename}")
-    log_message(log_filename, f"=== TDM-MIMO Session Started ===")
-    log_message(log_filename, f"Configuration JSON: {json_filename}")
-    log_message(log_filename, f"Record duration: {record_duration} seconds")
-    log_message(log_filename, f"Start Frequency: {config_dict['mimo']['profile']['start_freq']} GHz")
-    log_message(log_filename, f"Frames per recording: {config_dict['mimo']['frame']['nframes_master']}")
-except Exception as e:
-    print(f"ERROR: Failed to create JSON config: {e}")
-
-recording_count = 0
-try:
-    while True:
-        recording_count += 1
-        log_message(log_filename, f"\n=== Recording {recording_count} Started ===")
-        dirName = datetime.now().strftime("TDM_MIMO_%Y%m%d_%H%M%S")
-        log_message(log_filename, f"Directory: {dirName}")
-        print(f"\n{'=' * 60}")
-        print(f"Recording {recording_count}: {dirName}")
-        print(f"{'=' * 60}")
-        
-        try:
-            # Step 1: Arm TDA
-            print("→ Arming TDA...")
-            status = mmwcas.mmw_arming_tda(dirName)
-            if status != 0:
-                raise Exception(f"Arming TDA failed with status {status}")
-            log_message(log_filename, "✓ TDA armed successfully")
-            print("✓ TDA armed")
+        while True:
+            # Check if we should continue
+            if not infinite_mode and loop_count >= args.num_loops:
+                break
             
+            if shutdown_flag:
+                print("\n Shutdown requested. Exiting capture loop...")
+                break
+            
+            loop_count += 1
+            
+            # Generate capture directory name with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            capture_dir = f"{args.directory}_{timestamp}"
+            
+            print("\n" + "="*60)
+            print(f"CAPTURE LOOP {loop_count}" + (" (INFINITE MODE)" if infinite_mode else f" of {args.num_loops}"))
+            print("="*60)
+            print(f"Capture directory: {capture_dir}")
+            print(f"Recording duration: {args.duration} seconds")
+            print("="*60)
+            
+            # Arm TDA for capture
+            status = mmwcas.mmw_arming_tda(capture_dir)
+            if status != 0:
+                print(f"mmw_arming_tda failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
             time.sleep(2)
             
-            # Step 2: Start frame (triggers all devices in cascade)
-            print("→ Starting frame trigger sequence...")
+            # Start frame capture
             status = mmwcas.mmw_start_frame()
             if status != 0:
-                raise Exception(f"Start frame failed with status {status}")
-            log_message(log_filename, "✓ Frame started (Master + Slaves triggered)")
-            print("✓ Frame sequence started")
-
-            # Step 3: Wait for recording to complete
-            print(f"→ Recording for {record_duration} seconds...")
-            time.sleep(record_duration)
-            log_message(log_filename, f"✓ Recording completed ({record_duration}s)")
-            print("✓ Recording complete")
-
-            # Step 4: Stop frame
-            print("→ Stopping frame...")
+                print(f"mmw_start_frame failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
+            
+            print(f"\n Capturing... ({args.duration}s)")
+            
+            # Stop frame capture
             status = mmwcas.mmw_stop_frame()
             if status != 0:
-                raise Exception(f"Stop frame failed with status {status}")
-            log_message(log_filename, "✓ Frame stopped successfully")
-            print("✓ Frame stopped")
+                print(f"mmw_stop_frame failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
             
-            # Step 5: De-arm TDA
-            print("→ De-arming TDA...")
+            # De-arm TDA
             status = mmwcas.mmw_dearming_tda()
             if status != 0:
-                raise Exception(f"Dearming TDA failed with status {status}")
-            log_message(log_filename, "✓ TDA de-armed successfully")
-            print("✓ TDA de-armed")
+                print(f"mmw_dearming_tda failed (status: {status})")
+                time.sleep(1)
+                continue  # Skip to next loop
+    
+            # Check if files were actually captured
+            print("\n" + "="*60)
+            print("Verifying data capture...")
+            print("="*60)
             
-            time.sleep(2)
-            log_message(log_filename, f"✓ Recording {recording_count} completed successfully")
-            print(f"\n✓ Recording {recording_count} completed successfully!")
-            print(f"  Data saved to: {dirName}")
+            success, file_count, files = check_captured_files(capture_dir, args.tda_ip)
             
-        except Exception as e:
-            error_msg = f"Recording {recording_count} failed: {e}"
-            log_message(log_filename, f"✗ ERROR: {error_msg}")
-            log_message(log_filename, f"*** DO NOT USE FOR ANALYSIS: {dirName} ***")
-            print(f"\n✗ {error_msg}")
-            print(f"*** Flagged as corrupted: {dirName} ***")
+            if not success:
+                print("\n  WARNING: No files found in capture directory!")
+                print("\n  Skipping .mmwave.json generation.")
+                #sys.exit(1)
             
-            # Cleanup
-            print("→ Performing cleanup...")
-            try:
-                mmwcas.mmw_stop_frame()
-                log_message(log_filename, "Cleanup: Frame stopped")
-            except:
-                pass
+            # Generate configuration JSON file only if capture was successful
+            json_filename = os.path.join("mmwave_json_files", f"{capture_dir}.mmwave.json")
+            print(f"\nGenerating configuration file: {json_filename}")
+            export_config_to_json(config_dict, json_filename)
             
-            try:
-                mmwcas.mmw_dearming_tda()
-                log_message(log_filename, "Cleanup: TDA de-armed")
-            except:
-                pass
-            
-            log_message(log_filename, "Moving to next recording")
-            print("→ Moving to next recording...")
-        
-        # Small delay between recordings
-        time.sleep(1)
+            print("\n" + "="*60)
+            print(f"Data capture {capture_dir} completed successfully!")
+            print("="*60)
 
-except KeyboardInterrupt:
-    log_message(log_filename, f"\n=== Session Stopped by user (Ctrl+C) ===")
-    log_message(log_filename, f"Total recordings attempted: {recording_count}")
-    print("\n\n" + "=" * 60)
-    print("SESSION STOPPED BY USER (Ctrl+C)")
-    print("=" * 60)
-    print(f"Total recordings attempted: {recording_count}")
-except Exception as e:
-    log_message(log_filename, f"\n=== Unexpected error occurred ===")
-    log_message(log_filename, f"Error: {e}")
-    log_message(log_filename, f"Total recordings attempted: {recording_count}")
-    print(f"\n\n" + "=" * 60)
-    print("UNEXPECTED ERROR OCCURRED")
-    print("=" * 60)
-    print(f"Error: {e}")
-    print(f"Total recordings attempted: {recording_count}")
-finally:
-    # Final cleanup
-    print("\n→ Performing final cleanup...")
-    try:
-        mmwcas.mmw_stop_frame()
-        mmwcas.mmw_dearming_tda()
-        log_message(log_filename, "Final cleanup completed")
-        print("✓ Final cleanup completed")
-    except:
-        pass
-    print("\nSession ended.")
+    except KeyboardInterrupt:
+        print("\n\nCapture interrupted by user")
+        sys.exit(130)
+    except Exception as e:
+        print(f"\nError during capture: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

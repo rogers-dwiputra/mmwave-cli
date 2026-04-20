@@ -13,3 +13,6 @@ mmwave
 /mmwcas.c
 /build
 .DS_Store
+*.mmwave.json
+__pycache__/
+/PostProc/*

@@ -2,6 +2,7 @@
 from libc.stdio cimport printf
 from libc.stdint cimport uint8_t, int8_t,int16_t,uint16_t, int32_t, uint32_t
 from libc.math cimport ceil
+from libc.string cimport strncpy
 
 cdef extern from "ti/mmwave/mmwave.h":
     '''
@@ -229,6 +230,7 @@ ctypedef struct devConfig_t:
 cdef rlProfileCfg_t profileCfgArgs=rlProfileCfg_t(
     profileId = 0,                 # Profile index (0-3)
     pfVcoSelect = 0x02,            # VCO2 (77G:77 - 81 GHz or 60G:60 - 64 GHz) 77-81GHz use only VCO2
+    pfCalLutUpdate = 0,
     startFreqConst = 1435384036,   # 77GHz | 1 LSB = 53.644 Hz Valid range: 0x5471C71B to 0x5A000000 
     freqSlopeConst = 311,          # 15.0148 Mhz/us | 1LSB = 48.279 kHz/uS AWR2243 device: -5510 to 5510 (266MHz/uS)
     idleTimeConst = 500,           # 5us  | 1LSB = 10ns Valid range: 0 to 524287
@@ -241,7 +243,9 @@ cdef rlProfileCfg_t profileCfgArgs=rlProfileCfg_t(
     digOutSampleRate = 8000,       # 8000 ksps (8 MHz) | 1LSB = 1 ksps
     hpfCornerFreq1 = 0x0,          # 175kHz
     hpfCornerFreq2 = 0x0,          # 350kHz
+    pfCalLutUpdate = 0,
     rxGain = 48,                   # 48 dB | 1LSB = 1dB
+    pfCalLutUpdate = 0,
 )
 
 """! \brief
@@ -284,19 +288,15 @@ cdef rlChanCfg_t channelCfgArgs = rlChanCfg_t(
     cascading = 0x02,        # Slave
 )
 
-cdef rlAdcBitFormat_t adcBitFmtArgs = rlAdcBitFormat_t(
-    b2AdcBits = 2,           # 16-bit ADC
-    b2AdcOutFmt = 1,         # Complex values
-    b8FullScaleReducFctr = 0,
-)
-
-
-"""! \brief
-* ADC format and payload justification Configuration
-"""
-cdef rlAdcOutCfg_t adcOutCfgArgs = rlAdcOutCfg_t(
-    fmt = adcBitFmtArgs,
-)
+# Manual initialization to ensure correct values
+cdef rlAdcOutCfg_t adcOutCfgArgs
+adcOutCfgArgs.fmt.b2AdcBits = 2           # 16-bit
+adcOutCfgArgs.fmt.b6Reserved0 = 0
+adcOutCfgArgs.fmt.b8FullScaleReducFctr = 0
+adcOutCfgArgs.fmt.b2AdcOutFmt = 1         # Complex
+adcOutCfgArgs.fmt.b14Reserved1 = 0
+adcOutCfgArgs.reserved0 = 0
+adcOutCfgArgs.reserved1 = 0
 
 """! \brief
 * mmwave radar data format config
@@ -658,6 +658,7 @@ cpdef mmw_set_config(dict configdict):
     config.ldoCfg = ldoCfgArgs
     config.lpmCfg = lpmCfgArgs
     config.miscCfg = miscCfgArgs
+    config.adcOutCfg = adcOutCfgArgs
 
     cdef dict mimo,profile,frame,channel
     if "mimo" in configdict:
@@ -676,8 +677,8 @@ cpdef mmw_set_config(dict configdict):
                 config.profileCfg.adcStartTimeConst = <uint32_t>(ceil(profile["adcStartTime"]*1e2)) # 1LSB = 10ns
             if "rampEndTime" in profile:# Chirp ramp end time in us
                 config.profileCfg.rampEndTime = <uint32_t>(ceil(profile["rampEndTime"]*1e2)) # 1LSB = 10ns
-            if "txStartTIme" in profile:# TX starttime in us
-                config.profileCfg.txStartTime = <uint16_t>(ceil(profile["txStartTIme"]*1e2)) # 1LSB = 10ns
+            if "txStartTime" in profile:# TX starttime in us
+                config.profileCfg.txStartTime = <uint16_t>(ceil(profile["txStartTime"]*1e2)) # 1LSB = 10ns
             if "numAdcSamples" in profile:# Number of ADC samples per chirp
                 config.profileCfg.numAdcSamples = <uint16_t>(profile["numAdcSamples"])
             if "adcSamplingFrequency" in profile:# ADC sampling frequency in ksps
@@ -731,34 +732,55 @@ cpdef int mmw_arming_tda(str capture_path):
     * @return int 
     """
     cdef int status = 0
+    cdef char capture_path_buf[256]
     cdef bytes capture_path_bytes = f"/mnt/ssd/{capture_path}".encode('utf-8')
-    cdef rlTdaArmCfg_t tdaCfg = rlTdaArmCfg_t(
-        captureDirectory = capture_path_bytes,
-        framePeriodicity = (frameCfgArgs.framePeriodicity * 5)//(1000 * 1000),
-        numberOfFilesToAllocate = 0,
-        numberOfFramesToCapture = 0, # config.frameCfg.numFrames,
-        dataPacking = 0, # 0: 16-bit | 1: 12-bit
-    )
+    if len(capture_path_bytes) >= sizeof(capture_path_buf):
+        printf(b"[MMWCAS] ERROR: capture_path too long!\n")
+        return -1
+    strncpy(capture_path_buf, capture_path_bytes, sizeof(capture_path_buf) - 1)
+    capture_path_buf[sizeof(capture_path_buf) - 1] = b'\0'
+
+    cdef unsigned int frame_period_ms = (config.frameCfg.framePeriodicity * 5) // (1000 * 1000)
+
+    cdef rlTdaArmCfg_t tdaCfg
+    tdaCfg.captureDirectory = capture_path_buf
+    tdaCfg.framePeriodicity = frame_period_ms
+    tdaCfg.numberOfFilesToAllocate = 0
+    tdaCfg.numberOfFramesToCapture = 0  # config.frameCfg.numFrames
+    tdaCfg.dataPacking = 0              # 0: 16-bit | 1: 12-bit
+
     status = MMWL_ArmingTDA(tdaCfg)
     check(status,
         b"[MMWCAS-DSP] Arming TDA",
-        b"[MMWCAS-DSP] TDA Arming failed!", 32, TRUE)
+        b"[MMWCAS-DSP] TDA Arming failed!", 32, 0)
     return status
 
 cpdef int mmw_start_frame():
     cdef int status = 0
-    status += MMWL_StartFrame(config.deviceMap)
+    cdef int i
+    # Start devices sequentially (3, 2, 1, 0)
+    for i in range(3, -1, -1):
+        status += MMWL_StartFrame(1 << i)
+    
     check(status,
         b"[MMWCAS-RF] Framing ...",
-        b"[MMWCAS-RF] Failed to initiate framing!", config.deviceMap, TRUE)
+        b"[MMWCAS-RF] Failed to initiate framing!", 
+        config.deviceMap, 
+        0)
     return status
 
 cpdef int mmw_stop_frame():
     cdef int status = 0
-    status += MMWL_StopFrame(config.deviceMap)
+    cdef int i
+    # Stop devices sequentially (3, 2, 1, 0)
+    for i in range(3, -1, -1):
+        status += MMWL_StopFrame(1 << i)
+    
     check(status,
-        b"[MMWCAS-RF] Stoped Frame ...",
-        b"[MMWCAS-RF] Failed to stoped frame!", config.deviceMap, TRUE)
+        b"[MMWCAS-RF] Stopped Frame ...",
+        b"[MMWCAS-RF] Failed to stop frame!", 
+        config.deviceMap, 
+        0)
     return status
 
 cpdef int mmw_dearming_tda():
@@ -766,5 +788,5 @@ cpdef int mmw_dearming_tda():
     status = MMWL_DeArmingTDA()
     check(status,
         b"[MMWCAS-RF] Stop recording",
-        b"[MMWCAS-RF] Failed to de-arm TDA board!", 32, TRUE)
+        b"[MMWCAS-RF] Failed to de-arm TDA board!", 32, 0)
     return status

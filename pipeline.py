@@ -156,10 +156,10 @@ def transfer_data(capture_dir: str, tda_ip: str) -> bool:
 
 
 # ─────────────────────────────────────────────
-# Step 3 — Edge Processing
+# Step 3 — Edge Processing (SLC + Range Profile)
 # ─────────────────────────────────────────────
 
-_mimo_processing_mod = None   # cached import
+_mimo_processing_mod = None
 
 def _load_mimo_processing():
     global _mimo_processing_mod
@@ -176,11 +176,7 @@ def _load_mimo_processing():
 
 
 def run_processing(capture_dir: str) -> bool:
-    """
-    Run edge processing (range FFT, Doppler FFT, SLC image, range profile)
-    for a single capture directory.
-    Returns True on success.
-    """
+    """Generate SLC.png and range-profile.png for a single capture directory."""
     _banner(f'STEP 3 — Edge Processing  ({capture_dir})')
 
     data_folder = os.path.join(POSTPROC_DIR, capture_dir)
@@ -197,6 +193,45 @@ def run_processing(capture_dir: str) -> bool:
         print(f'[PIPELINE] ERROR during processing: {exc}')
         traceback.print_exc()
         return False
+
+
+# ─────────────────────────────────────────────
+# Step 4 — PS Monitoring (Natural Frequency)
+# ─────────────────────────────────────────────
+
+_ps_monitoring_mod = None
+
+def _load_ps_monitoring():
+    global _ps_monitoring_mod
+    if _ps_monitoring_mod is not None:
+        return _ps_monitoring_mod
+    mod_path = os.path.join(EDGE_DIR, 'ps_monitoring.py')
+    if not os.path.isfile(mod_path):
+        raise FileNotFoundError(f'ps_monitoring.py not found at {mod_path}')
+    spec = importlib.util.spec_from_file_location('ps_monitoring', mod_path)
+    mod  = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    _ps_monitoring_mod = mod
+    return mod
+
+
+def run_ps_monitoring(capture_dir: str, ps_map_file: str) -> dict:
+    """Run PS-based structural health monitoring for one capture directory."""
+    _banner(f'STEP 4 — PS Monitoring  ({capture_dir})')
+
+    data_folder = os.path.join(POSTPROC_DIR, capture_dir)
+    if not os.path.isdir(data_folder):
+        print(f'[PIPELINE] ERROR: Capture directory not found: {data_folder}')
+        return {}
+
+    try:
+        mod = _load_ps_monitoring()
+        return mod.run_ps_monitoring(data_folder, ps_map_file)
+    except Exception as exc:
+        import traceback
+        print(f'[PIPELINE] ERROR during PS monitoring: {exc}')
+        traceback.print_exc()
+        return {}
 
 
 # ─────────────────────────────────────────────
@@ -217,8 +252,18 @@ def main():
     parser.add_argument('--skip-transfer',   action='store_true',
                         help='Skip SCP transfer step (useful for testing processing only)')
     parser.add_argument('--skip-processing', action='store_true',
-                        help='Skip edge-processing step (capture + transfer only)')
+                        help='Skip SLC/range-profile generation')
+    parser.add_argument('--skip-ps',         action='store_true',
+                        help='Skip PS monitoring step')
+    parser.add_argument('--reset-ps',        action='store_true',
+                        help='Delete PS map so it is recomputed on the next cycle')
     args = parser.parse_args()
+
+    # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
+    ps_map_file = os.path.join(EDGE_DIR, 'ps_map.json')
+    if args.reset_ps and os.path.isfile(ps_map_file):
+        os.remove(ps_map_file)
+        print(f'[PIPELINE] Deleted PS map: {ps_map_file}')
 
     print('╔══════════════════════════════════════════════════════════╗')
     print('║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║')
@@ -228,6 +273,7 @@ def main():
     print(f'  Cycle interval   : {args.interval}s')
     print(f'  PostProc dir     : {POSTPROC_DIR}')
     print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
+    print(f'  PS map           : {ps_map_file}')
     print(f'  Press Ctrl+C to stop after the current cycle.')
 
     os.makedirs(POSTPROC_DIR,   exist_ok=True)
@@ -266,11 +312,20 @@ def main():
         if shutdown_flag:
             break
 
-        # ── 3. Process ──────────────────────────────────────────────
+        # ── 3. SLC + Range Profile ──────────────────────────────────
         if not args.skip_processing:
             run_processing(capture_dir)
         else:
             _step('Processing skipped (--skip-processing)')
+
+        if shutdown_flag:
+            break
+
+        # ── 4. PS Monitoring ────────────────────────────────────────
+        if not args.skip_ps:
+            run_ps_monitoring(capture_dir, ps_map_file)
+        else:
+            _step('PS monitoring skipped (--skip-ps)')
 
         elapsed = time.time() - t_start
         _banner(f'Cycle {cycle} done in {elapsed:.1f}s')

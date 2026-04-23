@@ -139,7 +139,8 @@ def main():
                 continue  # Skip to next loop
             
             print(f"\n Capturing... ({args.duration}s)")
-            
+            time.sleep(args.duration)
+
             # Stop frame capture
             status = mmwcas.mmw_stop_frame()
             if status != 0:

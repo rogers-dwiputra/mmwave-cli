@@ -1,0 +1,619 @@
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Wed Apr 22 18:15:51 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/MMWL_Capture_1776846419 /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+^Cimrsl@imrslpi5-02:~ $ cd mmwave-cli/
+imrsl@imrslpi5-02:~/mmwave-cli $ sudo sh ip-configure.sh 
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:41 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::4a44:36ed:eb27:d983/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:42 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.11.41/24 brd 192.168.11.255 scope global dynamic noprefixroute wlan0
+       valid_lft 172650sec preferred_lft 172650sec
+    inet6 fe80::b408:e804:a240:beb8/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+4: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc fq_codel state UNKNOWN group default qlen 500
+    link/none 
+    inet 100.74.9.11/32 scope global tailscale0
+       valid_lft forever preferred_lft forever
+    inet6 fd7a:115c:a1e0::b601:90d/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::90bf:88d0:de2d:3bb3/64 scope link stable-privacy proto kernel_ll 
+       valid_lft forever preferred_lft forever
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+64 bytes from 192.168.33.180: icmp_seq=1 ttl=64 time=0.305 ms
+64 bytes from 192.168.33.180: icmp_seq=2 ttl=64 time=0.151 ms
+^C
+--- 192.168.33.180 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1004ms
+rtt min/avg/max/mdev = 0.151/0.228/0.305/0.077 ms
+imrsl@imrslpi5-02:~/mmwave-cli $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/MMWL_Capture_1776846419 /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                           100% 5304     4.4MB/s   00:00    
+slave3_0000_data.bin                          100%   83MB   6.5MB/s   00:12    
+slave1_0000_data.bin                            0%    0     0.0KB/s   --:-- ETA^Cimrsl@imrslpi5-02:~/mmwave-cli $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/MMWL_Capture_1776846419 /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+^Cimrsl@imrslpi5-02:~/mmwave-cli sudo sh ip-configure.sh 
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:41 brd ff:ff:ff:ff:ff:ff
+3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:42 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.11.41/24 brd 192.168.11.255 scope global dynamic noprefixroute wlan0
+       valid_lft 172190sec preferred_lft 172190sec
+    inet6 fe80::b408:e804:a240:beb8/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+4: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc fq_codel state UNKNOWN group default qlen 500
+    link/none 
+    inet 100.74.9.11/32 scope global tailscale0
+       valid_lft forever preferred_lft forever
+    inet6 fd7a:115c:a1e0::b601:90d/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::90bf:88d0:de2d:3bb3/64 scope link stable-privacy proto kernel_ll 
+       valid_lft forever preferred_lft forever
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+From 192.168.33.31 icmp_seq=4 Destination Host Unreachable
+From 192.168.33.31 icmp_seq=5 Destination Host Unreachable
+From 192.168.33.31 icmp_seq=6 Destination Host Unreachable
+64 bytes from 192.168.33.180: icmp_seq=7 ttl=64 time=1024 ms
+64 bytes from 192.168.33.180: icmp_seq=8 ttl=64 time=0.262 ms
+^C
+--- 192.168.33.180 ping statistics ---
+8 packets transmitted, 2 received, +3 errors, 75% packet loss, time 7155ms
+rtt min/avg/max/mdev = 0.262/512.214/1024.166/511.952 ms, pipe 3
+imrsl@imrslpi5-02:~/mmwave-cli $ sudo sh ip-configure.sh 
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:41 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.33.31/24 scope global eth0
+       valid_lft forever preferred_lft forever
+3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:42 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.11.41/24 brd 192.168.11.255 scope global dynamic noprefixroute wlan0
+       valid_lft 172178sec preferred_lft 172178sec
+    inet6 fe80::b408:e804:a240:beb8/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+4: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc fq_codel state UNKNOWN group default qlen 500
+    link/none 
+    inet 100.74.9.11/32 scope global tailscale0
+       valid_lft forever preferred_lft forever
+    inet6 fd7a:115c:a1e0::b601:90d/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::90bf:88d0:de2d:3bb3/64 scope link stable-privacy proto kernel_ll 
+       valid_lft forever preferred_lft forever
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+64 bytes from 192.168.33.180: icmp_seq=1 ttl=64 time=0.318 ms
+64 bytes from 192.168.33.180: icmp_seq=2 ttl=64 time=0.173 ms
+^C
+--- 192.168.33.180 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1021ms
+rtt min/avg/max/mdev = 0.173/0.245/0.318/0.072 ms
+imrsl@imrslpi5-02:~/mmwave-cli $ exit
+logout
+Connection to imrslpi5-02 closed.
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Thu Apr 23 10:35:27 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ cd mmwave-cli/
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-23 10:45:18.994] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-23 10:45:20.455] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-23 10:45:34.979] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-23 10:45:35.378] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-23 10:45:37.618] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-23 10:45:38.026] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-23 10:45:38.438] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-23 10:45:38.438] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-23 10:45:39.899] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-23 10:45:41.359] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-23 10:45:42.818] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-23 10:45:56.954] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-23 10:45:57.355] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-23 10:46:02.678] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-23 10:46:03.070] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-23 10:46:03.470] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-23 10:46:03.470] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-23 10:46:03.870] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-23 10:46:04.270] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-23 10:46:04.694] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-23 10:46:05.091] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-23 10:46:07.091] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-23 10:46:08.690] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-23 10:46:09.090] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-23 10:46:28.998] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-23 10:46:29.798] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-23 10:46:30.626] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-23 10:46:30.626] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776908717.mmwave.json
+[2026-04-23 10:46:33.166] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-23 10:46:38.579] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2026-04-23 10:47:41.830] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 mimo.py --duration 10
+Capture directory: mmwave_python_20260423_104808
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260423_104923
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260423_104923
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                   5.3M
+  master_0000_idx.bin                                     360
+  slave1_0000_data.bin                                   5.3M
+  slave1_0000_idx.bin                                     360
+  slave2_0000_data.bin                                   5.3M
+  slave2_0000_idx.bin                                     360
+  slave3_0000_data.bin                                   5.3M
+  slave3_0000_idx.bin                                     360
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260423_104923.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260423_104923.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260423_104923 completed successfully!
+============================================================
+imrsl@imrslpi5-02:~/mmwave-cli $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/MMWL_Capture_1776908717 /home/imrsl/IoSAR-EdgeProcessing/PostProc/@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the RSA key sent by the remote host is
+SHA256:p7kZ+qYU7fZQL6epubIo8vgwKjlTyLHuyI530kaZafs.
+Please contact your system administrator.
+Add correct host key in /home/imrsl/.ssh/known_hosts to get rid of this message.
+Offending RSA key in /home/imrsl/.ssh/known_hosts:4
+  remove with:
+  ssh-keygen -f '/home/imrsl/.ssh/known_hosts' -R '192.168.33.180'
+Host key for 192.168.33.180 has changed and you have requested strict checking.
+Host key verification failed.
+imrsl@imrslpi5-02:~/mmwave-cli $ ssh-keygen -f '/home/imrsl/.ssh/known_hosts' -R '192.168.33.180'
+# Host 192.168.33.180 found: line 4
+/home/imrsl/.ssh/known_hosts updated.
+Original contents retained as /home/imrsl/.ssh/known_hosts.old
+imrsl@imrslpi5-02:~/mmwave-cli $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/MMWL_Capture_1776908717 /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+The authenticity of host '192.168.33.180 (192.168.33.180)' can't be established.
+RSA key fingerprint is SHA256:p7kZ+qYU7fZQL6epubIo8vgwKjlTyLHuyI530kaZafs.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '192.168.33.180' (RSA) to the list of known hosts.
+slave2_0000_idx.bin                                                                                                                                                      100%   28KB   7.8MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                      100%   28KB   8.4MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                      100%   28KB   1.2MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                      100%   28KB  10.2MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                     100%  568MB   6.5MB/s   01:28    
+slave1_0000_data.bin                                                                                                                                                     100%  568MB   6.5MB/s   01:27    
+master_0000_data.bin                                                                                                                                                     100%  568MB   6.5MB/s   01:27    
+slave3_0000_data.bin                                                                                                                                                     100%  568MB   6.4MB/s   01:28    
+imrsl@imrslpi5-02:~/mmwave-cli $ mv MMWL_Capture_1776908717.mmwave.json
+mv: missing destination file operand after 'MMWL_Capture_1776908717.mmwave.json'
+Try 'mv --help' for more information.
+imrsl@imrslpi5-02:~/mmwave-cli $ mv MMWL_Capture_1776908717.mmwave.json ~/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/
+mv: cannot stat 'MMWL_Capture_1776908717.mmwave.json': No such file or directory
+imrsl@imrslpi5-02:~/mmwave-cli $ mv mmwave MMWL_Capture_1776908717.mmwave.json ~/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/
+mmwave                    mmwave_json_files/        mmwave_json_generator.py  
+imrsl@imrslpi5-02:~/mmwave-cli $ mv mmwave_json_files/MMWL_Capture_1776908717.mmwave.json ~/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/
+mv: cannot stat '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/MMWL_Capture_1776908717.mmwave.json': Permission denied
+imrsl@imrslpi5-02:~/mmwave-cli $ ls -l ~/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/slave1_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/master_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/slave2_0000_idx.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/slave3_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/slave2_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/master_0000_idx.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/slave3_0000_idx.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/slave1_0000_idx.bin': Permission denied
+total 0
+-????????? ? ? ? ?            ? master_0000_data.bin
+-????????? ? ? ? ?            ? master_0000_idx.bin
+-????????? ? ? ? ?            ? slave1_0000_data.bin
+-????????? ? ? ? ?            ? slave1_0000_idx.bin
+-????????? ? ? ? ?            ? slave2_0000_data.bin
+-????????? ? ? ? ?            ? slave2_0000_idx.bin
+-????????? ? ? ? ?            ? slave3_0000_data.bin
+-????????? ? ? ? ?            ? slave3_0000_idx.bin
+imrsl@imrslpi5-02:~/mmwave-cli $ chmod -R u+rwx ~/IoSAR-EdgeProcessing/PostProc/
+imrsl@imrslpi5-02:~/mmwave-cli $ ls -l ~/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/
+total 2327184
+-rwxr--r-- 1 imrsl imrsl 595722240 Apr 23 10:56 master_0000_data.bin
+-rwxr--r-- 1 imrsl imrsl     29112 Apr 23 10:51 master_0000_idx.bin
+-rwxr--r-- 1 imrsl imrsl 595722240 Apr 23 10:54 slave1_0000_data.bin
+-rwxr--r-- 1 imrsl imrsl     29112 Apr 23 10:51 slave1_0000_idx.bin
+-rwxr--r-- 1 imrsl imrsl 595722240 Apr 23 10:53 slave2_0000_data.bin
+-rwxr--r-- 1 imrsl imrsl     29112 Apr 23 10:51 slave2_0000_idx.bin
+-rwxr--r-- 1 imrsl imrsl 595722240 Apr 23 10:57 slave3_0000_data.bin
+-rwxr--r-- 1 imrsl imrsl     29112 Apr 23 10:51 slave3_0000_idx.bin
+imrsl@imrslpi5-02:~/mmwave-cli $ mv mmwave_json_files/MMWL_Capture_1776908717.mmwave.json ~/IoSAR-EdgeProcessing/PostProc/MMWL_Capture_1776908717/
+imrsl@imrslpi5-02:~/mmwave-cli $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/mmwave_python_20260423_104923 /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                      100%  360   768.3KB/s   00:00    
+master_0000_idx.bin                                                                                                                                                      100%  360   878.0KB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                      100%  360   813.0KB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                      100%  360   880.3KB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                     100% 5376KB   6.1MB/s   00:00    
+slave1_0000_data.bin                                                                                                                                                     100% 5376KB   6.0MB/s   00:00    
+master_0000_data.bin                                                                                                                                                     100% 5376KB   7.8MB/s   00:00    
+slave3_0000_data.bin                                                                                                                                                     100% 5376KB   7.2MB/s   00:00    
+imrsl@imrslpi5-02:~/mmwave-cli $ mv mmwave_json_files/mmwave_python_20260423_104923.mmwave.json ~/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/
+mv: cannot stat '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/mmwave_python_20260423_104923.mmwave.json': Permission denied
+imrsl@imrslpi5-02:~/mmwave-cli $ ls -l ~/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/slave1_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/master_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/slave2_0000_idx.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/slave3_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/slave2_0000_data.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/master_0000_idx.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/slave3_0000_idx.bin': Permission denied
+ls: cannot access '/home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/slave1_0000_idx.bin': Permission denied
+total 0
+-????????? ? ? ? ?            ? master_0000_data.bin
+-????????? ? ? ? ?            ? master_0000_idx.bin
+-????????? ? ? ? ?            ? slave1_0000_data.bin
+-????????? ? ? ? ?            ? slave1_0000_idx.bin
+-????????? ? ? ? ?            ? slave2_0000_data.bin
+-????????? ? ? ? ?            ? slave2_0000_idx.bin
+-????????? ? ? ? ?            ? slave3_0000_data.bin
+-????????? ? ? ? ?            ? slave3_0000_idx.bin
+imrsl@imrslpi5-02:~/mmwave-cli $ chmod -R u+rwx ~/IoSAR-EdgeProcessing/PostProc/
+imrsl@imrslpi5-02:~/mmwave-cli $ mv mmwave_json_files/mmwave_python_20260423_104923.mmwave.json ~/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260423_104923/
+imrsl@imrslpi5-02:~/mmwave-cli $ cd ~/IoSAR-EdgeProcessing/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ cd PostProc/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/PostProc $ ls -l
+total 36
+drwxr-xr-x 2 imrsl imrsl 4096 Apr 20 11:26 MMWL_Capture_1776650880
+drwxr-xr-x 2 imrsl imrsl 4096 Apr 20 18:34 MMWL_Capture_1776677127
+drwxr--r-- 2 imrsl imrsl 4096 Apr 23 10:37 MMWL_Capture_1776846419
+drwxr--r-- 2 imrsl imrsl 4096 Apr 23 11:03 MMWL_Capture_1776908717
+drwxr-xr-x 2 imrsl imrsl 4096 Apr 20 11:28 mmwave_python_20260420_111232
+drwxr-xr-x 2 imrsl imrsl 4096 Apr 20 11:20 mmwave_python_20260420_111520
+drwxr-xr-x 2 imrsl imrsl 4096 Apr 20 11:19 mmwave_python_20260420_111658
+drwxr-xr-x 2 imrsl imrsl 4096 Apr 20 18:36 mmwave_python_20260420_182433
+drwxr--r-- 2 imrsl imrsl 4096 Apr 23 11:05 mmwave_python_20260423_104923
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/PostProc $ cd ..
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ ls -l
+total 2552
+drwxrwxr-x  5 imrsl imrsl    4096 Apr 17 17:07 4chip_cascade_MIMO_example
+-rwxrwxr-x  1 imrsl imrsl    7286 Apr 17 17:07 MIMO_Interferometry_Imaging_linux.m
+drwxrwxr-x  2 imrsl imrsl    4096 Apr 17 17:13 Outdoor_GroundTruth_260120_161916
+drwxrwxr-x 11 imrsl imrsl    4096 Apr 23 11:03 PostProc
+-rw-rw-r--  1 imrsl imrsl    3987 Apr 17 17:07 README.md
+drwxrwxr-x  2 imrsl imrsl    4096 Apr 17 17:07 matlab-result
+-rw-rw-r--  1 imrsl imrsl   27636 Apr 20 11:33 mimo_processing.py
+drwxrwxr-x  7 imrsl imrsl    4096 Apr 20 18:45 python-result
+-rw-rw-r--  1 imrsl imrsl      40 Apr 17 17:07 requirements.txt
+-rwxrwxr-x  1 imrsl imrsl 2543799 Apr 17 17:07 signal_processing_4chip_cascade.pdf
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ python3 mimo_processing.py 
+Scanning PostProc directory: /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  [skip] MMWL_Capture_1776846419  — missing: master_0000_data.bin, master_0000_idx.bin, slave2_0000_data.bin
+  [skip] mmwave_python_20260420_111520  — missing: master_0000_data.bin, master_0000_idx.bin, slave1_0000_data.bin, slave2_0000_data.bin, slave3_0000_data.bin
+Found 7 capture(s) to process.
+
+────────────────────────────────────────────────────────────
+Capture : MMWL_Capture_1776650880
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776650880
+────────────────────────────────────────────────────────────
+Total valid frames: 607  →  processing frame 607
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 607): 167.8 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776650880/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776650880/range-profile.png
+
+────────────────────────────────────────────────────────────
+Capture : MMWL_Capture_1776677127
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776677127
+────────────────────────────────────────────────────────────
+Total valid frames: 607  →  processing frame 607
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 607): 160.7 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776677127/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776677127/range-profile.png
+
+────────────────────────────────────────────────────────────
+Capture : MMWL_Capture_1776908717
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776908717
+────────────────────────────────────────────────────────────
+Total valid frames: 606  →  processing frame 606
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 606): 166.6 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776908717/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776908717/range-profile.png
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260420_111232
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_111232
+────────────────────────────────────────────────────────────
+Total valid frames: 16  →  processing frame 16
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 16): 169.7 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_111232/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_111232/range-profile.png
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260420_111658
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_111658
+────────────────────────────────────────────────────────────
+Total valid frames: 7  →  processing frame 7
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 7): 169.6 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_111658/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_111658/range-profile.png
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260420_182433
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_182433
+────────────────────────────────────────────────────────────
+Total valid frames: 7  →  processing frame 7
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 7): 169.7 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_182433/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260420_182433/range-profile.png
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260423_104923
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260423_104923
+────────────────────────────────────────────────────────────
+Total valid frames: 7  →  processing frame 7
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 7): 176.9 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260423_104923/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260423_104923/range-profile.png
+
+════════════════════════════════════════════════════════════
+All done. Results saved to: /home/imrsl/IoSAR-EdgeProcessing/python-result
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ cd python-result/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result $ ls -l
+total 384
+drwxrwxr-x 2 imrsl imrsl   4096 Apr 20 11:34 MMWL_Capture_1776650880
+drwxrwxr-x 2 imrsl imrsl   4096 Apr 20 18:43 MMWL_Capture_1776677127
+drwxrwxr-x 2 imrsl imrsl   4096 Apr 23 11:09 MMWL_Capture_1776908717
+-rw-rw-r-- 1 imrsl imrsl 228264 Apr 17 17:14 SLC.png
+drwxrwxr-x 2 imrsl imrsl   4096 Apr 20 11:35 mmwave_python_20260420_111232
+drwxrwxr-x 2 imrsl imrsl   4096 Apr 20 11:36 mmwave_python_20260420_111658
+drwxrwxr-x 2 imrsl imrsl   4096 Apr 20 18:45 mmwave_python_20260420_182433
+drwxrwxr-x 2 imrsl imrsl   4096 Apr 23 11:12 mmwave_python_20260423_104923
+-rw-rw-r-- 1 imrsl imrsl 133715 Apr 17 17:14 range-profile.png
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result $ cd MMWL_Capture_1776908717/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776908717 $ ls -l
+total 1160
+-rw-rw-r-- 1 imrsl imrsl 1082235 Apr 23 11:09 SLC.png
+-rw-rw-r-- 1 imrsl imrsl   99888 Apr 23 11:09 range-profile.png
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result/MMWL_Capture_1776908717 $ cd ..
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result $ cd mmwave_python_20260423_104923/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result/mmwave_python_20260423_104923 $ ls -l
+total 488
+-rw-rw-r-- 1 imrsl imrsl 352853 Apr 23 11:12 SLC.png
+-rw-rw-r-- 1 imrsl imrsl 140800 Apr 23 11:12 range-profile.png
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result/mmwave_python_20260423_104923 $ cd ..
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/python-result $ cd ..
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	PostProc/
+
+nothing added to commit but untracked files present (use "git add" to track)
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ cd ~/mmwave-cli/
+imrsl@imrslpi5-02:~/mmwave-cli $ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   makefile
+	modified:   mimo.c
+	modified:   mmwcas.pyx
+	modified:   opt/opt.c
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	Continuous_20260114_110938.log
+	Continuous_20260114_153103.log
+	config/compare.toml
+	mimo.log
+	mimo.py.backup
+	mimo.service
+
+no changes added to commit (use "git add" and/or "git commit -a")

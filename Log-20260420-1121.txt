@@ -1,0 +1,768 @@
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Fri Apr 17 17:31:09 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ cd mmwave-cli/
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+^C
+--- 192.168.33.180 ping statistics ---
+5 packets transmitted, 0 received, 100% packet loss, time 4074ms
+
+imrsl@imrslpi5-02:~/mmwave-cli $ sudo sh 
+build/                        opt/
+config/                       PostProc/
+configure_ip.sh               __pycache__/
+experiment-log/               reference docs/
+.git/                         run_mmwave_simultaneously.sh
+ip-configure.sh               ti/
+mmwave_json_files/            toml/
+imrsl@imrslpi5-02:~/mmwave-cli $ sudo sh ip-configure.sh 
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:41 brd ff:ff:ff:ff:ff:ff
+3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:42 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.11.41/24 brd 192.168.11.255 scope global dynamic noprefixroute wlan0
+       valid_lft 171481sec preferred_lft 171481sec
+    inet6 fe80::b408:e804:a240:beb8/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+4: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc fq_codel state UNKNOWN group default qlen 500
+    link/none 
+    inet 100.74.9.11/32 scope global tailscale0
+       valid_lft forever preferred_lft forever
+    inet6 fd7a:115c:a1e0::b601:90d/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::2283:6898:d804:bca1/64 scope link stable-privacy proto kernel_ll 
+       valid_lft forever preferred_lft forever
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+64 bytes from 192.168.33.180: icmp_seq=1 ttl=64 time=0.290 ms
+64 bytes from 192.168.33.180: icmp_seq=2 ttl=64 time=0.173 ms
+64 bytes from 192.168.33.180: icmp_seq=3 ttl=64 time=0.142 ms
+^C
+--- 192.168.33.180 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2024ms
+rtt min/avg/max/mdev = 0.142/0.201/0.290/0.063 ms
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 10:46:41.450] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 10:46:43.113] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 10:46:57.353] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 10:46:57.754] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 10:47:00.025] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 10:47:00.425] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 10:47:00.825] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 10:47:00.825] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 10:47:02.285] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 10:47:03.746] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 10:47:05.207] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 10:47:19.233] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 10:47:19.634] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 10:47:24.793] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 10:47:25.193] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 10:47:25.594] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 10:47:25.594] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 10:47:26.010] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 10:47:26.405] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 10:47:26.805] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 10:47:27.205] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 10:47:29.862] [IP: 192.168.33.180] STATUS   -8 | DEV MAP: 15 | [ALL] RF init failed!
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 10:47:36.728] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 10:47:38.186] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 10:47:52.725] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 10:47:53.125] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 10:47:55.365] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 10:47:55.761] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 10:47:56.161] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 10:47:56.161] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 10:47:57.714] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 10:47:59.173] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 10:48:00.634] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 10:48:15.342] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 10:48:15.741] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 10:48:21.093] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 10:48:21.493] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 10:48:21.893] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 10:48:21.893] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 10:48:22.293] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 10:48:22.693] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 10:48:23.093] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 10:48:23.529] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 10:48:25.493] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-20 10:48:27.093] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-20 10:48:27.493] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-20 10:48:47.281] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-20 10:48:48.081] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-20 10:48:48.898] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-20 10:48:48.898] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776649654.mmwave.json
+[2026-04-20 10:48:51.441] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-20 10:48:56.613] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2026-04-20 10:49:59.861] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+free(): invalid pointer
+Aborted
+imrsl@imrslpi5-02:~/mmwave-cli $ cd PostProc/
+Continuous_20260114_135150/ GroundTruth_260220_165213/  output/                     
+Continuous_20260114_153103/ MMWL_Capture_1768464958/    __pycache__/                
+imrsl@imrslpi5-02:~/mmwave-cli $ ssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa root@192.168.33.180
+root@dra7xx-evm:~# cd /mnt/ssd/MMWL_Capture_1776649654/
+root@dra7xx-evm:/mnt/ssd/MMWL_Capture_1776649654# ls -l
+total 0
+root@dra7xx-evm:/mnt/ssd/MMWL_Capture_1776649654# exit
+logout
+Connection to 192.168.33.180 closed.
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 10:52:54.462] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 10:52:55.926] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 10:53:09.997] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 10:53:10.425] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 10:53:12.665] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 10:53:13.065] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 10:53:13.465] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 10:53:13.465] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 10:53:15.206] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 10:53:16.666] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 10:53:18.125] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 10:53:32.354] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 10:53:32.753] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 10:53:37.886] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 10:53:38.286] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 10:53:38.686] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 10:53:38.686] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 10:53:39.086] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 10:53:39.486] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 10:53:39.886] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 10:53:40.286] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 10:53:42.314] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-20 10:53:43.913] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-20 10:53:44.313] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-20 10:54:03.785] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-20 10:54:04.585] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-20 10:54:05.386] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-20 10:54:05.386] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776649972.mmwave.json
+[2026-04-20 10:54:08.105] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-20 10:54:13.434] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2026-04-20 10:55:16.934] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+free(): invalid pointer
+Aborted
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 10:55:40.775] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 10:55:42.202] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 10:55:56.658] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 10:55:57.089] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 10:55:59.329] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 10:55:59.729] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 10:56:00.129] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 10:56:00.129] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 10:56:01.589] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 10:56:03.050] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 10:56:04.511] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 10:56:19.021] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 10:56:19.421] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 10:56:24.749] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 10:56:25.149] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 10:56:25.549] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 10:56:25.549] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 10:56:25.949] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 10:56:26.350] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 10:56:26.750] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 10:56:27.149] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 10:56:29.370] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-20 10:56:30.970] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-20 10:56:31.370] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-20 10:56:50.889] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-20 10:56:51.689] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-20 10:56:52.489] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-20 10:56:52.489] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776650138.mmwave.json
+[2026-04-20 10:56:55.029] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-20 10:57:00.390] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2026-04-20 10:58:03.690] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+free(): invalid pointer
+Aborted
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 10:58:45.899] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 10:58:47.357] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 10:59:01.657] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 10:59:02.057] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 10:59:04.297] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 10:59:04.701] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 10:59:05.105] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 10:59:05.105] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 10:59:06.566] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 10:59:08.026] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 10:59:09.485] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 10:59:23.798] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 10:59:24.197] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 10:59:29.345] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 10:59:29.745] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 10:59:30.145] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 10:59:30.145] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 10:59:30.545] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 10:59:30.945] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 10:59:31.354] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 10:59:31.765] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 10:59:33.767] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-20 10:59:35.365] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-20 10:59:35.766] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-20 10:59:55.326] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-20 10:59:56.125] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-20 10:59:56.925] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-20 10:59:56.925] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776650324.mmwave.json
+[2026-04-20 10:59:59.466] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-20 11:00:05.266] [IP: 192.168.33.180] STATUS   -1 | DEV MAP: 15 | [MMWCAS-RF] Failed to initiate framing!
+
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 11:01:13.779] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 11:01:15.246] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 11:01:29.745] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 11:01:30.145] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 11:01:31.603] [IP: 192.168.33.180] STATUS   -8 | DEV MAP:  1 | [MASTER] Error: Failed to enable master RF
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 11:01:36.175] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 11:01:37.713] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 11:01:51.981] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 11:01:52.381] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 11:01:54.653] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 11:01:55.053] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 11:01:55.454] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 11:01:55.454] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 11:01:56.921] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 11:01:58.662] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 11:02:00.121] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 11:02:14.521] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 11:02:14.921] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 11:02:20.293] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 11:02:20.694] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 11:02:21.094] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 11:02:21.094] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 11:02:21.494] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 11:02:21.894] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 11:02:22.293] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 11:02:22.693] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 11:02:24.902] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-20 11:02:26.505] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-20 11:02:26.901] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-20 11:02:46.433] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-20 11:02:47.233] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-20 11:02:48.033] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-20 11:02:48.033] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776650494.mmwave.json
+[2026-04-20 11:02:50.573] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-20 11:02:55.734] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2026-04-20 11:03:59.233] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+free(): invalid pointer
+Aborted
+imrsl@imrslpi5-02:~/mmwave-cli $ ssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa root@192.168.33.180
+root@dra7xx-evm:~# cd /mnt/ssd/MMWL_Capture_1776650494/
+root@dra7xx-evm:/mnt/ssd/MMWL_Capture_1776650494# ls -l
+total 0
+root@dra7xx-evm:/mnt/ssd/MMWL_Capture_1776650494# exit
+logout
+Connection to 192.168.33.180 closed.
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 11:04:36.743] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 11:04:38.202] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 11:04:52.701] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 11:04:53.101] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 11:04:55.349] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 11:04:56.009] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 11:04:56.409] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 11:04:56.409] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 11:04:57.870] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 11:04:59.330] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 11:05:00.802] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 11:05:15.057] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 11:05:15.457] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 11:05:20.677] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 11:05:21.077] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 11:05:21.478] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 11:05:21.478] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 11:05:21.877] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 11:05:22.290] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 11:05:22.697] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 11:05:23.097] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 11:05:25.098] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-20 11:05:26.698] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-20 11:05:27.097] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-20 11:05:46.737] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-20 11:05:47.538] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-20 11:05:48.549] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-20 11:05:48.549] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776650674.mmwave.json
+[2026-04-20 11:05:51.093] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-20 11:05:56.497] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2026-04-20 11:06:59.749] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+free(): invalid pointer
+Aborted
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+64 bytes from 192.168.33.180: icmp_seq=1 ttl=64 time=0.289 ms
+64 bytes from 192.168.33.180: icmp_seq=2 ttl=64 time=0.164 ms
+64 bytes from 192.168.33.180: icmp_seq=3 ttl=64 time=0.143 ms
+^C
+--- 192.168.33.180 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2046ms
+rtt min/avg/max/mdev = 0.143/0.198/0.289/0.064 ms
+imrsl@imrslpi5-02:~/mmwave-cli $ ./mmwave --configure --record --ip-addr 192.168.33.180
+[2026-04-20 11:08:01.837] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+[2026-04-20 11:08:03.294] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+[2026-04-20 11:08:17.353] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+[2026-04-20 11:08:17.753] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+[2026-04-20 11:08:19.993] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+[2026-04-20 11:08:20.393] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+[2026-04-20 11:08:20.793] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+[2026-04-20 11:08:20.793] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+
+[2026-04-20 11:08:22.254] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+[2026-04-20 11:08:23.713] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+[2026-04-20 11:08:25.174] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+[2026-04-20 11:08:39.434] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+[2026-04-20 11:08:39.833] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+[2026-04-20 11:08:45.222] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+[2026-04-20 11:08:45.621] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+[2026-04-20 11:08:46.021] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+[2026-04-20 11:08:46.021] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+
+[2026-04-20 11:08:46.422] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+[2026-04-20 11:08:46.821] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+[2026-04-20 11:08:47.221] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+[2026-04-20 11:08:47.621] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+[2026-04-20 11:08:49.582] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+[2026-04-20 11:08:51.182] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+[2026-04-20 11:08:51.581] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[2026-04-20 11:09:11.581] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+[2026-04-20 11:09:12.381] [IP: 192.168.33.180] STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+[2026-04-20 11:09:13.221] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+[2026-04-20 11:09:13.221] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MIMO] Configuration completed!
+
+Successfully exported configuration to mmwave_json_files/MMWL_Capture_1776650880.mmwave.json
+[2026-04-20 11:09:15.761] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+[2026-04-20 11:09:20.982] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+[2026-04-20 11:10:24.233] [IP: 192.168.33.180] STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+free(): invalid pointer
+Aborted
+imrsl@imrslpi5-02:~/mmwave-cli $ ssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa root@192.168.33.180
+root@dra7xx-evm:~# cd /mnt/ssd/MMWL_Capture_1776650880/
+root@dra7xx-evm:/mnt/ssd/MMWL_Capture_1776650880# ls -l
+total 2331024
+-rw-r--r--    1 root     root     596705280 May 13 19:55 master_0000_data.bin
+-rw-r--r--    1 root     root         29160 May 13 19:55 master_0000_idx.bin
+-rw-r--r--    1 root     root     596705280 May 13 19:55 slave1_0000_data.bin
+-rw-r--r--    1 root     root         29160 May 13 19:55 slave1_0000_idx.bin
+-rw-r--r--    1 root     root     596705280 May 13 19:55 slave2_0000_data.bin
+-rw-r--r--    1 root     root         29160 May 13 19:55 slave2_0000_idx.bin
+-rw-r--r--    1 root     root     596705280 May 13 19:55 slave3_0000_data.bin
+-rw-r--r--    1 root     root         29160 May 13 19:55 slave3_0000_idx.bin
+root@dra7xx-evm:/mnt/ssd/MMWL_Capture_1776650880# exit
+logout
+Connection to 192.168.33.180 closed.
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 mimo.py --duration 10
+Capture directory: mmwave_python_20260420_111117
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260420_111232
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS   -1 | DEV MAP: 15 | [MMWCAS-RF] Failed to stop frame!
+mmw_stop_frame failed (status: -1)
+imrsl@imrslpi5-02:~/mmwave-cli $ ssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa root@192.168.33.180
+root@dra7xx-evm:~# cd /mnt/ssd/mmwave_python_20260420_111232/
+root@dra7xx-evm:/mnt/ssd/mmwave_python_20260420_111232# ls -l
+total 24576
+-rw-r--r--    1 root     root       6291456 May 13 19:57 master_0000_data.bin
+-rw-r--r--    1 root     root       6291456 May 13 19:57 slave1_0000_data.bin
+-rw-r--r--    1 root     root       6291456 May 13 19:57 slave2_0000_data.bin
+-rw-r--r--    1 root     root       6291456 May 13 19:57 slave3_0000_data.bin
+root@dra7xx-evm:/mnt/ssd/mmwave_python_20260420_111232# exit
+logout
+Connection to 192.168.33.180 closed.
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 mimo.py --duration 10
+Capture directory: mmwave_python_20260420_111405
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260420_111520
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260420_111520
+
+ WARNING: Directory exists but contains NO files!
+   This usually means data capture failed.
+
+  WARNING: No files found in capture directory!
+
+  Skipping .mmwave.json generation.
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260420_111520.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260420_111520.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260420_111520 completed successfully!
+============================================================
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 mimo.py --duration 10
+Capture directory: mmwave_python_20260420_111543
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260420_111658
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260420_111658
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                   5.3M
+  master_0000_idx.bin                                     360
+  slave1_0000_data.bin                                   5.3M
+  slave1_0000_idx.bin                                     360
+  slave2_0000_data.bin                                   5.3M
+  slave2_0000_idx.bin                                     360
+  slave3_0000_data.bin                                   5.3M
+  slave3_0000_idx.bin                                     360
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260420_111658.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260420_111658.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260420_111658 completed successfully!
+============================================================
+imrsl@imrslpi5-02:~/mmwave-cli $ cd ..
+imrsl@imrslpi5-02:~ $ ls
+Desktop  Documents  Downloads  IoSAR-EdgeProcessing  Music  Pictures  Public  Templates  Videos  makefile  mimo.c  mmwave-cli  mmwave_json_files  opt.c  setup.py
+imrsl@imrslpi5-02:~ $ cd IoSAR-EdgeProcessing/
+4chip_cascade_MIMO_example/        matlab-result/                     python-result/                     
+.git/                              Outdoor_GroundTruth_260120_161916/ 
+imrsl@imrslpi5-02:~ $ cd IoSAR-EdgeProcessing/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ mkdir PostProc
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing $ cd PostProc/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/PostProc $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa     -r root@192.168.33.180:/mnt/ssd/Continuous_* /home/imrsl/Io-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+^C
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/PostProc $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/mmwave_python_20260420_111658 /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                   100%  360   795.1KB/s   00:00    
+slave3_0000_data.bin                                                                                                                  100% 5376KB   6.0MB/s   00:00    
+slave1_0000_data.bin                                                                                                                  100% 5376KB   5.8MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                   100%  360    45.4KB/s   00:00    
+slave1_0000_idx.bin                                                                                                                   100%  360   892.5KB/s   00:00    
+slave2_0000_data.bin                                                                                                                  100% 5376KB   6.3MB/s   00:00    
+master_0000_idx.bin                                                                                                                   100%  360   801.9KB/s   00:00    
+master_0000_data.bin                                                                                                                  100% 5376KB   6.5MB/s   00:00    
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/PostProc $ ls
+mmwave_python_20260420_111658
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/PostProc $ scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa -r root@192.168.33.180:/mnt/ssd/mmwave_python_20260420_111520 /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+imrsl@imrslpi5-02:~/IoSAR-EdgeProcessing/PostProc $ ls
+mmwave_python_20260420_111520  mmwave_python_20260420_111658

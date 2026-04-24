@@ -199,6 +199,7 @@ def run_processing(capture_dir: str) -> bool:
 # Step 4 — PS Monitoring (Natural Frequency)
 # ─────────────────────────────────────────────
 
+
 _ps_monitoring_mod = None
 
 def _load_ps_monitoring():
@@ -235,6 +236,40 @@ def run_ps_monitoring(capture_dir: str, ps_map_file: str) -> dict:
 
 
 # ─────────────────────────────────────────────
+# Step 5 — LoRa uplink (Wio-E5)
+# ─────────────────────────────────────────────
+
+def run_lora_send(capture_dir: str,
+                  port: str, appkey: str) -> bool:
+    """Send ps_metrics.json for this capture via LoRaWAN."""
+    _banner(f'STEP 5 — LoRa Uplink  ({capture_dir})')
+
+    metrics_path = os.path.join(
+        EDGE_DIR, 'python-result', capture_dir, 'ps_metrics.json'
+    )
+    if not os.path.isfile(metrics_path):
+        print(f'[PIPELINE] ERROR: ps_metrics.json not found: {metrics_path}')
+        return False
+
+    try:
+        # Import lora_sender from the same directory as pipeline.py
+        import importlib.util as _ilu
+        _spec = _ilu.spec_from_file_location(
+            'lora_sender',
+            os.path.join(SCRIPT_DIR, 'lora_sender.py'),
+        )
+        _mod = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        return _mod.send_lora(metrics_path=metrics_path,
+                              port=port, appkey=appkey)
+    except Exception as exc:
+        import traceback
+        print(f'[PIPELINE] ERROR during LoRa send: {exc}')
+        traceback.print_exc()
+        return False
+
+
+# ─────────────────────────────────────────────
 # Main loop
 # ─────────────────────────────────────────────
 
@@ -257,6 +292,14 @@ def main():
                         help='Skip PS monitoring step')
     parser.add_argument('--reset-ps',        action='store_true',
                         help='Delete PS map so it is recomputed on the next cycle')
+    parser.add_argument('--skip-lora',       action='store_true',
+                        help='Skip LoRa uplink step')
+    parser.add_argument('--lora-port',       type=str,
+                        default='/dev/ttyUSB0',
+                        help='Serial port of Wio-E5 LoRa module')
+    parser.add_argument('--lora-appkey',     type=str,
+                        default='562AD0AB720BA25D830E20164D3CC1B3',
+                        help='LoRaWAN APPKEY (32 hex chars)')
     args = parser.parse_args()
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
@@ -274,6 +317,7 @@ def main():
     print(f'  PostProc dir     : {POSTPROC_DIR}')
     print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
     print(f'  PS map           : {ps_map_file}')
+    print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
     print(f'  Press Ctrl+C to stop after the current cycle.')
 
     os.makedirs(POSTPROC_DIR,   exist_ok=True)
@@ -326,6 +370,15 @@ def main():
             run_ps_monitoring(capture_dir, ps_map_file)
         else:
             _step('PS monitoring skipped (--skip-ps)')
+
+        if shutdown_flag:
+            break
+
+        # ── 5. LoRa uplink ──────────────────────────────────────────
+        if not args.skip_lora:
+            run_lora_send(capture_dir, args.lora_port, args.lora_appkey)
+        else:
+            _step('LoRa uplink skipped (--skip-lora)')
 
         elapsed = time.time() - t_start
         _banner(f'Cycle {cycle} done in {elapsed:.1f}s')

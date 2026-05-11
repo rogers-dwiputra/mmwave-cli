@@ -33,7 +33,7 @@ tomlconfig:
 
 # Build all
 all: mmwlink mmwethernet mmwave cliopt tomlconfig
-	@${CC} ${FLAGS} *.c
+	@${CC} ${FLAGS} mimo.c
 	@${CC} ${CFLAGS} mmwave *.o -lpthread -lm
 	@rm -f *.o
 

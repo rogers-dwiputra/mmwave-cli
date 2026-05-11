@@ -160,8 +160,8 @@ int parse(parser_t *parser, int argc, char* argv[]) {
           }
           case OPT_STR: {
             size_t size = strlen(argv[idx+1]);
-            arg->opt->value = (unsigned char*)malloc(size);
-            strncpy(arg->opt->value, argv[idx+1], size);
+            arg->opt->value = (unsigned char*)malloc(size + 1);
+            strncpy(arg->opt->value, argv[idx+1], size + 1);
             idx++; // skip the next CLI entry
             break;
           }

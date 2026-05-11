@@ -1,0 +1,1842 @@
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 0.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : /dev/ttyUSB0
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-04-24 11:30:39]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_113040
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS   -8 | DEV MAP: 14 | [SLAVE] Error: Failed to enable master RF
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    2   [2026-04-24 11:31:31]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_113131
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_113246
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260424_113246
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260424_113246.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260424_113246.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260424_113246 completed successfully!
+============================================================
+[11:33:06] Capture directory: mmwave_python_20260424_113246
+
+============================================================
+  STEP 2 — Transfer Data  (mmwave_python_20260424_113246)
+============================================================
+[11:33:06] SCP  root@192.168.33.180:/mnt/ssd/mmwave_python_20260424_113246  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                     100% 5160     5.4MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                     100% 5160     5.8MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                     100% 5160     5.9MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                     100% 5160     5.9MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                    100%   80MB   6.4MB/s   00:12    
+slave1_0000_data.bin                                                                                                                                                    100%   80MB   6.7MB/s   00:12    
+master_0000_data.bin                                                                                                                                                    100%   80MB   6.1MB/s   00:13    
+slave3_0000_data.bin                                                                                                                                                    100%   80MB   6.6MB/s   00:12    
+[11:33:56] Fixing permissions...
+[11:33:56] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260424_113246/mmwave_python_20260424_113246.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (mmwave_python_20260424_113246)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260424_113246
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_113246
+────────────────────────────────────────────────────────────
+Total valid frames: 107  →  processing frame 107
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 107): 174.1 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_113246/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_113246/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (mmwave_python_20260424_113246)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : mmwave_python_20260424_113246
+────────────────────────────────────────────────────────────
+  Total frames : 107  |  Warm-up skip : 5  |  Usable : 102
+  Duration     : 10.2s  |  dt : 0.1s  |  f_res : 0.098 Hz
+  PS map found: /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Loaded 50 PS candidates (created 2026-04-23T17:28:16.023789)
+  Extracting phase at 50 PS points...
+  Phase pass — frame 107/107
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_113246/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_113246/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_113246/ps_map.png
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_113246/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Natural Frequency :       4.412 Hz       │
+  │  Displacement RMS  :       1.075 μm       │
+  │  Freq Resolution   :       0.098 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            102       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (mmwave_python_20260424_113246)
+============================================================
+[11:42:25] [LoRa] Metrics loaded: mmwave_python_20260424_113246
+[11:42:25] [LoRa] Encode → freq=0.00 Hz  rms=0.000 μm  max=0.000 μm
+[11:42:25] [LoRa] Payload hex (6 bytes): 000000000000
+[11:42:25] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[11:42:25] [LoRa] → AT
+[11:42:25] [LoRa] ← +AT: OK
+[11:42:25] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[11:42:26] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[11:42:29] [LoRa] Checking join status...
+[11:42:29] [LoRa] → AT+JOIN
+[11:42:29] [LoRa] ← +JOIN: Start
+[11:42:29] [LoRa] ← +JOIN: NORMAL
+[11:42:34] [LoRa] ← +JOIN: Network joined
+[11:42:36] [LoRa] Sending payload...
+[11:42:36] [LoRa] → AT+MSGHEX="000000000000"
+[11:42:37] [LoRa] ← +MSGHEX: Start
+[11:42:42] [LoRa] ← +MSGHEX: FPENDING
+[11:42:42] [LoRa] ← +MSGHEX: RXWIN1, RSSI -10, SNR 7.0
+[11:42:42] [LoRa] ← +MSGHEX: Done
+[11:42:42] [LoRa] ✓ Uplink sent successfully — payload: 000000000000
+[11:42:48] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 2 done in 676.5s
+============================================================
+
+############################################################
+# CYCLE    3   [2026-04-24 11:42:48]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_114248
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_114403
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260424_114403
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260424_114403.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260424_114403.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260424_114403 completed successfully!
+============================================================
+[11:44:22] Capture directory: mmwave_python_20260424_114403
+
+============================================================
+  STEP 2 — Transfer Data  (mmwave_python_20260424_114403)
+============================================================
+[11:44:22] SCP  root@192.168.33.180:/mnt/ssd/mmwave_python_20260424_114403  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                     100% 5160     5.8MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                     100% 5160     6.2MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                     100% 5160     6.2MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                     100% 5160     6.1MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                    100%   80MB   6.9MB/s   00:11    
+slave1_0000_data.bin                                                                                                                                                    100%   80MB   6.8MB/s   00:11    
+master_0000_data.bin                                                                                                                                                    100%   80MB   6.7MB/s   00:12    
+slave3_0000_data.bin                                                                                                                                                    100%   80MB   6.8MB/s   00:11    
+[11:45:10] Fixing permissions...
+[11:45:10] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260424_114403/mmwave_python_20260424_114403.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (mmwave_python_20260424_114403)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260424_114403
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_114403
+────────────────────────────────────────────────────────────
+Total valid frames: 107  →  processing frame 107
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 107): 176.2 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_114403/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_114403/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (mmwave_python_20260424_114403)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : mmwave_python_20260424_114403
+────────────────────────────────────────────────────────────
+  Total frames : 107  |  Warm-up skip : 5  |  Usable : 102
+  Duration     : 10.2s  |  dt : 0.1s  |  f_res : 0.098 Hz
+  PS map found: /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Loaded 50 PS candidates (created 2026-04-23T17:28:16.023789)
+  Extracting phase at 50 PS points...
+  Phase pass — frame 107/107
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_114403/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_114403/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_114403/ps_map.png
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_114403/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Natural Frequency :       0.392 Hz       │
+  │  Displacement RMS  :      16.105 μm       │
+  │  Freq Resolution   :       0.098 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            102       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (mmwave_python_20260424_114403)
+============================================================
+[11:53:23] [LoRa] Metrics loaded: mmwave_python_20260424_114403
+[11:53:23] [LoRa] Encode → freq=0.00 Hz  rms=0.000 μm  max=0.000 μm
+[11:53:23] [LoRa] Payload hex (6 bytes): 000000000000
+[11:53:24] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[11:53:24] [LoRa] → AT
+[11:53:24] [LoRa] ← +AT: OK
+[11:53:24] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[11:53:24] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[11:53:27] [LoRa] Checking join status...
+[11:53:27] [LoRa] → AT+JOIN
+[11:53:27] [LoRa] ← +JOIN: Start
+[11:53:27] [LoRa] ← +JOIN: NORMAL
+[11:53:33] [LoRa] ← +JOIN: Network joined
+[11:53:35] [LoRa] Sending payload...
+[11:53:35] [LoRa] → AT+MSGHEX="000000000000"
+[11:53:35] [LoRa] ← +MSGHEX: Start
+[11:53:41] [LoRa] ← +MSGHEX: FPENDING
+[11:53:41] [LoRa] ← +MSGHEX: RXWIN1, RSSI -9, SNR 6.0
+[11:53:41] [LoRa] ← +MSGHEX: Done
+[11:53:41] [LoRa] ✓ Uplink sent successfully — payload: 000000000000
+[11:53:46] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 3 done in 658.4s
+============================================================
+
+############################################################
+# CYCLE    4   [2026-04-24 11:53:46]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_115346
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_115502
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260424_115502
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  82.5M
+  master_0000_idx.bin                                    5.2K
+  slave1_0000_data.bin                                  82.5M
+  slave1_0000_idx.bin                                    5.2K
+  slave2_0000_data.bin                                  82.5M
+  slave2_0000_idx.bin                                    5.2K
+  slave3_0000_data.bin                                  82.5M
+  slave3_0000_idx.bin                                    5.2K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260424_115502.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260424_115502.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260424_115502 completed successfully!
+============================================================
+[11:55:21] Capture directory: mmwave_python_20260424_115502
+
+============================================================
+  STEP 2 — Transfer Data  (mmwave_python_20260424_115502)
+============================================================
+[11:55:21] SCP  root@192.168.33.180:/mnt/ssd/mmwave_python_20260424_115502  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                     100% 5304     5.5MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                     100% 5304     5.6MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                     100% 5304     5.7MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                     100% 5304     5.6MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                    100%   83MB   6.9MB/s   00:11    
+slave1_0000_data.bin                                                                                                                                                    100%   83MB   6.6MB/s   00:12    
+master_0000_data.bin                                                                                                                                                    100%   83MB   6.1MB/s   00:13    
+slave3_0000_data.bin                                                                                                                                                    100%   83MB   6.5MB/s   00:12    
+[11:56:12] Fixing permissions...
+[11:56:12] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260424_115502/mmwave_python_20260424_115502.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (mmwave_python_20260424_115502)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260424_115502
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_115502
+────────────────────────────────────────────────────────────
+Total valid frames: 110  →  processing frame 110
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 110): 176.9 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_115502/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_115502/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (mmwave_python_20260424_115502)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : mmwave_python_20260424_115502
+────────────────────────────────────────────────────────────
+  Total frames : 110  |  Warm-up skip : 5  |  Usable : 105
+  Duration     : 10.5s  |  dt : 0.1s  |  f_res : 0.095 Hz
+  PS map found: /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Loaded 50 PS candidates (created 2026-04-23T17:28:16.023789)
+  Extracting phase at 50 PS points...
+  Phase pass — frame 110/110
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_115502/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_115502/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_115502/ps_map.png
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_115502/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Natural Frequency :       0.381 Hz       │
+  │  Displacement RMS  :       2.721 μm       │
+  │  Freq Resolution   :       0.095 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            105       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (mmwave_python_20260424_115502)
+============================================================
+[12:05:05] [LoRa] Metrics loaded: mmwave_python_20260424_115502
+[12:05:05] [LoRa] Encode → freq=0.00 Hz  rms=0.000 μm  max=0.000 μm
+[12:05:05] [LoRa] Payload hex (6 bytes): 000000000000
+[12:05:06] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[12:05:06] [LoRa] → AT
+[12:05:06] [LoRa] ← +AT: OK
+[12:05:06] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[12:05:06] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[12:05:09] [LoRa] Checking join status...
+[12:05:09] [LoRa] → AT+JOIN
+[12:05:09] [LoRa] ← +JOIN: Start
+[12:05:09] [LoRa] ← +JOIN: NORMAL
+[12:05:15] [LoRa] ← +JOIN: Network joined
+[12:05:17] [LoRa] Sending payload...
+[12:05:17] [LoRa] → AT+MSGHEX="000000000000"
+[12:05:17] [LoRa] ← +MSGHEX: Start
+[12:05:23] [LoRa] ← +MSGHEX: FPENDING
+[12:05:23] [LoRa] ← +MSGHEX: RXWIN1, RSSI -9, SNR 7.0
+[12:05:23] [LoRa] ← +MSGHEX: Done
+[12:05:23] [LoRa] ✓ Uplink sent successfully — payload: 000000000000
+[12:05:28] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 4 done in 702.0s
+============================================================
+
+############################################################
+# CYCLE    5   [2026-04-24 12:05:28]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_120528
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_120642
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260424_120642
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260424_120642.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260424_120642.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260424_120642 completed successfully!
+============================================================
+[12:07:01] Capture directory: mmwave_python_20260424_120642
+
+============================================================
+  STEP 2 — Transfer Data  (mmwave_python_20260424_120642)
+============================================================
+[12:07:01] SCP  root@192.168.33.180:/mnt/ssd/mmwave_python_20260424_120642  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                     100% 5160     5.6MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                     100% 5160     6.0MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                     100% 5160     5.9MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                     100% 5160     6.1MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                    100%   80MB   6.5MB/s   00:12    
+slave1_0000_data.bin                                                                                                                                                    100%   80MB   6.5MB/s   00:12    
+master_0000_data.bin                                                                                                                                                    100%   80MB   6.7MB/s   00:12    
+slave3_0000_data.bin                                                                                                                                                    100%   80MB   6.7MB/s   00:12    
+[12:07:50] Fixing permissions...
+[12:07:50] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260424_120642/mmwave_python_20260424_120642.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (mmwave_python_20260424_120642)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260424_120642
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_120642
+────────────────────────────────────────────────────────────
+Total valid frames: 107  →  processing frame 107
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 107): 176.9 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_120642/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_120642/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (mmwave_python_20260424_120642)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : mmwave_python_20260424_120642
+────────────────────────────────────────────────────────────
+  Total frames : 107  |  Warm-up skip : 5  |  Usable : 102
+  Duration     : 10.2s  |  dt : 0.1s  |  f_res : 0.098 Hz
+  PS map found: /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Loaded 50 PS candidates (created 2026-04-23T17:28:16.023789)
+  Extracting phase at 50 PS points...
+  Phase pass — frame 107/107
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_120642/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_120642/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_120642/ps_map.png
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_120642/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Natural Frequency :       1.569 Hz       │
+  │  Displacement RMS  :       1.102 μm       │
+  │  Freq Resolution   :       0.098 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            102       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (mmwave_python_20260424_120642)
+============================================================
+[12:16:11] [LoRa] Metrics loaded: mmwave_python_20260424_120642
+[12:16:11] [LoRa] Encode → freq=0.00 Hz  rms=0.000 μm  max=0.000 μm
+[12:16:11] [LoRa] Payload hex (6 bytes): 000000000000
+[12:16:11] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[12:16:11] [LoRa] → AT
+[12:16:11] [LoRa] ← +AT: OK
+[12:16:11] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[12:16:12] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[12:16:15] [LoRa] Checking join status...
+[12:16:15] [LoRa] → AT+JOIN
+[12:16:15] [LoRa] ← +JOIN: Start
+[12:16:15] [LoRa] ← +JOIN: NORMAL
+[12:16:20] [LoRa] ← +JOIN: Network joined
+[12:16:22] [LoRa] Sending payload...
+[12:16:22] [LoRa] → AT+MSGHEX="000000000000"
+[12:16:23] [LoRa] ← +MSGHEX: Start
+[12:16:28] [LoRa] ← +MSGHEX: FPENDING
+[12:16:28] [LoRa] ← +MSGHEX: RXWIN1, RSSI -9, SNR 7.0
+[12:16:29] [LoRa] ← +MSGHEX: Done
+[12:16:29] [LoRa] ✓ Uplink sent successfully — payload: 000000000000
+[12:16:34] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 5 done in 665.6s
+============================================================
+
+############################################################
+# CYCLE    6   [2026-04-24 12:16:34]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_121634
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_121749
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260424_121749
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260424_121749.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260424_121749.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260424_121749 completed successfully!
+============================================================
+[12:18:09] Capture directory: mmwave_python_20260424_121749
+
+============================================================
+  STEP 2 — Transfer Data  (mmwave_python_20260424_121749)
+============================================================
+[12:18:09] SCP  root@192.168.33.180:/mnt/ssd/mmwave_python_20260424_121749  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                     100% 5160     5.9MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                     100% 5160     6.3MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                     100% 5160     6.2MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                     100% 5160     6.3MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                    100%   80MB   6.1MB/s   00:13    
+slave1_0000_data.bin                                                                                                                                                    100%   80MB   6.4MB/s   00:12    
+master_0000_data.bin                                                                                                                                                    100%   80MB   6.5MB/s   00:12    
+slave3_0000_data.bin                                                                                                                                                    100%   80MB   7.1MB/s   00:11    
+[12:18:58] Fixing permissions...
+[12:18:58] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260424_121749/mmwave_python_20260424_121749.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (mmwave_python_20260424_121749)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260424_121749
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_121749
+────────────────────────────────────────────────────────────
+Total valid frames: 107  →  processing frame 107
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 107): 176.8 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_121749/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_121749/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (mmwave_python_20260424_121749)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : mmwave_python_20260424_121749
+────────────────────────────────────────────────────────────
+  Total frames : 107  |  Warm-up skip : 5  |  Usable : 102
+  Duration     : 10.2s  |  dt : 0.1s  |  f_res : 0.098 Hz
+  PS map found: /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Loaded 50 PS candidates (created 2026-04-23T17:28:16.023789)
+  Extracting phase at 50 PS points...
+  Phase pass — frame 107/107
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_121749/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_121749/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_121749/ps_map.png
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_121749/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Natural Frequency :        0.49 Hz       │
+  │  Displacement RMS  :       1.354 μm       │
+  │  Freq Resolution   :       0.098 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            102       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (mmwave_python_20260424_121749)
+============================================================
+[12:27:31] [LoRa] Metrics loaded: mmwave_python_20260424_121749
+[12:27:31] [LoRa] Encode → freq=0.00 Hz  rms=0.000 μm  max=0.000 μm
+[12:27:31] [LoRa] Payload hex (6 bytes): 000000000000
+[12:27:32] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[12:27:32] [LoRa] → AT
+[12:27:32] [LoRa] ← +AT: OK
+[12:27:32] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[12:27:32] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[12:27:35] [LoRa] Checking join status...
+[12:27:35] [LoRa] → AT+JOIN
+[12:27:35] [LoRa] ← +JOIN: Start
+[12:27:35] [LoRa] ← +JOIN: NORMAL
+[12:27:41] [LoRa] ← +JOIN: Network joined
+[12:27:43] [LoRa] Sending payload...
+[12:27:43] [LoRa] → AT+MSGHEX="000000000000"
+[12:27:43] [LoRa] ← +MSGHEX: Start
+[12:27:49] [LoRa] ← +MSGHEX: FPENDING
+[12:27:49] [LoRa] ← +MSGHEX: RXWIN1, RSSI -9, SNR 6.0
+[12:27:49] [LoRa] ← +MSGHEX: Done
+[12:27:49] [LoRa] ✓ Uplink sent successfully — payload: 000000000000
+[12:27:54] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 6 done in 680.2s
+============================================================
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10 --interval 5 --reset-ps
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 5.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : /dev/ttyUSB0
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-04-24 15:21:19]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_152119
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_152235
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260424_152235
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  79.5M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  79.5M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  79.5M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  79.5M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260424_152235.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260424_152235.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260424_152235 completed successfully!
+============================================================
+[15:22:54] Capture directory: mmwave_python_20260424_152235
+
+============================================================
+  STEP 2 — Transfer Data  (mmwave_python_20260424_152235)
+============================================================
+[15:22:54] SCP  root@192.168.33.180:/mnt/ssd/mmwave_python_20260424_152235  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                     100% 5112     5.7MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                     100% 5112     5.9MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                     100% 5112     5.9MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                     100% 5112     6.2MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                    100%   80MB   6.6MB/s   00:12    
+slave1_0000_data.bin                                                                                                                                                    100%   80MB   6.2MB/s   00:12    
+master_0000_data.bin                                                                                                                                                    100%   80MB   6.0MB/s   00:13    
+slave3_0000_data.bin                                                                                                                                                    100%   80MB   6.2MB/s   00:12    
+[15:23:45] Fixing permissions...
+[15:23:45] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260424_152235/mmwave_python_20260424_152235.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (mmwave_python_20260424_152235)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260424_152235
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235
+────────────────────────────────────────────────────────────
+Total valid frames: 106  →  processing frame 106
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 106): 175.8 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (mmwave_python_20260424_152235)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : mmwave_python_20260424_152235
+────────────────────────────────────────────────────────────
+  Total frames : 106  |  Warm-up skip : 5  |  Usable : 101
+  Duration     : 10.1s  |  dt : 0.1s  |  f_res : 0.099 Hz
+  No PS map — running ADI computation (skipping 5 warm-up frames)...
+  ADI pass — frame 106/106
+  Selected 50 PS candidates from 101 frames
+  Saved PS map → /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Extracting phase at 50 PS points...
+  Phase pass — frame 106/106
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/ps_map.png
+  Saved time series   → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/displacement_timeseries.csv
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Mode 1 Frequency  :       1.485 Hz       │
+  │  Mode 2 Frequency  :       2.178 Hz       │
+  │  Mode 3 Frequency  :       2.673 Hz       │
+  │  Displacement RMS  :    0.001069 mm       │
+  │  Max Deflection    :    0.002893 mm       │
+  │  Freq Resolution   :       0.099 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            101       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (mmwave_python_20260424_152235)
+============================================================
+[15:40:07] [LoRa] Metrics loaded: mmwave_python_20260424_152235
+[15:40:07] [LoRa] Encode → ts=2026-04-25 00:40:07  freq=1.49 Hz  rms=1.069 μm  max=2.893 μm
+[15:40:07] [LoRa] Payload hex (10 bytes): 69EB8ED7009400010003
+[15:40:08] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[15:40:08] [LoRa] → AT
+[15:40:08] [LoRa] ← +AT: OK
+[15:40:08] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[15:40:08] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[15:40:11] [LoRa] Checking join status...
+[15:40:11] [LoRa] → AT+JOIN
+[15:40:11] [LoRa] ← +JOIN: Start
+[15:40:11] [LoRa] ← +JOIN: NORMAL
+[15:40:17] [LoRa] ← +JOIN: Network joined
+[15:40:19] [LoRa] Sending payload...
+[15:40:19] [LoRa] → AT+MSGHEX="69EB8ED7009400010003"
+[15:40:19] [LoRa] ← +MSGHEX: Start
+[15:40:25] [LoRa] ← +MSGHEX: FPENDING
+[15:40:25] [LoRa] ← +MSGHEX: RXWIN1, RSSI -9, SNR 7.0
+[15:40:25] [LoRa] ← +MSGHEX: Done
+[15:40:25] [LoRa] ✓ Uplink sent successfully — payload: 69EB8ED7009400010003
+[15:40:30] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 1 done in 1150.9s
+============================================================
+[15:40:30] Waiting 5.0s before next cycle...
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10 --interval 5 --reset-ps
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 5.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : /dev/ttyUSB0
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-04-24 15:21:19]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_152119
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_152235
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/mmwave_python_20260424_152235
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  79.5M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  79.5M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  79.5M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  79.5M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/mmwave_python_20260424_152235.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/mmwave_python_20260424_152235.mmwave.json
+
+============================================================
+Data capture mmwave_python_20260424_152235 completed successfully!
+============================================================
+[15:22:54] Capture directory: mmwave_python_20260424_152235
+
+============================================================
+  STEP 2 — Transfer Data  (mmwave_python_20260424_152235)
+============================================================
+[15:22:54] SCP  root@192.168.33.180:/mnt/ssd/mmwave_python_20260424_152235  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                                                                                                                                                     100% 5112     5.7MB/s   00:00    
+master_0000_idx.bin                                                                                                                                                     100% 5112     5.9MB/s   00:00    
+slave1_0000_idx.bin                                                                                                                                                     100% 5112     5.9MB/s   00:00    
+slave3_0000_idx.bin                                                                                                                                                     100% 5112     6.2MB/s   00:00    
+slave2_0000_data.bin                                                                                                                                                    100%   80MB   6.6MB/s   00:12    
+slave1_0000_data.bin                                                                                                                                                    100%   80MB   6.2MB/s   00:12    
+master_0000_data.bin                                                                                                                                                    100%   80MB   6.0MB/s   00:13    
+slave3_0000_data.bin                                                                                                                                                    100%   80MB   6.2MB/s   00:12    
+[15:23:45] Fixing permissions...
+[15:23:45] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/mmwave_python_20260424_152235/mmwave_python_20260424_152235.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (mmwave_python_20260424_152235)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : mmwave_python_20260424_152235
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235
+────────────────────────────────────────────────────────────
+Total valid frames: 106  →  processing frame 106
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 106): 175.8 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (mmwave_python_20260424_152235)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : mmwave_python_20260424_152235
+────────────────────────────────────────────────────────────
+  Total frames : 106  |  Warm-up skip : 5  |  Usable : 101
+  Duration     : 10.1s  |  dt : 0.1s  |  f_res : 0.099 Hz
+  No PS map — running ADI computation (skipping 5 warm-up frames)...
+  ADI pass — frame 106/106
+  Selected 50 PS candidates from 101 frames
+  Saved PS map → /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Extracting phase at 50 PS points...
+  Phase pass — frame 106/106
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/ps_map.png
+  Saved time series   → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/displacement_timeseries.csv
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/mmwave_python_20260424_152235/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Mode 1 Frequency  :       1.485 Hz       │
+  │  Mode 2 Frequency  :       2.178 Hz       │
+  │  Mode 3 Frequency  :       2.673 Hz       │
+  │  Displacement RMS  :    0.001069 mm       │
+  │  Max Deflection    :    0.002893 mm       │
+  │  Freq Resolution   :       0.099 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            101       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (mmwave_python_20260424_152235)
+============================================================
+[15:40:07] [LoRa] Metrics loaded: mmwave_python_20260424_152235
+[15:40:07] [LoRa] Encode → ts=2026-04-25 00:40:07  freq=1.49 Hz  rms=1.069 μm  max=2.893 μm
+[15:40:07] [LoRa] Payload hex (10 bytes): 69EB8ED7009400010003
+[15:40:08] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[15:40:08] [LoRa] → AT
+[15:40:08] [LoRa] ← +AT: OK
+[15:40:08] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[15:40:08] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[15:40:11] [LoRa] Checking join status...
+[15:40:11] [LoRa] → AT+JOIN
+[15:40:11] [LoRa] ← +JOIN: Start
+[15:40:11] [LoRa] ← +JOIN: NORMAL
+[15:40:17] [LoRa] ← +JOIN: Network joined
+[15:40:19] [LoRa] Sending payload...
+[15:40:19] [LoRa] → AT+MSGHEX="69EB8ED7009400010003"
+[15:40:19] [LoRa] ← +MSGHEX: Start
+[15:40:25] [LoRa] ← +MSGHEX: FPENDING
+[15:40:25] [LoRa] ← +MSGHEX: RXWIN1, RSSI -9, SNR 7.0
+[15:40:25] [LoRa] ← +MSGHEX: Done
+[15:40:25] [LoRa] ✓ Uplink sent successfully — payload: 69EB8ED7009400010003
+[15:40:30] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 1 done in 1150.9s
+============================================================
+[15:40:30] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    2   [2026-04-24 15:40:35]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: mmwave_python_20260424_154035
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+
+  Interrupt received (Ctrl+C). Finishing current capture and shutting down...
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: mmwave_python_20260424_154151
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS   -1 | DEV MAP: 15 | [MMWCAS-RF] Failed to stop frame!
+mmw_stop_frame failed (status: -1)
+[PIPELINE] ERROR: No new .mmwave.json generated — capture likely failed
+[PIPELINE] Capture failed — retrying in 10s...
+
+[PIPELINE] Pipeline stopped cleanly.
+
+
+---- Log Live Data TTN ----
+{
+  "name": "as.up.data.forward",
+  "time": "2026-04-24T06:40:20.213121600Z",
+  "identifiers": [
+    {
+      "device_ids": {
+        "device_id": "gb-sar-01",
+        "application_ids": {
+          "application_id": "iosar-imrsl"
+        },
+        "dev_eui": "2CF7F12070100407",
+        "join_eui": "526973696E674846",
+        "dev_addr": "27FA69A7"
+      }
+    }
+  ],
+  "data": {
+    "@type": "type.googleapis.com/ttn.lorawan.v3.ApplicationUp",
+    "end_device_ids": {
+      "device_id": "gb-sar-01",
+      "application_ids": {
+        "application_id": "iosar-imrsl"
+      },
+      "dev_eui": "2CF7F12070100407",
+      "join_eui": "526973696E674846",
+      "dev_addr": "27FA69A7"
+    },
+    "correlation_ids": [
+      "gs:uplink:01KPZ3FJ0HNCQQYMX7GN2R3W1Y"
+    ],
+    "received_at": "2026-04-24T06:40:20.206872011Z",
+    "uplink_message": {
+      "session_key_id": "AZ2+N6plkB65UmQJUIyjGQ==",
+      "f_port": 8,
+      "frm_payload": "aeuO1wCUAAEAAw==",
+      "decoded_payload": {
+        "displacement_rms_mm": 0.001,
+        "displacement_rms_um": 1,
+        "latitude": 43.8156,
+        "longitude": 140.9723,
+        "max_deflection_mm": 0.003,
+        "max_deflection_um": 3,
+        "natural_frequency_hz": 1.48,
+        "timestamp_iso": "2026-04-24T15:40:07.000Z",
+        "timestamp_unix": 1777045207
+      },
+      "rx_metadata": [
+        {
+          "gateway_ids": {
+            "gateway_id": "gw-imrsl",
+            "eui": "2CF7F11374400064"
+          },
+          "timestamp": 1456399475,
+          "rssi": -11,
+          "channel_rssi": -11,
+          "snr": 10.5,
+          "frequency_offset": "-615",
+          "uplink_token": "ChYKFAoIZ3ctaW1yc2wSCCz38RN0QABkEPPIu7YFGgwI06CszwYQ0r/S1QMguMKxwbHEngE=",
+          "channel_index": 7,
+          "received_at": "2026-04-24T06:40:19.974952143Z"
+        }
+      ],
+      "settings": {
+        "data_rate": {
+          "lora": {
+            "bandwidth": 125000,
+            "spreading_factor": 10,
+            "coding_rate": "4/5"
+          }
+        },
+        "frequency": "922000000",
+        "timestamp": 1456399475
+      },
+      "received_at": "2026-04-24T06:40:19.985898334Z",
+      "consumed_airtime": "0.370688s",
+      "locations": {
+        "frm-payload": {
+          "latitude": 43.8156,
+          "longitude": 140.9723,
+          "source": "SOURCE_GPS"
+        }
+      },
+      "network_ids": {
+        "net_id": "000013",
+        "ns_id": "EC656E0000104E13",
+        "tenant_id": "imrsl",
+        "cluster_id": "as1",
+        "cluster_address": "as1.cloud.thethings.industries",
+        "tenant_address": "imrsl.as1.cloud.thethings.industries"
+      }
+    }
+  },
+  "correlation_ids": [
+    "gs:uplink:01KPZ3FJ0HNCQQYMX7GN2R3W1Y"
+  ],
+  "origin": "ip-10-25-13-49.ap-northeast-1.compute.internal",
+  "context": {
+    "tenant-id": "CgVpbXJzbA=="
+  },
+  "visibility": {
+    "rights": [
+      "RIGHT_APPLICATION_TRAFFIC_READ"
+    ]
+  },
+  "unique_id": "01KPZ3FJ7NP5D3WQK801TNFX7D"
+}

@@ -28,7 +28,7 @@ config_dict = {
         "frame": {
             "numLoops": 16,                 # Number of chirp loop per frame
             "numFrames": 0,                 # Number of frames to record
-            "framePeriodicity": 100,        # Frame periodicity in ms (Inter_Frame_Interval)
+            "framePeriodicity": 50,        # Frame periodicity in ms (Inter_Frame_Interval)
         },
         "channel": {
             "rxChannelEn": 0x0F,            # Enable all 4 RX channels

@@ -743,7 +743,7 @@ cpdef int mmw_arming_tda(str capture_path):
     cdef unsigned int frame_period_ms = (config.frameCfg.framePeriodicity * 5) // (1000 * 1000)
 
     cdef rlTdaArmCfg_t tdaCfg
-    tdaCfg.captureDirectory = capture_path_buf
+    tdaCfg.captureDirectory = <unsigned char*>capture_path_buf
     tdaCfg.framePeriodicity = frame_period_ms
     tdaCfg.numberOfFilesToAllocate = 0
     tdaCfg.numberOfFramesToCapture = 0  # config.frameCfg.numFrames

@@ -80,7 +80,7 @@ def run_capture(duration: float, tda_ip: str) -> str | None:
         '--duration', str(duration),
         '--tda-ip',   tda_ip,
         '--num-loops', '1',
-	'--directory', 'RPI_python_sine_2hz_1mm_10s_continuous'
+        '--directory', 'RPI_indoor_static_4m_10s'
     ]
     result = subprocess.run(cmd)
 

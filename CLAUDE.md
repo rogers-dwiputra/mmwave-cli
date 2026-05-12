@@ -1,4 +1,6 @@
-# CLAUDE.md — mmwave-cli
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
@@ -8,6 +10,45 @@ Automated pipeline for **Bridge Structural Health Monitoring** using a TIDEP-010
 **Goal:** Detect bridge modal frequencies and displacement via sub-mm radar interferometry, transmit via LoRaWAN (Wio-E5 → TTN) for remote dashboard monitoring.
 
 **Status:** Full pipeline operational end-to-end (capture → edge processing → LoRa → TTN). Validated in lab (static ceiling test). Next: vibrating table validation, then bridge deployment.
+
+---
+
+## Build & Setup
+
+### Python dependencies (Raspberry Pi)
+```bash
+pip install cython pyserial numpy scipy
+```
+
+### Build the `mmwcas` Cython extension (Python path — preferred)
+```bash
+# Full clean + C objects + Cython extension
+make build
+
+# Cython extension only (faster rebuild after Python/Cython changes)
+make build-cython
+# or equivalently:
+python setup.py build_ext --inplace
+```
+After a successful build, `mmwcas.cpython-*.so` appears in the repo root.
+
+### Build the standalone C binary (`mmwave`)
+```bash
+# Compile and install to /usr/local/bin
+sudo make install
+
+# Compile only (no install)
+make all
+
+# Clean build artifacts
+make clean
+```
+
+### Verify the build
+```bash
+python3 -c "import mmwcas; print('mmwcas OK')"
+mmwave -h   # if installed via sudo make install
+```
 
 ---
 
@@ -23,12 +64,13 @@ Automated pipeline for **Bridge Structural Health Monitoring** using a TIDEP-010
 | LoRaWAN modem | Wio-E5 Development Kit (SeeedStudio) — `/dev/ttyUSB0`, 9600 baud, CP2102N |
 | LoRaWAN network | The Things Stack (TTN) — tenant `imrsl`, app `iosar-imrsl`, device `gb-sar-01` |
 
-**Key radar parameters (mimo.py config):**
-- `framePeriodicity = 100 ms` → frame rate = 10 Hz, `dt = 0.1 s`
+**Key radar parameters (`mimo.py` `config_dict`):**
+- `framePeriodicity = 50 ms` → frame rate = 20 Hz (note: was 100 ms / 10 Hz in earlier experiments)
 - `numAdcSamples = 256`, `adcSamplingFrequency = 8000 ksps`
 - `frequencySlope = 79.0327 MHz/μs`, `rampEndTime = 40 μs`
 - `numLoops = 16` chirp loops per frame
 - λ ≈ 3.896 mm at 77 GHz
+- `dt` in edge processing must match the actual `framePeriodicity` configured here
 
 ---
 
@@ -37,34 +79,28 @@ Automated pipeline for **Bridge Structural Health Monitoring** using a TIDEP-010
 ```
 mmwave-cli/                         ← this repo (runs on Raspberry Pi ~/mmwave-cli/)
 ├── mimo.py                         ← radar control: configure, arm, capture, stop
-├── mimo.c / mimo.h                 ← C extension source (mmwcas Python module)
-├── mmwcas.pyx / mmwcas.pyi         ← Cython wrapper for mmwcas C extension
-├── setup.py                        ← build mmwcas extension
+├── mimo.c / mimo.h                 ← standalone C binary (legacy/alternate path)
+├── mmwcas.pyx / mmwcas.pyi         ← Cython wrapper — compiled to mmwcas.so (Python import)
+├── setup.py                        ← build mmwcas Cython extension
+├── makefile                        ← build C binary + Cython extension
 ├── pipeline.py                     ← automated 5-step pipeline (main entry point)
 ├── lora_sender.py                  ← LoRaWAN uplink via Wio-E5 AT commands (Step 5)
-├── utility.py                      ← check_captured_files(), export_config_to_json()
+├── utility.py                      ← check_captured_files(), export_config_to_json(), signal_handler()
+├── config_export.py                ← standalone duplicate of export_config_to_json() (not used by pipeline)
+├── multiradar.py                   ← experimental dual-radar script (not part of pipeline)
 ├── mmwave_json_files/              ← generated .mmwave.json config files (per capture)
-├── config/                         ← TOML radar config files (reference)
-└── ti/                             ← TI SDK headers and firmware
+├── config/                         ← TOML radar config files (for standalone C binary)
+└── ti/                             ← TI SDK headers and firmware (do not modify)
 
 ~/IoSAR-EdgeProcessing/             ← edge processing (separate repo, OneDrive-synced)
 ├── mimo_processing.py              ← range FFT → Doppler FFT → beamforming → SLC image
 ├── ps_monitoring.py                ← PS selection → phase extraction → FFT → modal frequencies
 ├── ps_map.json                     ← learned PS candidate map (auto-generated, bridge-specific)
 ├── PostProc/                       ← SCP destination for TDA capture data
-│   └── <capture_dir>/              ← one folder per capture cycle
-│       ├── master_0000_idx.bin
-│       ├── master_0000_data.bin
-│       ├── slave{1,2,3}_0000_data.bin
-│       └── <capture_dir>.mmwave.json
-└── python-result/                  ← processing outputs
-    └── <capture_dir>/
-        ├── ps_metrics.json              ← modal frequencies, displacement, max deflection
-        ├── displacement_timeseries.csv  ← per-frame displacement time series
-        ├── displacement.png
-        ├── fft_spectrum.png
-        └── ps_map.png
+└── python-result/                  ← processing outputs (ps_metrics.json, displacement_timeseries.csv, PNGs)
 ```
+
+`pipeline.py` dynamically imports `mimo_processing.py` and `ps_monitoring.py` from `~/IoSAR-EdgeProcessing/` at runtime using `importlib`. Changes to those files take effect immediately without rebuilding.
 
 ---
 
@@ -82,45 +118,20 @@ Step 5 — LoRa Uplink  lora_sender.send_lora() → 10-byte payload → Wio-E5 �
 
 **Common invocations:**
 ```bash
-# Normal operation (60s capture, continuous)
-python3 pipeline.py --duration 60
-
-# Lab / vibrating table test (10s capture, 5s interval between cycles)
-python3 pipeline.py --duration 10 --interval 5
-
-# Reset PS map (new bridge deployment)
-python3 pipeline.py --duration 60 --reset-ps
-
-# Skip LoRa (no modem connected)
-python3 pipeline.py --duration 10 --skip-lora
-
-# Skip PS step (faster, SLC images only)
-python3 pipeline.py --duration 10 --skip-ps
-
-# Test LoRa with latest result without running pipeline
-python3 lora_sender.py
-python3 lora_sender.py --metrics /path/to/ps_metrics.json
+python3 pipeline.py --duration 60                        # Normal operation
+python3 pipeline.py --duration 10 --interval 5          # Lab / vibrating table test
+python3 pipeline.py --duration 60 --reset-ps            # New bridge deployment
+python3 pipeline.py --duration 10 --skip-lora           # No modem connected
+python3 pipeline.py --duration 10 --skip-ps             # SLC images only (faster)
+python3 lora_sender.py                                   # Test LoRa with latest result
 ```
-
-**All pipeline.py arguments:**
-
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `-t / --duration` | `10.0` | Capture duration in seconds |
-| `--tda-ip` | `192.168.33.180` | TDA board IP |
-| `-i / --interval` | `0.0` | Wait between cycles (seconds) |
-| `--skip-transfer` | off | Skip SCP step |
-| `--skip-processing` | off | Skip SLC/range-profile |
-| `--skip-ps` | off | Skip PS monitoring |
-| `--skip-lora` | off | Skip LoRa uplink |
-| `--reset-ps` | off | Delete ps_map.json and relearn |
-| `--lora-port` | `/dev/ttyUSB0` | Wio-E5 serial port |
-| `--lora-appkey` | `562AD0AB...` | LoRaWAN APPKEY |
 
 **Observed cycle times (10 s capture, Raspberry Pi 5):**
 - No PS map (Pass 1 + Pass 2): ~1150 s (~19 min)
 - With PS map cached (Pass 2 only): ~670 s (~11 min)
 - 60 s capture with PS map: ~5800 s (~97 min)
+
+**Capture directory** is hardcoded in `pipeline.py:run_capture()` via `--directory RPI_python_sine_2hz_1mm_10s_continuous`. Change this string for new experiment series.
 
 ---
 
@@ -138,8 +149,7 @@ SLC image axes: `[257 angle bins, 3992 range bins]`
 
 - **Pass 1 — ADI** (only on first run, result cached in `ps_map.json`):  
   Welford online algorithm → per-pixel mean amplitude + ADI (std/mean).  
-  Select PS where `ADI < 0.3` AND `amplitude > 95th percentile`.  
-  Cap at 50 PS candidates.
+  Select PS where `ADI < 0.3` AND `amplitude > 95th percentile`. Cap at 50 PS candidates.
 
 - **Pass 2 — Phase extraction**:  
   Re-process each frame, extract complex SLC only at PS coordinates → `[N_frames × 50]` array.
@@ -157,16 +167,13 @@ ADI_THRESHOLD  = 0.3
 AMP_PERCENTILE = 95
 MAX_PS_COUNT   = 50
 FREQ_MIN, FREQ_MAX = 0.3, 10.0  # Hz
-DT_DEFAULT     = 0.1            # 10 Hz frame rate
+DT_DEFAULT     = 0.1            # must match framePeriodicity in mimo.py
 ```
 
 **PS map lifecycle:**
-- Auto-created on first run from any capture of that bridge (takes ~2× longer for that cycle).
+- Auto-created on first run (takes ~2× longer for that cycle).
 - Reused across all subsequent captures (stable reflectors assumed static).
 - Delete `ps_map.json` or use `--reset-ps` when deploying on a different bridge.
-
-**Note on bending vs torsional separation:**  
-A single radar cannot distinguish bending from torsional modes. Mode 1/2/3 are ordered by frequency only. True bending/torsional separation requires a second radar on the opposite side of the bridge (future work).
 
 ---
 
@@ -183,20 +190,9 @@ A single radar cannot distinguish bending from torsional modes. Mode 1/2/3 are o
   "displacement_rms_mm": 0.001069,
   "displacement_rms_um": 1.069,
   "max_deflection_mm": 0.002893,
-  "freq_resolution_hz": 0.099,
-  "ps_count": 50,
-  "ps_with_peak": 50,
-  "num_frames_total": 106,
   "num_frames_used": 101,
-  "warmup_frames": 5,
-  "dt_s": 0.1,
-  "total_duration_s": 10.1
+  "dt_s": 0.1
 }
-```
-
-**displacement_timeseries.csv columns:**
-```
-time_s, datetime, disp_mean_mm, disp_max_abs_mm
 ```
 
 **System noise floor (static ceiling, no vibration):**
@@ -208,58 +204,18 @@ time_s, datetime, disp_mean_mm, disp_max_abs_mm
 
 ## LoRa Uplink (lora_sender.py)
 
-**Hardware:** Wio-E5 DevKit (SeeedStudio) — CP2102N USB-UART — `/dev/ttyUSB0` — 9600 baud  
-**Network:** LoRaWAN OTAA, APPKEY `562AD0AB720BA25D830E20164D3CC1B3`
-
 **Payload format — 10 bytes, big-endian:**
 
-| Byte | Field | Encoding | Resolution | Max |
-|------|-------|----------|------------|-----|
-| 0–3 | Unix timestamp | uint32 | 1 s | 2106 |
-| 4–5 | `freq_mode_1_hz` | uint16 × 100 | 0.01 Hz | 655.35 Hz |
-| 6–7 | `displacement_rms_mm` | uint16 × 1000 | 0.001 mm (1 μm) | 65.5 mm |
-| 8–9 | `max_deflection_mm` | uint16 × 1000 | 0.001 mm (1 μm) | 65.5 mm |
+| Byte | Field | Encoding | Resolution |
+|------|-------|----------|------------|
+| 0–3 | Unix timestamp | uint32 | 1 s |
+| 4–5 | `freq_mode_1_hz` | uint16 × 100 | 0.01 Hz |
+| 6–7 | `displacement_rms_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
+| 8–9 | `max_deflection_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
 
-**Total: 10 bytes** (well within LoRaWAN SF10 limit of 51 bytes)
-
-**AT command sequence:**
-```
-AT                                    → +AT: OK
-AT+KEY=APPKEY,"<key>"                 → +KEY: APPKEY ...
-AT+JOIN                               → +JOIN: Network joined  (OTAA, ~6s)
-AT+MSGHEX="<10-byte-hex>"            → +MSGHEX: Done
-```
+**AT command sequence:** `AT` → `AT+KEY=APPKEY,"<key>"` → `AT+JOIN` → `AT+MSGHEX="<hex>"`
 
 **Backward compatibility:** `lora_sender.py` reads `freq_mode_1_hz` or falls back to `natural_frequency_hz`; reads `displacement_rms_mm` or converts from `displacement_rms_um`.
-
-**TTN Payload Formatter (uplink decoder — JavaScript):**
-```javascript
-function decodeUplink(input) {
-  var bytes = input.bytes;
-  var data  = {};
-
-  var ts = ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]) >>> 0;
-  data.timestamp_unix        = ts;
-  data.timestamp_iso         = new Date(ts * 1000).toISOString();
-  data.natural_frequency_hz  = ((bytes[4] << 8) | bytes[5]) / 100.0;
-  data.displacement_rms_mm   = ((bytes[6] << 8) | bytes[7]) / 1000.0;
-  data.displacement_rms_um   = (bytes[6] << 8) | bytes[7];
-  data.max_deflection_mm     = ((bytes[8] << 8) | bytes[9]) / 1000.0;
-  data.max_deflection_um     = (bytes[8] << 8) | bytes[9];
-  data.latitude              = 43.8156;   // Muroran IT (hardcoded)
-  data.longitude             = 140.9723;
-
-  return { data: data };
-}
-```
-
-**Verified received payload (2026-04-24, TTN app `iosar-imrsl`, device `gb-sar-01`):**
-```
-hex:   69 EB 8E D7  00 94  00 01  00 03
-→ ts:  2026-04-24T15:40:07 JST
-→ freq: 1.48 Hz  |  rms: 1 μm  |  max: 3 μm
-RSSI: -9 dBm, SNR: 10.5 dB  (gateway: gw-imrsl)
-```
 
 ---
 
@@ -283,10 +239,6 @@ RSSI: -9 dBm, SNR: 10.5 dB  (gateway: gw-imrsl)
 # Test connectivity
 ssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa \
     -oStrictHostKeyChecking=no root@192.168.33.180
-
-# List captures on SSD
-ssh -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa \
-    -oStrictHostKeyChecking=no root@192.168.33.180 "ls /mnt/ssd/"
 
 # Manual SCP
 scp -O -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa \

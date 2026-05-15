@@ -217,7 +217,8 @@ def _load_ps_monitoring():
     return mod
 
 
-def run_ps_monitoring(capture_dir: str, ps_map_file: str) -> dict:
+def run_ps_monitoring(capture_dir: str, ps_map_file: str,
+                      ps_file: str = None) -> dict:
     """Run PS-based structural health monitoring for one capture directory."""
     _banner(f'STEP 4 — PS Monitoring  ({capture_dir})')
 
@@ -228,7 +229,7 @@ def run_ps_monitoring(capture_dir: str, ps_map_file: str) -> dict:
 
     try:
         mod = _load_ps_monitoring()
-        return mod.run_ps_monitoring(data_folder, ps_map_file)
+        return mod.run_ps_monitoring(data_folder, ps_map_file, ps_file)
     except Exception as exc:
         import traceback
         print(f'[PIPELINE] ERROR during PS monitoring: {exc}')
@@ -291,8 +292,11 @@ def main():
                         help='Skip SLC/range-profile generation')
     parser.add_argument('--skip-ps',         action='store_true',
                         help='Skip PS monitoring step')
+    parser.add_argument('--ps-file',         type=str, default=None,
+                        help='Path to manually-selected PS JSON (from select_ps_manual.m). '
+                             'Skips ADI computation — use after first manual PS selection.')
     parser.add_argument('--reset-ps',        action='store_true',
-                        help='Delete PS map so it is recomputed on the next cycle')
+                        help='Delete PS map so it is recomputed on the next cycle (ignored when --ps-file is set)')
     parser.add_argument('--skip-lora',       action='store_true',
                         help='Skip LoRa uplink step')
     parser.add_argument('--lora-port',       type=str,
@@ -305,7 +309,7 @@ def main():
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
     ps_map_file = os.path.join(EDGE_DIR, 'ps_map.json')
-    if args.reset_ps and os.path.isfile(ps_map_file):
+    if args.reset_ps and args.ps_file is None and os.path.isfile(ps_map_file):
         os.remove(ps_map_file)
         print(f'[PIPELINE] Deleted PS map: {ps_map_file}')
 
@@ -317,7 +321,7 @@ def main():
     print(f'  Cycle interval   : {args.interval}s')
     print(f'  PostProc dir     : {POSTPROC_DIR}')
     print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
-    print(f'  PS map           : {ps_map_file}')
+    print(f'  PS source        : {args.ps_file if args.ps_file else ps_map_file + " (auto/ADI)"}')
     print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
     print(f'  Press Ctrl+C to stop after the current cycle.')
 
@@ -368,7 +372,7 @@ def main():
 
         # ── 4. PS Monitoring ────────────────────────────────────────
         if not args.skip_ps:
-            run_ps_monitoring(capture_dir, ps_map_file)
+            run_ps_monitoring(capture_dir, ps_map_file, args.ps_file)
         else:
             _step('PS monitoring skipped (--skip-ps)')
 

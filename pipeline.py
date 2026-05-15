@@ -63,10 +63,10 @@ def _step(msg: str) -> None:
 # Step 1 — Capture
 # ─────────────────────────────────────────────
 
-def run_capture(duration: float, tda_ip: str) -> str | None:
+def run_capture(duration: float, tda_ip: str, label: str) -> str | None:
     """
     Execute one capture cycle via mimo.py.
-    Returns the capture directory name (e.g. 'mmwave_python_20260423_104923'),
+    Returns the capture directory name (e.g. 'RPI_python_sine_2hz_1mm_10s_20260510_144105'),
     or None on failure.
     """
     _banner(f'STEP 1 — Radar Capture  ({duration}s)')
@@ -80,7 +80,7 @@ def run_capture(duration: float, tda_ip: str) -> str | None:
         '--duration', str(duration),
         '--tda-ip',   tda_ip,
         '--num-loops', '1',
-        '--directory', 'RPI_indoor_static_4m_10s'
+        '--directory', label,
     ]
     result = subprocess.run(cmd)
 
@@ -282,6 +282,10 @@ def main():
     )
     parser.add_argument('-t', '--duration',  type=float, default=10.0,
                         help='Radar capture duration in seconds')
+    parser.add_argument('--label',           type=str,   default='RPI_python',
+                        help='Experiment label used as capture directory prefix '
+                             '(e.g. RPI_python_sine_2hz_1mm_10s). '
+                             'Timestamp is appended automatically by mimo.py.')
     parser.add_argument('--tda-ip',          type=str,   default=TDA_IP_DEFAULT,
                         help='TDA board IP address')
     parser.add_argument('-i', '--interval',  type=float, default=0.0,
@@ -317,6 +321,7 @@ def main():
     print('║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║')
     print('╚══════════════════════════════════════════════════════════╝')
     print(f'  Capture duration : {args.duration}s')
+    print(f'  Capture label    : {args.label}')
     print(f'  TDA IP address   : {args.tda_ip}')
     print(f'  Cycle interval   : {args.interval}s')
     print(f'  PostProc dir     : {POSTPROC_DIR}')
@@ -338,7 +343,7 @@ def main():
         print(f'{"#"*60}')
 
         # ── 1. Capture ──────────────────────────────────────────────
-        capture_dir = run_capture(args.duration, args.tda_ip)
+        capture_dir = run_capture(args.duration, args.tda_ip, args.label)
         if capture_dir is None:
             print('[PIPELINE] Capture failed — retrying in 10s...')
             time.sleep(10)

@@ -209,8 +209,13 @@ def send_lora(metrics_path: str = None,
         return False
 
     try:
-        # 1 ── Test connectivity ───────────────────────────────────────
-        ok, _ = _send_at(ser, 'AT', timeout=3, expected='OK')
+        # 1 ── Test connectivity (retry — Wio-E5 needs 1-2 ATs to wake up) ──
+        ok = False
+        for _retry in range(4):
+            ok, _ = _send_at(ser, 'AT', timeout=3, expected='OK')
+            if ok:
+                break
+            _log(f'AT no response — retry {_retry + 1}/4...')
         if not ok:
             _log('ERROR: No response from Wio-E5 — check cable and port')
             return False

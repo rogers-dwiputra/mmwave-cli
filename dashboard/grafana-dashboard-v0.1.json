@@ -1,0 +1,247 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB",
+      "label": "InfluxDB Cloud",
+      "description": "InfluxDB Cloud — iosar bucket",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    { "type": "grafana",    "id": "grafana",    "name": "Grafana",    "version": "10.0.0" },
+    { "type": "datasource", "id": "influxdb",   "name": "InfluxDB",   "version": "1.0.0"  },
+    { "type": "panel",      "id": "stat",       "name": "Stat",       "version": ""       },
+    { "type": "panel",      "id": "timeseries", "name": "Time series","version": ""       }
+  ],
+  "annotations": { "list": [] },
+  "description": "IoSAR Bridge Structural Health Monitoring — v0.1",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Dominant Frequency",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "text": { "titleSize": 16, "valueSize": 40 }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Hz",
+          "decimals": 2,
+          "mappings": [],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue",   "value": null },
+              { "color": "green",  "value": 0.3  },
+              { "color": "yellow", "value": 5.0  }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+          "query": "from(bucket: \"iosar\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dominant_frequency_hz\")\n  |> last()",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Max Deflection (time window)",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "options": {
+        "reduceOptions": { "calcs": ["max"], "fields": "", "values": false },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "text": { "titleSize": 16, "valueSize": 40 }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "mm",
+          "decimals": 3,
+          "mappings": [],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green",  "value": null },
+              { "color": "yellow", "value": 0.05 },
+              { "color": "orange", "value": 0.5  },
+              { "color": "red",    "value": 2.0  }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+          "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"max_deflection_mm\")\n  |> max()",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Current Temperature",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "text": { "titleSize": 16, "valueSize": 40 }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "mappings": [],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue",   "value": null },
+              { "color": "green",  "value": 5    },
+              { "color": "yellow", "value": 30   },
+              { "color": "red",    "value": 45   }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+          "query": "from(bucket: \"iosar\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_c\")\n  |> last()",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Temperature Min / Max",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "options": {
+        "reduceOptions": { "calcs": ["min", "max"], "fields": "", "values": false },
+        "orientation": "horizontal",
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "text": {}
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "mappings": [],
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue",   "value": null },
+              { "color": "green",  "value": 5    },
+              { "color": "yellow", "value": 30   },
+              { "color": "red",    "value": 45   }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+          "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_c\")",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Displacement Time Series",
+      "description": "max_deflection_mm per LoRa uplink cycle. Per-PS timeseries akan ditambahkan di v0.2 setelah ps_monitoring.py diupdate untuk export per-PS data.",
+      "type": "timeseries",
+      "gridPos": { "h": 11, "w": 24, "x": 0, "y": 5 },
+      "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "none" },
+        "legend": {
+          "calcs": ["lastNotNull", "max", "min"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "mm",
+          "decimals": 3,
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "always",
+            "pointSize": 6,
+            "spanNulls": false,
+            "lineInterpolation": "linear"
+          },
+          "color": { "mode": "palette-classic" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "green", "value": null }]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "datasource": { "type": "influxdb", "uid": "${DS_INFLUXDB}" },
+          "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"max_deflection_mm\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"max_deflection_mm\")",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 38,
+  "tags": ["iosar", "bridge", "shm"],
+  "templating": { "list": [] },
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": {},
+  "timezone": "Asia/Tokyo",
+  "title": "IoSAR Bridge Monitoring v0.1",
+  "uid": "iosar-bridge-v01",
+  "version": 1,
+  "weekStart": ""
+}

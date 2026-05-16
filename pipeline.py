@@ -231,7 +231,7 @@ def run_processing(capture_dir: str) -> bool:
 
 
 # ─────────────────────────────────────────────
-# Step 4 — PS Monitoring (Natural Frequency)
+# Step 4 — PS Monitoring (Dominant Frequency)
 # ─────────────────────────────────────────────
 
 

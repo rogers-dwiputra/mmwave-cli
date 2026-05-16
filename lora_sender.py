@@ -4,10 +4,10 @@ LoRa uplink sender for Bridge Health Monitoring
 Reads ps_metrics.json → encodes 10-byte payload → sends via Wio-E5 AT commands
 
 Payload format (10 bytes, big-endian):
-  Byte 0-3 : Unix timestamp   (uint32, seconds since epoch)
-  Byte 4-5 : freq_mode_1_hz   × 100   uint16  (resolution 0.01 Hz,  max 655.35 Hz)
-  Byte 6-7 : displacement_rms × 1000  uint16  (resolution 0.001 mm, max 65.535 mm)
-  Byte 8-9 : max_deflection   × 1000  uint16  (resolution 0.001 mm, max 65.535 mm)
+  Byte 0-3 : Unix timestamp        (uint32, seconds since epoch)
+  Byte 4-5 : dominant_frequency_hz × 100   uint16  (resolution 0.01 Hz,  max 655.35 Hz)
+  Byte 6-7 : displacement_rms_mm   × 1000  uint16  (resolution 0.001 mm, max 65.535 mm)
+  Byte 8-9 : max_deflection_mm     × 1000  uint16  (resolution 0.001 mm, max 65.535 mm)
 
 Decoder (gateway side):
   ts       = struct.unpack('>I', byte[0:4])[0]   # Unix timestamp
@@ -116,8 +116,9 @@ def encode_payload(metrics: dict) -> str:
         ts_unix = int(time.time())
 
     # ── Values ───────────────────────────────────────────────────────
-    # Support both old (natural_frequency_hz) and new (freq_mode_1_hz) field names
-    freq = float(metrics.get('freq_mode_1_hz')
+    # Read dominant_frequency_hz; fall back to old field names for compatibility
+    freq = float(metrics.get('dominant_frequency_hz')
+                 or metrics.get('freq_mode_1_hz')
                  or metrics.get('natural_frequency_hz') or 0.0)
     # Support both old (displacement_rms_um) and new (displacement_rms_mm) field names
     rms_mm = metrics.get('displacement_rms_mm')

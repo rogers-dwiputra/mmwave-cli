@@ -169,6 +169,24 @@ def transfer_data(capture_dir: str, tda_ip: str) -> bool:
     else:
         print(f'[PIPELINE] WARNING: JSON config not found: {json_src}')
 
+    # Delete raw data from TDA SSD after successful transfer to free space.
+    # Raw .bin files are now safely stored on RPi (PostProc dir).
+    _step(f'Deleting from TDA SSD: /mnt/ssd/{capture_dir}')
+    ssh_cmd = [
+        'ssh',
+        '-oHostKeyAlgorithms=+ssh-rsa',
+        '-oPubkeyAcceptedAlgorithms=+ssh-rsa',
+        '-oStrictHostKeyChecking=no',
+        f'root@{tda_ip}',
+        f'rm -rf /mnt/ssd/{capture_dir}',
+    ]
+    del_result = subprocess.run(ssh_cmd)
+    if del_result.returncode == 0:
+        _step(f'TDA SSD cleaned — /mnt/ssd/{capture_dir} deleted')
+    else:
+        print(f'[PIPELINE] WARNING: TDA delete failed (exit {del_result.returncode}) '
+              f'— manual cleanup may be needed: rm -rf /mnt/ssd/{capture_dir}')
+
     return True
 
 

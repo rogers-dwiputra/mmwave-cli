@@ -49,14 +49,30 @@ signal.signal(signal.SIGTERM, _handle_signal)
 # Helpers
 # ─────────────────────────────────────────────
 
+def _ts() -> str:
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
 def _banner(title: str) -> None:
+    ts = _ts()
     print(f'\n{"="*60}')
     print(f'  {title}')
+    print(f'  {ts}')
     print(f'{"="*60}')
 
 def _step(msg: str) -> None:
-    ts = datetime.now().strftime('%H:%M:%S')
-    print(f'[{ts}] {msg}')
+    print(f'[{datetime.now().strftime("%H:%M:%S")}] {msg}', flush=True)
+
+def _step_start(name: str) -> float:
+    """Log step start and return start time."""
+    t = time.time()
+    print(f'[{datetime.now().strftime("%H:%M:%S")}] ▶ {name} started', flush=True)
+    return t
+
+def _step_done(name: str, t_start: float) -> float:
+    """Log step end with elapsed time. Returns elapsed seconds."""
+    elapsed = time.time() - t_start
+    print(f'[{datetime.now().strftime("%H:%M:%S")}] ✓ {name} done  ({elapsed:.1f}s)', flush=True)
+    return elapsed
 
 
 # ─────────────────────────────────────────────
@@ -346,55 +362,67 @@ def main():
         print(f'{"#"*60}')
 
         # ── 1. Capture ──────────────────────────────────────────────
+        t1 = _step_start(f'Step 1 — Capture ({args.duration}s)')
         capture_dir = run_capture(args.duration, args.tda_ip, args.label)
         if capture_dir is None:
             print('[PIPELINE] Capture failed — retrying in 10s...')
             time.sleep(10)
             continue
+        _step_done('Step 1 — Capture', t1)
 
         if shutdown_flag:
             break
 
         # ── 2. Transfer ─────────────────────────────────────────────
         if not args.skip_transfer:
+            t2 = _step_start(f'Step 2 — Transfer ({capture_dir})')
             ok = transfer_data(capture_dir, args.tda_ip)
             if not ok:
                 print('[PIPELINE] Transfer failed — skipping processing for this cycle')
                 if args.interval > 0:
                     time.sleep(args.interval)
                 continue
+            _step_done('Step 2 — Transfer', t2)
         else:
-            _step('Transfer skipped (--skip-transfer)')
+            _step('Step 2 — Transfer skipped (--skip-transfer)')
 
         if shutdown_flag:
             break
 
         # ── 3. SLC + Range Profile (debug mode only) ────────────────
         if args.debug:
+            t3 = _step_start('Step 3 — Edge Processing (SLC + range-profile)')
             run_processing(capture_dir)
+            _step_done('Step 3 — Edge Processing', t3)
         else:
-            _step('SLC/range-profile skipped (add --debug to enable)')
+            _step('Step 3 — Edge Processing skipped (add --debug to enable)')
 
         if shutdown_flag:
             break
 
         # ── 4. PS Monitoring ────────────────────────────────────────
         if not args.skip_ps:
+            t4 = _step_start('Step 4 — PS Monitoring')
             run_ps_monitoring(capture_dir, ps_map_file, args.ps_file)
+            _step_done('Step 4 — PS Monitoring', t4)
         else:
-            _step('PS monitoring skipped (--skip-ps)')
+            _step('Step 4 — PS Monitoring skipped (--skip-ps)')
 
         if shutdown_flag:
             break
 
         # ── 5. LoRa uplink ──────────────────────────────────────────
         if not args.skip_lora:
+            t5 = _step_start('Step 5 — LoRa Uplink')
             run_lora_send(capture_dir, args.lora_port, args.lora_appkey)
+            _step_done('Step 5 — LoRa Uplink', t5)
         else:
-            _step('LoRa uplink skipped (--skip-lora)')
+            _step('Step 5 — LoRa Uplink skipped (--skip-lora)')
 
         elapsed = time.time() - t_start
-        _banner(f'Cycle {cycle} done in {elapsed:.1f}s')
+        print(f'\n{"─"*60}')
+        print(f'  Cycle {cycle} completed  |  Total: {elapsed:.1f}s  |  {_ts()}')
+        print(f'{"─"*60}')
 
         if shutdown_flag:
             break

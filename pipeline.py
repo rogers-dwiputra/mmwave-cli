@@ -290,10 +290,12 @@ def main():
                         help='TDA board IP address')
     parser.add_argument('-i', '--interval',  type=float, default=0.0,
                         help='Wait time between cycles in seconds (0 = no delay)')
+    parser.add_argument('--debug',           action='store_true',
+                        help='Debug mode: also generate SLC image and range-profile plots '
+                             'after transfer. Without this flag, only PS metrics are computed '
+                             '(faster, recommended for long monitoring sessions).')
     parser.add_argument('--skip-transfer',   action='store_true',
                         help='Skip SCP transfer step (useful for testing processing only)')
-    parser.add_argument('--skip-processing', action='store_true',
-                        help='Skip SLC/range-profile generation')
     parser.add_argument('--skip-ps',         action='store_true',
                         help='Skip PS monitoring step')
     parser.add_argument('--ps-file',         type=str, default=None,
@@ -327,6 +329,7 @@ def main():
     print(f'  PostProc dir     : {POSTPROC_DIR}')
     print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
     print(f'  PS source        : {args.ps_file if args.ps_file else ps_map_file + " (auto/ADI)"}')
+    print(f'  Debug mode       : {"ON (SLC + range-profile enabled)" if args.debug else "OFF (PS metrics only)"}')
     print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
     print(f'  Press Ctrl+C to stop after the current cycle.')
 
@@ -366,11 +369,11 @@ def main():
         if shutdown_flag:
             break
 
-        # ── 3. SLC + Range Profile ──────────────────────────────────
-        if not args.skip_processing:
+        # ── 3. SLC + Range Profile (debug mode only) ────────────────
+        if args.debug:
             run_processing(capture_dir)
         else:
-            _step('Processing skipped (--skip-processing)')
+            _step('SLC/range-profile skipped (add --debug to enable)')
 
         if shutdown_flag:
             break

@@ -74,10 +74,10 @@ def main():
         print("Error: --num-loops must be >= 0")
         sys.exit(1)
     
-    # Generate capture directory name with timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    # Generate capture directory name with timestamp (2-digit year, e.g. 260510_141438)
+    timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
     capture_dir = f"{args.directory}_{timestamp}"
-    
+
     print(f"Capture directory: {capture_dir}")
     print(f"Capture duration: {args.duration} seconds")
     print(f"Number of loops  : {'Infinite (until Ctrl+C)' if args.num_loops == 0 else args.num_loops}")
@@ -112,8 +112,8 @@ def main():
             
             loop_count += 1
             
-            # Generate capture directory name with timestamp
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # Generate capture directory name with timestamp (2-digit year)
+            timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
             capture_dir = f"{args.directory}_{timestamp}"
             
             print("\n" + "="*60)

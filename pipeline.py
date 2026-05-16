@@ -401,6 +401,16 @@ def main():
                     time.sleep(args.interval)
                 continue
             _step_done('Step 2 — Transfer', t2)
+
+            # Verify essential binary files arrived — mimo.py can exit 0 with
+            # an empty TDA directory when the hardware failed to write data.
+            idx_file = os.path.join(POSTPROC_DIR, capture_dir, 'master_0000_idx.bin')
+            if not os.path.isfile(idx_file):
+                print(f'[PIPELINE] ERROR: master_0000_idx.bin missing in {capture_dir} '
+                      f'— capture produced no data. Removing empty dir, retrying in 10s...')
+                shutil.rmtree(os.path.join(POSTPROC_DIR, capture_dir), ignore_errors=True)
+                time.sleep(10)
+                continue
         else:
             _step('Step 2 — Transfer skipped (--skip-transfer)')
 

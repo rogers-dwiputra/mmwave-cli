@@ -1,0 +1,10 @@
+services:
+  telegraf:
+    image: telegraf:1.30-alpine
+    container_name: telegraf-iosar
+    restart: unless-stopped
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    environment:
+      - TTN_API_KEY=${TTN_API_KEY}
+      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}

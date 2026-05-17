@@ -28,7 +28,9 @@ from datetime import datetime
 SCRIPT_DIR     = os.path.dirname(os.path.abspath(__file__))
 HOME_DIR       = os.path.expanduser('~')
 EDGE_DIR       = os.path.join(HOME_DIR, 'IoSAR-EdgeProcessing')
-POSTPROC_DIR   = os.path.join(EDGE_DIR, 'PostProc')
+# POSTPROC_DIR   = os.path.join(EDGE_DIR, 'PostProc') # Auto Detect capture dirs in PostProc instead of hardcoding path
+# POSTPROC_DIR = ~/IoSAR-EdgeProcessing/PostProc # Static path on RPi's SD card for storing captures and processing results
+POSTPROC_DIR   = '/media/imrsl/Extreme SSD/PostProc' # SSD mounted on RPi for storing captures and processing results
 JSON_FILES_DIR = os.path.join(SCRIPT_DIR, 'mmwave_json_files')
 TDA_IP_DEFAULT = '192.168.33.180'
 

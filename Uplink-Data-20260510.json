@@ -1,0 +1,106 @@
+{
+  "name": "as.up.data.forward",
+  "time": "2026-05-10T07:09:44.800982448Z",
+  "identifiers": [
+    {
+      "device_ids": {
+        "device_id": "gb-sar-01",
+        "application_ids": {
+          "application_id": "iosar-imrsl"
+        },
+        "dev_eui": "2CF7F12070100407",
+        "join_eui": "526973696E674846",
+        "dev_addr": "27FA69A6"
+      }
+    }
+  ],
+  "data": {
+    "@type": "type.googleapis.com/ttn.lorawan.v3.ApplicationUp",
+    "end_device_ids": {
+      "device_id": "gb-sar-01",
+      "application_ids": {
+        "application_id": "iosar-imrsl"
+      },
+      "dev_eui": "2CF7F12070100407",
+      "join_eui": "526973696E674846",
+      "dev_addr": "27FA69A6"
+    },
+    "correlation_ids": [
+      "gs:uplink:01KR8BGX80A646VFMH5XTJBBB5"
+    ],
+    "received_at": "2026-05-10T07:09:44.783449303Z",
+    "uplink_message": {
+      "session_key_id": "AZ4QuFbrrCEoidyzhrfHrQ==",
+      "f_port": 8,
+      "frm_payload": "agCtvABpAAAAAw==",
+      "decoded_payload": {
+        "displacement_rms_mm": 0,
+        "displacement_rms_um": 0,
+        "latitude": 43.8156,
+        "longitude": 140.9723,
+        "max_deflection_mm": 0.003,
+        "max_deflection_um": 3,
+        "natural_frequency_hz": 1.05,
+        "timestamp_iso": "2026-05-10T16:09:32.000Z",
+        "timestamp_unix": 1778429372
+      },
+      "rx_metadata": [
+        {
+          "gateway_ids": {
+            "gateway_id": "gw-imrsl",
+            "eui": "2CF7F11374400064"
+          },
+          "timestamp": 3278488426,
+          "rssi": -56,
+          "channel_rssi": -56,
+          "snr": 10.2,
+          "frequency_offset": "-591",
+          "uplink_token": "ChYKFAoIZ3ctaW1yc2wSCCz38RN0QABkEOqGp5sMGgwIuN6A0AYQyf7hkgIgkKyNqbXX0wE=",
+          "channel_index": 7,
+          "received_at": "2026-05-10T07:09:44.562910692Z"
+        }
+      ],
+      "settings": {
+        "data_rate": {
+          "lora": {
+            "bandwidth": 125000,
+            "spreading_factor": 10,
+            "coding_rate": "4/5"
+          }
+        },
+        "frequency": "922000000",
+        "timestamp": 3278488426
+      },
+      "received_at": "2026-05-10T07:09:44.577974816Z",
+      "consumed_airtime": "0.370688s",
+      "locations": {
+        "frm-payload": {
+          "latitude": 43.8156,
+          "longitude": 140.9723,
+          "source": "SOURCE_GPS"
+        }
+      },
+      "network_ids": {
+        "net_id": "000013",
+        "ns_id": "EC656E0000104E13",
+        "tenant_id": "imrsl",
+        "cluster_id": "as1",
+        "cluster_address": "as1.cloud.thethings.industries",
+        "tenant_address": "imrsl.as1.cloud.thethings.industries"
+      }
+    }
+  },
+  "correlation_ids": [
+    "gs:uplink:01KR8BGX80A646VFMH5XTJBBB5"
+  ],
+  "origin": "ip-10-25-6-249.ap-northeast-1.compute.internal",
+  "context": {
+    "tenant-id": "CgVpbXJzbA=="
+  },
+  "visibility": {
+    "rights": [
+      "RIGHT_APPLICATION_TRAFFIC_READ"
+    ]
+  },
+  "unique_id": "01KR8BGXF0EH4SM7Z2H7ZFBXM4"
+}

@@ -16,3 +16,4 @@ mmwave
 *.mmwave.json
 __pycache__/
 /PostProc/*
+dashboard/telegraf/.env

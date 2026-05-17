@@ -1,0 +1,3621 @@
+Last login: Sun May 10 12:15:26 on ttys000
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun May 10 12:15:50 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ nmcli connection show --active
+NAME        UUID                                  TYPE      DEVICE     
+IMRSL_5G    874c6899-cc42-4fdc-9e70-ce4fe0c99f05  wifi      wlan0      
+tailscale0  550faac1-0d59-43ed-82a0-a67e4dd60651  tun       tailscale0 
+lo          f5b2e765-d524-4de6-9f3e-9dd545a6cb05  loopback  lo         
+imrsl@imrslpi5-02:~ $ nmcli -f IN-USE,SSID,BARS,SIGNAL dev wifi
+IN-USE  SSID      BARS  SIGNAL 
+*       IMRSL_5G  ***   68     
+        IMRSL_5G  ***   60     
+imrsl@imrslpi5-02:~ $ nmcli dev wifi rescan
+Error: org.freedesktop.NetworkManager.wifi.scan request failed: not authorized.
+imrsl@imrslpi5-02:~ $ sudo nmcli dev wifi rescan
+imrsl@imrslpi5-02:~ $ nmcli dev wifi list
+IN-USE  BSSID              SSID                         MODE   CHAN  RATE      >
+        66:CC:2C:3C:7A:A6  Hot Spot ?                  Infra  1     117 Mbit/s >
+        84:9E:56:A9:00:04  Rakuten-0004                 Infra  12    135 Mbit/s>
+        AC:44:F2:EB:55:50  Psycho-Acoustics             Infra  6     130 Mbit/s>
+        84:E8:CB:13:3C:BF  IMRSL_5G_WPA3                Infra  128   540 Mbit/s>
+        84:E8:CB:13:3C:B7  IMRSL_2G_WPA3                Infra  6     260 Mbit/s>
+        84:E8:CB:13:3C:B1  --                           Infra  6     260 Mbit/s>
+        84:E8:CB:13:3C:B2  IMRSL_2G                     Infra  6     260 Mbit/s>
+        AC:44:F2:F4:F5:F0  Psycho-Acoustics             Infra  132   270 Mbit/s>
+        AC:44:F2:EB:55:58  Psycho-Acoustics             Infra  52    270 Mbit/s>
+        AC:44:F2:EB:53:58  Psycho-Acoustics             Infra  11    130 Mbit/s>
+        AC:44:F2:F4:F5:E8  Psycho-Acoustics             Infra  6     130 Mbit/s>
+        AC:44:F2:EB:4C:80  Psycho-Acoustics             Infra  6     130 Mbit/s>
+        00:E5:F1:85:2C:86  --                           Infra  7     260 Mbit/s>
+        00:E5:F1:85:2C:87  IMRSL_2G_WPA3                Infra  7     260 Mbit/s>
+        AC:44:F2:EB:53:60  Psycho-Acoustics             Infra  100   270 Mbit/s>
+*       84:E8:CB:13:3C:BA  IMRSL_5G                     Infra  128   540 Mbit/s>
+        AC:44:F2:EB:4C:88  Psycho-Acoustics             Infra  100   270 Mbit/s>
+        00:E5:F1:85:2C:88  IMRSL_5G                     Infra  128   540 Mbit/s>
+        00:E5:F1:85:2C:8F  IMRSL_5G_WPA3                Infra  128   540 Mbit/s>
+        00:E5:F1:85:2C:8E  --                           Infra  128   540 Mbit/s>
+        90:BF:D9:C2:49:6C  --                           Infra  3     130 Mbit/s>
+        CE:6B:1E:05:FC:91  DIRECT-cAHL-L8360CDW_BRfc91  Infra  6     65 Mbit/s >
+        00:E5:F1:85:2C:80  IMRSL_2G                     Infra  7     260 Mbit/s>
+        54:9B:49:B3:31:FA  oga-lab                      Infra  1     130 Mbit/s>
+        34:97:F6:20:75:00  DSCOM                        Infra  11    260 Mbit/s>
+        3C:6A:D2:C1:FA:42  V502                         Infra  10    130 Mbit/s>
+        3C:6A:D2:B7:D2:0E  V502                         Infra  2     130 Mbit/s>
+        42:6A:D2:C1:EA:A0  --                           Infra  5     270 Mbit/s>
+        1C:7C:98:7F:B2:CF  aterm-2db3d3-a               Infra  120   540 Mbit/s>
+        34:97:F6:20:75:04  DSCOM                        Infra  36    135 Mbit/s>
+        E8:9F:80:8D:8C:B6  wnlab@Y                      Infra  13    130 Mbit/s>
+imrsl@imrslpi5-02:~ $ sudo nmcli dev wifi connect "Rakuten-0004" password "ARFNGS9V3X22MV9S"
+Error: 802-11-wireless-security.key-mgmt: property is missing.
+imrsl@imrslpi5-02:~ $ nmcli connection show
+NAME                UUID                                  TYPE      DEVICE     
+IMRSL_5G            874c6899-cc42-4fdc-9e70-ce4fe0c99f05  wifi      wlan0      
+tailscale0          550faac1-0d59-43ed-82a0-a67e4dd60651  tun       tailscale0 
+lo                  f5b2e765-d524-4de6-9f3e-9dd545a6cb05  loopback  lo         
+Rakuten-0004        3d84aa4e-db37-421a-9f3a-cce376408ec0  wifi      --         
+Wired connection 1  cf62e5da-5419-334d-ad8a-0f47dfefe3ff  ethernet  --         
+imrsl@imrslpi5-02:~ $ sudo nmcli connection up Rakuten-0004
+Read from remote host imrslpi5-02: Operation timed out
+Connection to imrslpi5-02 closed.
+client_loop: send disconnect: Broken pipe
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun May 10 12:23:47 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ nmcli connection show --active
+NAME        UUID                                  TYPE      DEVICE     
+IMRSL_5G    874c6899-cc42-4fdc-9e70-ce4fe0c99f05  wifi      wlan0      
+tailscale0  550faac1-0d59-43ed-82a0-a67e4dd60651  tun       tailscale0 
+lo          f5b2e765-d524-4de6-9f3e-9dd545a6cb05  loopback  lo         
+imrsl@imrslpi5-02:~ $ nmcli -f IN-USE,SSID,BARS,SIGNAL dev wifi
+IN-USE  SSID                         BARS  SIGNAL 
+        Hot Spot ?                  ****  100    
+        Psycho-Acoustics             ****  89     
+        IMRSL_5G_WPA3                ****  82     
+        --                           ****  82     
+        IMRSL_2G_WPA3                ***   79     
+        Psycho-Acoustics             ***   79     
+        Psycho-Acoustics             ***   79     
+        IMRSL_2G_WPA3                ***   75     
+        --                           ***   75     
+        IMRSL_2G                     ***   75     
+        Psycho-Acoustics             ***   74     
+        --                           ***   74     
+        IMRSL_2G                     ***   74     
+        Psycho-Acoustics             ***   70     
+        Psycho-Acoustics             ***   70     
+        Psycho-Acoustics             ***   69     
+*       IMRSL_5G                     ***   67     
+        Psycho-Acoustics             ***   65     
+        IMRSL_5G                     ***   62     
+        IMRSL_5G_WPA3                ***   62     
+        --                           ***   62     
+        oga-lab                      **    45     
+        aterm-2db3d3-g               **    45     
+        --                           **    44     
+        DIRECT-nK-BRAVIA             **    44     
+        --                           **    39     
+        V502                         **    37     
+        DSCOM                        **    37     
+        X107_mobile                  **    37     
+        DIRECT-cAHL-L8360CDW_BRfc91  **    35     
+        --                           **    34     
+        rs500k-b33358-2              **    34     
+        --                           **    32     
+        aterm-2db3d3-a               *     30     
+        TP-Link_2C90                 *     29     
+        --                           *     27     
+        DSCOM                        *     27     
+        Buffalo-G-19F0-WPA3          *     25     
+        V502                         *     25     
+        IODATA-90015a-2G             *     22     
+imrsl@imrslpi5-02:~ $ sudo nmcli dev wifi rescan
+imrsl@imrslpi5-02:~ $ nmcli dev wifi list
+IN-USE  BSSID              SSID                         MODE   CHAN  RATE      >
+        66:CC:2C:3C:7A:A6  Hot Spot ?                  Infra  1     117 Mbit/s >
+        84:9E:56:A9:00:04  Rakuten-0004                 Infra  12    135 Mbit/s>
+        AC:44:F2:EB:55:50  Psycho-Acoustics             Infra  6     130 Mbit/s>
+*       84:E8:CB:13:3C:BA  IMRSL_5G                     Infra  128   540 Mbit/s>
+        84:E8:CB:13:3C:BF  IMRSL_5G_WPA3                Infra  128   540 Mbit/s>
+        84:E8:CB:13:3C:B9  --                           Infra  128   540 Mbit/s>
+        84:E8:CB:13:3C:B7  IMRSL_2G_WPA3                Infra  6     260 Mbit/s>
+        84:E8:CB:13:3C:B1  --                           Infra  6     260 Mbit/s>
+        84:E8:CB:13:3C:B2  IMRSL_2G                     Infra  6     260 Mbit/s>
+        AC:44:F2:EB:55:58  Psycho-Acoustics             Infra  52    270 Mbit/s>
+        AC:44:F2:F4:F5:F0  Psycho-Acoustics             Infra  132   270 Mbit/s>
+        AC:44:F2:F4:F5:E8  Psycho-Acoustics             Infra  6     130 Mbit/s>
+        00:E5:F1:85:2C:86  --                           Infra  7     260 Mbit/s>
+        00:E5:F1:85:2C:87  IMRSL_2G_WPA3                Infra  7     260 Mbit/s>
+        00:E5:F1:85:2C:80  IMRSL_2G                     Infra  7     260 Mbit/s>
+        AC:44:F2:EB:53:58  Psycho-Acoustics             Infra  11    130 Mbit/s>
+        AC:44:F2:EB:4C:80  Psycho-Acoustics             Infra  6     130 Mbit/s>
+        AC:44:F2:EB:53:60  Psycho-Acoustics             Infra  100   270 Mbit/s>
+        AC:44:F2:EB:4C:88  Psycho-Acoustics             Infra  100   270 Mbit/s>
+        00:E5:F1:85:2C:88  IMRSL_5G                     Infra  128   540 Mbit/s>
+        00:E5:F1:85:2C:8F  IMRSL_5G_WPA3                Infra  128   540 Mbit/s>
+        00:E5:F1:85:2C:8E  --                           Infra  128   540 Mbit/s>
+        1C:7C:98:7F:B2:CE  aterm-2db3d3-g               Infra  6     540 Mbit/s>
+        90:BF:D9:C2:49:6C  --                           Infra  3     130 Mbit/s>
+        92:CD:B6:30:16:76  DIRECT-nK-BRAVIA             Infra  8     130 Mbit/s>
+        34:97:F6:20:75:01  X107_mobile                  Infra  11    260 Mbit/s>
+        54:9B:49:B3:31:FA  oga-lab                      Infra  1     130 Mbit/s>
+        CE:6B:1E:05:FC:91  DIRECT-cAHL-L8360CDW_BRfc91  Infra  6     65 Mbit/s >
+        5E:9B:49:B3:31:FA  --                           Infra  1     130 Mbit/s>
+        3C:6A:D2:B7:D2:0E  V502                         Infra  2     130 Mbit/s>
+        34:97:F6:20:75:00  DSCOM                        Infra  11    260 Mbit/s>
+        42:6A:D2:C1:FA:42  --                           Infra  10    130 Mbit/s>
+        02:25:36:B3:33:B8  rs500k-b33358-2              Infra  11    195 Mbit/s>
+        42:6A:D2:C1:EA:A1  --                           Infra  40    270 Mbit/s>
+        1C:7C:98:7F:B2:CF  aterm-2db3d3-a               Infra  120   540 Mbit/s>
+        40:AE:30:B4:2C:92  TP-Link_2C90                 Infra  4     130 Mbit/s>
+        42:6A:D2:C1:EA:A0  --                           Infra  5     270 Mbit/s>
+        34:97:F6:20:75:04  DSCOM                        Infra  36    135 Mbit/s>
+        C6:36:C0:CD:19:F3  Buffalo-G-19F0-WPA3          Infra  3     270 Mbit/s>
+        3C:6A:D2:C1:FA:43  V502                         Infra  40    270 Mbit/s>
+        34:76:C5:90:01:5A  IODATA-90015a-2G             Infra  2     540 Mbit/s>
+        E8:9F:80:8D:8C:B6  wnlab@Y                      Infra  13    130 Mbit/s>
+imrsl@imrslpi5-02:~ $ sudo nmcli connection delete Rakuten-0004
+Connection 'Rakuten-0004' (3d84aa4e-db37-421a-9f3a-cce376408ec0) successfully deleted.
+imrsl@imrslpi5-02:~ $ nmcli dev wifi rescan
+Error: org.freedesktop.NetworkManager.wifi.scan request failed: not authorized.
+imrsl@imrslpi5-02:~ $ exit
+logout
+Connection to imrslpi5-02 closed.
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun May 10 12:27:10 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ sudo nmcli dev wifi connect "Rakuten-0004" password "ARFNGS9V3X22MV9S"
+Device 'wlan0' successfully activated with 'b3f0ef63-b224-44ea-8c17-6876c4ddc2ce'.
+imrsl@imrslpi5-02:~ $ Read from remote host imrslpi5-02: Operation timed out
+Connection to imrslpi5-02 closed.
+client_loop: send disconnect: Broken pipe
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun May 10 12:29:22 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ nmcli connection show --active
+NAME          UUID                                  TYPE      DEVICE     
+Rakuten-0004  b3f0ef63-b224-44ea-8c17-6876c4ddc2ce  wifi      wlan0      
+tailscale0    550faac1-0d59-43ed-82a0-a67e4dd60651  tun       tailscale0 
+lo            f5b2e765-d524-4de6-9f3e-9dd545a6cb05  loopback  lo         
+imrsl@imrslpi5-02:~ $ Read from remote host imrslpi5-02: Connection reset by peer
+Connection to imrslpi5-02 closed.
+client_loop: send disconnect: Broken pipe
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun May 10 12:29:53 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ cd mmwave-cli/
+imrsl@imrslpi5-02:~/mmwave-cli $ nmcli connection show --active
+NAME          UUID                                  TYPE      DEVICE     
+Rakuten-0004  b3f0ef63-b224-44ea-8c17-6876c4ddc2ce  wifi      wlan0      
+tailscale0    2853c966-e429-4259-a7c0-902d7721fbbe  tun       tailscale0 
+lo            9d67ec07-1420-476f-beb1-5fd477d1c241  loopback  lo         
+imrsl@imrslpi5-02:~/mmwave-cli $ sudo sh ip-configure.sh 
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:41 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::4a44:36ed:eb27:d983/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1440 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:42 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.21/24 brd 192.168.0.255 scope global dynamic noprefixroute wlan0
+       valid_lft 43037sec preferred_lft 43037sec
+    inet6 240b:c010:430:43bc:b1df:5d6d:5ab4:2da9/64 scope global noprefixroute 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::b8c5:cb65:278b:c42e/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+4: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc fq_codel state UNKNOWN group default qlen 500
+    link/none 
+    inet 100.74.9.11/32 scope global tailscale0
+       valid_lft forever preferred_lft forever
+    inet6 fd7a:115c:a1e0::b601:90d/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::9da0:4ca:70c1:d423/64 scope link stable-privacy proto kernel_ll 
+       valid_lft forever preferred_lft forever
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+64 bytes from 192.168.33.180: icmp_seq=1 ttl=64 time=0.326 ms
+64 bytes from 192.168.33.180: icmp_seq=2 ttl=64 time=0.175 ms
+64 bytes from 192.168.33.180: icmp_seq=3 ttl=64 time=0.175 ms
+^C
+--- 192.168.33.180 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2049ms
+rtt min/avg/max/mdev = 0.175/0.225/0.326/0.071 ms
+imrsl@imrslpi5-02:~/mmwave-cli $ nano mimo.py
+imrsl@imrslpi5-02:~/mmwave-cli $ nano pipeline.py 
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10 --interval 5 --reset-ps --skip-processing --skip-ps --skip-lora
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 5.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : disabled (--skip-lora)
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-05-10 14:41:05]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144105
+Capture duration: 10.0 seconds
+Number of loops  : 1
+^CSTATUS   -1 | DEV MAP: 32 | [MMWCAS-DSP] Couldn't connect to TDA board!
+
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+
+
+  Interrupt received (Ctrl+C). Finishing current capture and shutting down...
+[PIPELINE] ERROR: mimo.py exited with code 255
+[PIPELINE] Capture failed — retrying in 10s...
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+
+[PIPELINE] Pipeline stopped cleanly.
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+^C
+--- 192.168.33.180 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2048ms
+
+imrsl@imrslpi5-02:~/mmwave-cli $ exit
+logout
+Connection to imrslpi5-02 closed.
+mac@Rogers-Macbook-Pro-M1 ~ % ssh imrsl@imrslpi5-02
+imrsl@imrslpi5-02's password: 
+Linux imrslpi5-02 6.12.47+rpt-rpi-2712 #1 SMP PREEMPT Debian 1:6.12.47-1+rpt1 (2025-09-16) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun May 10 14:36:54 2026 from 100.70.94.28
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+-bash: warning: setlocale: LC_CTYPE: cannot change locale (UTF-8): No such file or directory
+imrsl@imrslpi5-02:~ $ cd mmwave-cli/
+imrsl@imrslpi5-02:~/mmwave-cli $ sudo sh ip-configure.sh 
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:41 brd ff:ff:ff:ff:ff:ff
+3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1440 qdisc fq_codel state UP group default qlen 1000
+    link/ether 2c:cf:67:ef:ce:42 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.21/24 brd 192.168.0.255 scope global dynamic noprefixroute wlan0
+       valid_lft 42738sec preferred_lft 42738sec
+    inet6 240b:c010:430:43bc:b1df:5d6d:5ab4:2da9/64 scope global noprefixroute 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::b8c5:cb65:278b:c42e/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+4: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc fq_codel state UNKNOWN group default qlen 500
+    link/none 
+    inet 100.74.9.11/32 scope global tailscale0
+       valid_lft forever preferred_lft forever
+    inet6 fd7a:115c:a1e0::b601:90d/128 scope global 
+       valid_lft forever preferred_lft forever
+    inet6 fe80::9da0:4ca:70c1:d423/64 scope link stable-privacy proto kernel_ll 
+       valid_lft forever preferred_lft forever
+imrsl@imrslpi5-02:~/mmwave-cli $ ping 192.168.33.180
+PING 192.168.33.180 (192.168.33.180) 56(84) bytes of data.
+64 bytes from 192.168.33.180: icmp_seq=1 ttl=64 time=0.272 ms
+64 bytes from 192.168.33.180: icmp_seq=2 ttl=64 time=0.146 ms
+^C
+--- 192.168.33.180 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1021ms
+rtt min/avg/max/mdev = 0.146/0.209/0.272/0.063 ms
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10 --interval 5 --reset-ps --skip-processing --skip-ps --skip-lora
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 5.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : disabled (--skip-lora)
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-05-10 14:43:18]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144318
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS   -8 | DEV MAP: 15 | [ALL] RF init failed!
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    2   [2026-05-10 14:44:18]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144418
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS   -8 | DEV MAP: 14 | [SLAVE] Error: Failed to enable master RF
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    3   [2026-05-10 14:45:09]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144509
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144625
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS   -2 | DEV MAP: 15 | [MMWCAS-RF] Failed to stop frame!
+mmw_stop_frame failed (status: -2)
+[PIPELINE] ERROR: No new .mmwave.json generated — capture likely failed
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    4   [2026-05-10 14:46:56]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144656
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144811
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_144811
+
+ WARNING: Directory exists but contains NO files!
+   This usually means data capture failed.
+
+  WARNING: No files found in capture directory!
+
+  Skipping .mmwave.json generation.
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_144811.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_144811.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_20260510_144811 completed successfully!
+============================================================
+[14:48:30] Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144811
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_20260510_144811)
+============================================================
+[14:48:30] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_144811  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+[14:48:31] Fixing permissions...
+[14:48:31] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_20260510_144811/RPI_python_sine_2hz_1mm_10s_20260510_144811.mmwave.json
+[14:48:31] Processing skipped (--skip-processing)
+[14:48:31] PS monitoring skipped (--skip-ps)
+[14:48:31] LoRa uplink skipped (--skip-lora)
+
+============================================================
+  Cycle 4 done in 94.8s
+============================================================
+[14:48:31] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    5   [2026-05-10 14:48:36]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144836
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144951
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_144951
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_144951.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_144951.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_20260510_144951 completed successfully!
+============================================================
+[14:50:11] Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_144951
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_20260510_144951)
+============================================================
+[14:50:11] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_144951  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                           100% 5160     5.4MB/s   00:00    
+master_0000_idx.bin                           100% 5160     5.3MB/s   00:00    
+slave1_0000_idx.bin                           100% 5160     5.5MB/s   00:00    
+slave3_0000_idx.bin                           100% 5160     5.6MB/s   00:00    
+slave2_0000_data.bin                          100%   80MB   6.9MB/s   00:11    
+slave1_0000_data.bin                          100%   80MB   6.4MB/s   00:12    
+master_0000_data.bin                          100%   80MB   7.1MB/s   00:11    
+slave3_0000_data.bin                          100%   80MB   6.2MB/s   00:12    
+[14:50:59] Fixing permissions...
+[14:50:59] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_20260510_144951/RPI_python_sine_2hz_1mm_10s_20260510_144951.mmwave.json
+[14:50:59] Processing skipped (--skip-processing)
+[14:50:59] PS monitoring skipped (--skip-ps)
+[14:50:59] LoRa uplink skipped (--skip-lora)
+
+============================================================
+  Cycle 5 done in 143.5s
+============================================================
+[14:50:59] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    6   [2026-05-10 14:51:04]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145104
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS   -8 | DEV MAP: 14 | [SLAVE] Error: Failed to enable master RF
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    7   [2026-05-10 14:51:56]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145156
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS   -8 | DEV MAP: 15 | [ALL] RF init failed!
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    8   [2026-05-10 14:52:57]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145257
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145413
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_145413
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_145413.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_145413.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_20260510_145413 completed successfully!
+============================================================
+[14:54:32] Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145413
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_20260510_145413)
+============================================================
+[14:54:32] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_145413  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                           100% 5160     5.9MB/s   00:00    
+master_0000_idx.bin                           100% 5160     6.1MB/s   00:00    
+slave1_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+slave3_0000_idx.bin                           100% 5160     6.3MB/s   00:00    
+slave2_0000_data.bin                          100%   80MB   6.3MB/s   00:12    
+slave1_0000_data.bin                          100%   80MB   6.3MB/s   00:12    
+master_0000_data.bin                          100%   80MB   6.8MB/s   00:11    
+slave3_0000_data.bin                          100%   80MB   6.6MB/s   00:12    
+[14:55:22] Fixing permissions...
+[14:55:22] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_20260510_145413/RPI_python_sine_2hz_1mm_10s_20260510_145413.mmwave.json
+[14:55:22] Processing skipped (--skip-processing)
+[14:55:22] PS monitoring skipped (--skip-ps)
+[14:55:22] LoRa uplink skipped (--skip-lora)
+
+============================================================
+  Cycle 8 done in 144.5s
+============================================================
+[14:55:22] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    9   [2026-05-10 14:55:27]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145527
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145641
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_145641
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_145641.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_145641.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_20260510_145641 completed successfully!
+============================================================
+[14:57:01] Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145641
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_20260510_145641)
+============================================================
+[14:57:01] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_145641  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                           100% 5160     5.3MB/s   00:00    
+master_0000_idx.bin                           100% 5160     5.3MB/s   00:00    
+slave1_0000_idx.bin                           100% 5160     5.5MB/s   00:00    
+slave3_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+slave2_0000_data.bin                          100%   80MB   6.0MB/s   00:13    
+slave1_0000_data.bin                          100%   80MB   6.5MB/s   00:12    
+master_0000_data.bin                          100%   80MB   6.7MB/s   00:11    
+slave3_0000_data.bin                          100%   80MB   6.5MB/s   00:12    
+[14:57:51] Fixing permissions...
+[14:57:51] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_20260510_145641/RPI_python_sine_2hz_1mm_10s_20260510_145641.mmwave.json
+[14:57:51] Processing skipped (--skip-processing)
+[14:57:51] PS monitoring skipped (--skip-ps)
+[14:57:51] LoRa uplink skipped (--skip-lora)
+
+============================================================
+  Cycle 9 done in 144.5s
+============================================================
+[14:57:51] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE   10   [2026-05-10 14:57:56]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145756
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS   -8 | DEV MAP:  1 | [MASTER] Error: Failed to enable master RF
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE   11   [2026-05-10 14:58:26]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145826
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145941
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_145941
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_145941.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_145941.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_20260510_145941 completed successfully!
+============================================================
+[15:00:00] Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_145941
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_20260510_145941)
+============================================================
+[15:00:00] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_145941  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+master_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+slave1_0000_idx.bin                           100% 5160     6.2MB/s   00:00    
+slave3_0000_idx.bin                           100% 5160     6.2MB/s   00:00    
+slave2_0000_data.bin                          100%   80MB   6.4MB/s   00:12    
+slave1_0000_data.bin                          100%   80MB   6.4MB/s   00:12    
+master_0000_data.bin                          100%   80MB   6.6MB/s   00:12    
+slave3_0000_data.bin                          100%   80MB   6.7MB/s   00:11    
+[15:00:50] Fixing permissions...
+[15:00:50] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_20260510_145941/RPI_python_sine_2hz_1mm_10s_20260510_145941.mmwave.json
+[15:00:50] Processing skipped (--skip-processing)
+[15:00:50] PS monitoring skipped (--skip-ps)
+[15:00:50] LoRa uplink skipped (--skip-lora)
+
+============================================================
+  Cycle 11 done in 144.3s
+============================================================
+[15:00:50] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE   12   [2026-05-10 15:00:55]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_150055
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_150210
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_150210
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_150210.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_150210.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_20260510_150210 completed successfully!
+============================================================
+[15:02:29] Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_150210
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_20260510_150210)
+============================================================
+[15:02:29] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_150210  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+master_0000_idx.bin                           100% 5160     5.9MB/s   00:00    
+slave1_0000_idx.bin                           100% 5160     5.9MB/s   00:00    
+slave3_0000_idx.bin                           100% 5160     5.9MB/s   00:00    
+slave2_0000_data.bin                          100%   80MB   6.3MB/s   00:12    
+slave1_0000_data.bin                          100%   80MB   6.6MB/s   00:12    
+master_0000_data.bin                          100%   80MB   6.5MB/s   00:12    
+slave3_0000_data.bin                          100%   80MB   6.7MB/s   00:12    
+[15:03:19] Fixing permissions...
+[15:03:19] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_20260510_150210/RPI_python_sine_2hz_1mm_10s_20260510_150210.mmwave.json
+[15:03:19] Processing skipped (--skip-processing)
+[15:03:19] PS monitoring skipped (--skip-ps)
+[15:03:19] LoRa uplink skipped (--skip-lora)
+
+============================================================
+  Cycle 12 done in 143.9s
+============================================================
+[15:03:19] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE   13   [2026-05-10 15:03:24]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_150324
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_150438
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_150438
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_150438.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_20260510_150438.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_20260510_150438 completed successfully!
+============================================================
+[15:04:58] Capture directory: RPI_python_sine_2hz_1mm_10s_20260510_150438
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_20260510_150438)
+============================================================
+[15:04:58] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_20260510_150438  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                           100% 5160     5.4MB/s   00:00    
+master_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+slave1_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+slave3_0000_idx.bin                           100% 5160     5.8MB/s   00:00    
+slave2_0000_data.bin                          100%   80MB   6.5MB/s   00:12    
+slave1_0000_data.bin                          100%   80MB   6.1MB/s   00:13    
+master_0000_data.bin                          100%   80MB   6.2MB/s   00:12    
+slave3_0000_data.bin                          100%   80MB   6.4MB/s   00:12    
+[15:05:49] Fixing permissions...
+[15:05:49] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_20260510_150438/RPI_python_sine_2hz_1mm_10s_20260510_150438.mmwave.json
+[15:05:49] Processing skipped (--skip-processing)
+[15:05:49] PS monitoring skipped (--skip-ps)
+[15:05:49] LoRa uplink skipped (--skip-lora)
+
+============================================================
+  Cycle 13 done in 145.7s
+============================================================
+[15:05:49] Waiting 5.0s before next cycle...
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+
+[PIPELINE] Pipeline stopped cleanly.
+imrsl@imrslpi5-02:~/mmwave-cli $ nano pipeline.py 
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10 --interval 5 --reset-ps
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 5.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : /dev/ttyUSB0
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-05-10 15:07:01]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_150701
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817 completed successfully!
+============================================================
+[15:08:36] Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817)
+============================================================
+[15:08:36] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                             100% 5160     5.4MB/s   00:00    
+master_0000_idx.bin                             100% 5160     6.0MB/s   00:00    
+slave1_0000_idx.bin                             100% 5160     6.0MB/s   00:00    
+slave3_0000_idx.bin                             100% 5160     6.0MB/s   00:00    
+slave2_0000_data.bin                            100%   80MB   6.3MB/s   00:12    
+slave1_0000_data.bin                            100%   80MB   6.1MB/s   00:13    
+master_0000_data.bin                            100%   80MB   7.0MB/s   00:11    
+slave3_0000_data.bin                            100%   80MB   6.3MB/s   00:12    
+[15:09:27] Fixing permissions...
+[15:09:27] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817
+────────────────────────────────────────────────────────────
+Total valid frames: 107  →  processing frame 107
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 107): 151.2 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817
+────────────────────────────────────────────────────────────
+  Total frames : 107  |  Warm-up skip : 5  |  Usable : 102
+  Duration     : 10.2s  |  dt : 0.1s  |  f_res : 0.098 Hz
+  No PS map — running ADI computation (skipping 5 warm-up frames)...
+  ADI pass — frame 107/107
+  Selected 50 PS candidates from 102 frames
+  Saved PS map → /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Extracting phase at 50 PS points...
+^CPhase pass — frame  12/107
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C^C^Ce pass — frame  42/107
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^CPhase pass — frame  43/107
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C^C^C^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^CPhase pass — frame  52/107
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^CPhase pass — frame  53/107
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C^Case pass — frame  54/107
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+  Phase pass — frame 107/107
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/ps_map.png
+  Saved time series   → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/displacement_timeseries.csv
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_150817/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Mode 1 Frequency  :       0.588 Hz       │
+  │  Mode 2 Frequency  :        0.98 Hz       │
+  │  Mode 3 Frequency  :       3.235 Hz       │
+  │  Displacement RMS  :    0.000414 mm       │
+  │  Max Deflection    :    0.002647 mm       │
+  │  Freq Resolution   :       0.098 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            102       │
+  └──────────────────────────────────────────┘
+
+[PIPELINE] Pipeline stopped cleanly.
+imrsl@imrslpi5-02:~/mmwave-cli $ nano mimo.py
+imrsl@imrslpi5-02:~/mmwave-cli $ nano pipeline.py 
+imrsl@imrslpi5-02:~/mmwave-cli $ cat pipeline.py 
+#!/usr/bin/env python3
+"""
+Automated MIMO Radar Pipeline
+Continuously: capture → transfer data from TDA → edge processing → repeat
+
+Usage:
+    python3 pipeline.py
+    python3 pipeline.py --duration 10 --interval 5
+    python3 pipeline.py --duration 60 --tda-ip 192.168.33.180
+
+Press Ctrl+C to stop gracefully after the current cycle completes.
+"""
+
+import argparse
+import glob
+import importlib.util
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import time
+from datetime import datetime
+
+# ─────────────────────────────────────────────
+# Paths  (resolved relative to this script)
+# ─────────────────────────────────────────────
+SCRIPT_DIR     = os.path.dirname(os.path.abspath(__file__))
+HOME_DIR       = os.path.expanduser('~')
+EDGE_DIR       = os.path.join(HOME_DIR, 'IoSAR-EdgeProcessing')
+POSTPROC_DIR   = os.path.join(EDGE_DIR, 'PostProc')
+JSON_FILES_DIR = os.path.join(SCRIPT_DIR, 'mmwave_json_files')
+TDA_IP_DEFAULT = '192.168.33.180'
+
+# ─────────────────────────────────────────────
+# Graceful shutdown
+# ─────────────────────────────────────────────
+shutdown_flag = False
+
+def _handle_signal(sig, frame):
+    global shutdown_flag
+    print('\n\n[PIPELINE] Interrupt received — stopping after current cycle...')
+    shutdown_flag = True
+
+signal.signal(signal.SIGINT,  _handle_signal)
+signal.signal(signal.SIGTERM, _handle_signal)
+
+# ─────────────────────────────────────────────
+# Helpers
+# ─────────────────────────────────────────────
+
+def _banner(title: str) -> None:
+    print(f'\n{"="*60}')
+    print(f'  {title}')
+    print(f'{"="*60}')
+
+def _step(msg: str) -> None:
+    ts = datetime.now().strftime('%H:%M:%S')
+    print(f'[{ts}] {msg}')
+
+
+# ─────────────────────────────────────────────
+# Step 1 — Capture
+# ─────────────────────────────────────────────
+
+def run_capture(duration: float, tda_ip: str) -> str | None:
+    """
+    Execute one capture cycle via mimo.py.
+    Returns the capture directory name (e.g. 'mmwave_python_20260423_104923'),
+    or None on failure.
+    """
+    _banner(f'STEP 1 — Radar Capture  ({duration}s)')
+
+    # Remember existing JSON files so we can detect the new one afterwards.
+    before = set(glob.glob(os.path.join(JSON_FILES_DIR, '*.mmwave.json')))
+
+    cmd = [
+        sys.executable,
+        os.path.join(SCRIPT_DIR, 'mimo.py'),
+        '--duration', str(duration),
+        '--tda-ip',   tda_ip,
+        '--num-loops', '1',
+	'--directory', 'RPI_python_sine_2hz_1mm_10s_continuous'
+    ]
+    result = subprocess.run(cmd)
+
+    if result.returncode != 0:
+        print(f'[PIPELINE] ERROR: mimo.py exited with code {result.returncode}')
+        return None
+
+    # Identify the newly created .mmwave.json file.
+    after     = set(glob.glob(os.path.join(JSON_FILES_DIR, '*.mmwave.json')))
+    new_files = after - before
+
+    if not new_files:
+        print('[PIPELINE] ERROR: No new .mmwave.json generated — capture likely failed')
+        return None
+
+    new_json = list(new_files)[0]
+
+    stem = os.path.basename(new_json)
+    if stem.endswith('.mmwave.json'):
+        capture_dir = stem[: -len('.mmwave.json')]
+        _step(f'Capture directory: {capture_dir}')
+        return capture_dir
+
+    return None
+
+
+# ─────────────────────────────────────────────
+# Step 2 — Transfer
+# ─────────────────────────────────────────────
+
+def transfer_data(capture_dir: str, tda_ip: str) -> bool:
+    """
+    SCP capture data from TDA board → PostProc,
+    fix permissions, and move the .mmwave.json into the capture folder.
+    Returns True on success.
+    """
+    _banner(f'STEP 2 — Transfer Data  ({capture_dir})')
+
+    remote_src = f'root@{tda_ip}:/mnt/ssd/{capture_dir}'
+    os.makedirs(POSTPROC_DIR, exist_ok=True)
+
+    _step(f'SCP  {remote_src}  →  {POSTPROC_DIR}/')
+    scp_cmd = [
+        'scp',
+        '-O',
+        '-oHostKeyAlgorithms=+ssh-rsa',
+        '-oPubkeyAcceptedAlgorithms=+ssh-rsa',
+        '-oStrictHostKeyChecking=no',
+        '-r',
+        remote_src,
+        POSTPROC_DIR + '/',
+    ]
+    result = subprocess.run(scp_cmd)
+    if result.returncode != 0:
+        print(f'[PIPELINE] ERROR: SCP transfer failed (exit {result.returncode})')
+        return False
+
+    # Fix ownership/permissions on files copied as root.
+    _step('Fixing permissions...')
+    subprocess.run(['chmod', '-R', 'u+rwx', POSTPROC_DIR], check=False)
+
+    # Move the .mmwave.json config file into the capture directory.
+    json_src     = os.path.join(JSON_FILES_DIR, f'{capture_dir}.mmwave.json')
+    capture_path = os.path.join(POSTPROC_DIR, capture_dir)
+    if os.path.isfile(json_src):
+        os.makedirs(capture_path, exist_ok=True)
+        dst = os.path.join(capture_path, f'{capture_dir}.mmwave.json')
+        shutil.move(json_src, dst)
+        _step(f'Moved config JSON → {dst}')
+    else:
+        print(f'[PIPELINE] WARNING: JSON config not found: {json_src}')
+
+    return True
+
+
+# ─────────────────────────────────────────────
+# Step 3 — Edge Processing (SLC + Range Profile)
+# ─────────────────────────────────────────────
+
+_mimo_processing_mod = None
+
+def _load_mimo_processing():
+    global _mimo_processing_mod
+    if _mimo_processing_mod is not None:
+        return _mimo_processing_mod
+    mod_path = os.path.join(EDGE_DIR, 'mimo_processing.py')
+    if not os.path.isfile(mod_path):
+        raise FileNotFoundError(f'mimo_processing.py not found at {mod_path}')
+    spec = importlib.util.spec_from_file_location('mimo_processing', mod_path)
+    mod  = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    _mimo_processing_mod = mod
+    return mod
+
+
+def run_processing(capture_dir: str) -> bool:
+    """Generate SLC.png and range-profile.png for a single capture directory."""
+    _banner(f'STEP 3 — Edge Processing  ({capture_dir})')
+
+    data_folder = os.path.join(POSTPROC_DIR, capture_dir)
+    if not os.path.isdir(data_folder):
+        print(f'[PIPELINE] ERROR: Capture directory not found: {data_folder}')
+        return False
+
+    try:
+        mod = _load_mimo_processing()
+        mod.process_capture(data_folder)
+        return True
+    except Exception as exc:
+        import traceback
+        print(f'[PIPELINE] ERROR during processing: {exc}')
+        traceback.print_exc()
+        return False
+
+
+# ─────────────────────────────────────────────
+# Step 4 — PS Monitoring (Natural Frequency)
+# ─────────────────────────────────────────────
+
+
+_ps_monitoring_mod = None
+
+def _load_ps_monitoring():
+    global _ps_monitoring_mod
+    if _ps_monitoring_mod is not None:
+        return _ps_monitoring_mod
+    mod_path = os.path.join(EDGE_DIR, 'ps_monitoring.py')
+    if not os.path.isfile(mod_path):
+        raise FileNotFoundError(f'ps_monitoring.py not found at {mod_path}')
+    spec = importlib.util.spec_from_file_location('ps_monitoring', mod_path)
+    mod  = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    _ps_monitoring_mod = mod
+    return mod
+
+
+def run_ps_monitoring(capture_dir: str, ps_map_file: str) -> dict:
+    """Run PS-based structural health monitoring for one capture directory."""
+    _banner(f'STEP 4 — PS Monitoring  ({capture_dir})')
+
+    data_folder = os.path.join(POSTPROC_DIR, capture_dir)
+    if not os.path.isdir(data_folder):
+        print(f'[PIPELINE] ERROR: Capture directory not found: {data_folder}')
+        return {}
+
+    try:
+        mod = _load_ps_monitoring()
+        return mod.run_ps_monitoring(data_folder, ps_map_file)
+    except Exception as exc:
+        import traceback
+        print(f'[PIPELINE] ERROR during PS monitoring: {exc}')
+        traceback.print_exc()
+        return {}
+
+
+# ─────────────────────────────────────────────
+# Step 5 — LoRa uplink (Wio-E5)
+# ─────────────────────────────────────────────
+
+def run_lora_send(capture_dir: str,
+                  port: str, appkey: str) -> bool:
+    """Send ps_metrics.json for this capture via LoRaWAN."""
+    _banner(f'STEP 5 — LoRa Uplink  ({capture_dir})')
+
+    metrics_path = os.path.join(
+        EDGE_DIR, 'python-result', capture_dir, 'ps_metrics.json'
+    )
+    if not os.path.isfile(metrics_path):
+        print(f'[PIPELINE] ERROR: ps_metrics.json not found: {metrics_path}')
+        return False
+
+    try:
+        # Import lora_sender from the same directory as pipeline.py
+        import importlib.util as _ilu
+        _spec = _ilu.spec_from_file_location(
+            'lora_sender',
+            os.path.join(SCRIPT_DIR, 'lora_sender.py'),
+        )
+        _mod = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        return _mod.send_lora(metrics_path=metrics_path,
+                              port=port, appkey=appkey)
+    except Exception as exc:
+        import traceback
+        print(f'[PIPELINE] ERROR during LoRa send: {exc}')
+        traceback.print_exc()
+        return False
+
+
+# ─────────────────────────────────────────────
+# Main loop
+# ─────────────────────────────────────────────
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Automated MIMO Radar Capture & Processing Pipeline',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument('-t', '--duration',  type=float, default=10.0,
+                        help='Radar capture duration in seconds')
+    parser.add_argument('--tda-ip',          type=str,   default=TDA_IP_DEFAULT,
+                        help='TDA board IP address')
+    parser.add_argument('-i', '--interval',  type=float, default=0.0,
+                        help='Wait time between cycles in seconds (0 = no delay)')
+    parser.add_argument('--skip-transfer',   action='store_true',
+                        help='Skip SCP transfer step (useful for testing processing only)')
+    parser.add_argument('--skip-processing', action='store_true',
+                        help='Skip SLC/range-profile generation')
+    parser.add_argument('--skip-ps',         action='store_true',
+                        help='Skip PS monitoring step')
+    parser.add_argument('--reset-ps',        action='store_true',
+                        help='Delete PS map so it is recomputed on the next cycle')
+    parser.add_argument('--skip-lora',       action='store_true',
+                        help='Skip LoRa uplink step')
+    parser.add_argument('--lora-port',       type=str,
+                        default='/dev/ttyUSB0',
+                        help='Serial port of Wio-E5 LoRa module')
+    parser.add_argument('--lora-appkey',     type=str,
+                        default='562AD0AB720BA25D830E20164D3CC1B3',
+                        help='LoRaWAN APPKEY (32 hex chars)')
+    args = parser.parse_args()
+
+    # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
+    ps_map_file = os.path.join(EDGE_DIR, 'ps_map.json')
+    if args.reset_ps and os.path.isfile(ps_map_file):
+        os.remove(ps_map_file)
+        print(f'[PIPELINE] Deleted PS map: {ps_map_file}')
+
+    print('╔══════════════════════════════════════════════════════════╗')
+    print('║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║')
+    print('╚══════════════════════════════════════════════════════════╝')
+    print(f'  Capture duration : {args.duration}s')
+    print(f'  TDA IP address   : {args.tda_ip}')
+    print(f'  Cycle interval   : {args.interval}s')
+    print(f'  PostProc dir     : {POSTPROC_DIR}')
+    print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
+    print(f'  PS map           : {ps_map_file}')
+    print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
+    print(f'  Press Ctrl+C to stop after the current cycle.')
+
+    os.makedirs(POSTPROC_DIR,   exist_ok=True)
+    os.makedirs(JSON_FILES_DIR, exist_ok=True)
+
+    cycle = 0
+    while not shutdown_flag:
+        cycle += 1
+        t_start = time.time()
+
+        print(f'\n{"#"*60}')
+        print(f'# CYCLE {cycle:4d}   [{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}]')
+        print(f'{"#"*60}')
+
+        # ── 1. Capture ──────────────────────────────────────────────
+        capture_dir = run_capture(args.duration, args.tda_ip)
+        if capture_dir is None:
+            print('[PIPELINE] Capture failed — retrying in 10s...')
+            time.sleep(10)
+            continue
+
+        if shutdown_flag:
+            break
+
+        # ── 2. Transfer ─────────────────────────────────────────────
+        if not args.skip_transfer:
+            ok = transfer_data(capture_dir, args.tda_ip)
+            if not ok:
+                print('[PIPELINE] Transfer failed — skipping processing for this cycle')
+                if args.interval > 0:
+                    time.sleep(args.interval)
+                continue
+        else:
+            _step('Transfer skipped (--skip-transfer)')
+
+        if shutdown_flag:
+            break
+
+        # ── 3. SLC + Range Profile ──────────────────────────────────
+        if not args.skip_processing:
+            run_processing(capture_dir)
+        else:
+            _step('Processing skipped (--skip-processing)')
+
+        if shutdown_flag:
+            break
+
+        # ── 4. PS Monitoring ────────────────────────────────────────
+        if not args.skip_ps:
+            run_ps_monitoring(capture_dir, ps_map_file)
+        else:
+            _step('PS monitoring skipped (--skip-ps)')
+
+        if shutdown_flag:
+            break
+
+        # ── 5. LoRa uplink ──────────────────────────────────────────
+        if not args.skip_lora:
+            run_lora_send(capture_dir, args.lora_port, args.lora_appkey)
+        else:
+            _step('LoRa uplink skipped (--skip-lora)')
+
+        elapsed = time.time() - t_start
+        _banner(f'Cycle {cycle} done in {elapsed:.1f}s')
+
+        if shutdown_flag:
+            break
+
+        if args.interval > 0:
+            _step(f'Waiting {args.interval}s before next cycle...')
+            time.sleep(args.interval)
+
+    print('\n[PIPELINE] Pipeline stopped cleanly.')
+
+
+if __name__ == '__main__':
+    main()
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10 --interval 5 --reset-ps
+[PIPELINE] Deleted PS map: /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 5.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : /dev/ttyUSB0
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-05-10 15:29:22]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_152922
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153038
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS   -1 | DEV MAP: 15 | [MMWCAS-RF] Failed to stop frame!
+mmw_stop_frame failed (status: -1)
+[PIPELINE] ERROR: No new .mmwave.json generated — capture likely failed
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    2   [2026-05-10 15:31:08]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153108
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224
+
+ WARNING: Directory exists but contains NO files!
+   This usually means data capture failed.
+
+  WARNING: No files found in capture directory!
+
+  Skipping .mmwave.json generation.
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224 completed successfully!
+============================================================
+[15:32:43] Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224)
+============================================================
+[15:32:43] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+[15:32:43] Fixing permissions...
+[15:32:43] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224
+────────────────────────────────────────────────────────────
+[PIPELINE] ERROR during processing: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224/master_0000_idx.bin'
+Traceback (most recent call last):
+  File "/home/imrsl/mmwave-cli/pipeline.py", line 190, in run_processing
+    mod.process_capture(data_folder)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/imrsl/IoSAR-EdgeProcessing/mimo_processing.py", line 508, in process_capture
+    num_valid = get_valid_num_frames(idx_file)
+  File "/home/imrsl/IoSAR-EdgeProcessing/mimo_processing.py", line 118, in get_valid_num_frames
+    with open(idx_file_path, 'rb') as fh:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224/master_0000_idx.bin'
+
+============================================================
+  STEP 4 — PS Monitoring  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224
+────────────────────────────────────────────────────────────
+[PIPELINE] ERROR during PS monitoring: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224/master_0000_idx.bin'
+Traceback (most recent call last):
+  File "/home/imrsl/mmwave-cli/pipeline.py", line 231, in run_ps_monitoring
+    return mod.run_ps_monitoring(data_folder, ps_map_file)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/imrsl/IoSAR-EdgeProcessing/ps_monitoring.py", line 530, in run_ps_monitoring
+    num_frames = mp.get_valid_num_frames(idx_file)
+  File "/home/imrsl/IoSAR-EdgeProcessing/mimo_processing.py", line 118, in get_valid_num_frames
+    with open(idx_file_path, 'rb') as fh:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224/master_0000_idx.bin'
+
+============================================================
+  STEP 5 — LoRa Uplink  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224)
+============================================================
+[PIPELINE] ERROR: ps_metrics.json not found: /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153224/ps_metrics.json
+
+============================================================
+  Cycle 2 done in 96.1s
+============================================================
+[15:32:44] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    3   [2026-05-10 15:32:49]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153250
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+STATUS   -8 | DEV MAP: 15 | [ALL] RF init failed!
+
+
+  Interrupt received (Ctrl+C). Finishing current capture and shutting down...
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+[PIPELINE] Pipeline stopped cleanly.
+imrsl@imrslpi5-02:~/mmwave-cli $ python3 pipeline.py --duration 10 --interval 5 --reset-ps
+╔══════════════════════════════════════════════════════════╗
+║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║
+╚══════════════════════════════════════════════════════════╝
+  Capture duration : 10.0s
+  TDA IP address   : 192.168.33.180
+  Cycle interval   : 5.0s
+  PostProc dir     : /home/imrsl/IoSAR-EdgeProcessing/PostProc
+  Results dir      : /home/imrsl/IoSAR-EdgeProcessing/python-result
+  PS map           : /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  LoRa port        : /dev/ttyUSB0
+  Press Ctrl+C to stop after the current cycle.
+
+############################################################
+# CYCLE    1   [2026-05-10 15:35:11]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153511
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS   -8 | DEV MAP: 14 | [SLAVE] Error: Failed to enable master RF
+[PIPELINE] ERROR: mimo.py exited with code 248
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    2   [2026-05-10 15:36:03]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153603
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  80.3M
+  master_0000_idx.bin                                    5.0K
+  slave1_0000_data.bin                                  80.3M
+  slave1_0000_idx.bin                                    5.0K
+  slave2_0000_data.bin                                  80.3M
+  slave2_0000_idx.bin                                    5.0K
+  slave3_0000_data.bin                                  80.3M
+  slave3_0000_idx.bin                                    5.0K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718 completed successfully!
+============================================================
+[15:37:37] Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718)
+============================================================
+[15:37:37] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                             100% 5160     5.7MB/s   00:00    
+master_0000_idx.bin                             100% 5160     6.0MB/s   00:00    
+slave1_0000_idx.bin                             100% 5160     6.0MB/s   00:00    
+slave3_0000_idx.bin                             100% 5160     6.1MB/s   00:00    
+slave2_0000_data.bin                            100%   80MB   6.2MB/s   00:12    
+slave1_0000_data.bin                            100%   80MB   6.1MB/s   00:13    
+master_0000_data.bin                            100%   80MB   6.3MB/s   00:12    
+slave3_0000_data.bin                            100%   80MB   6.5MB/s   00:12    
+[15:38:29] Fixing permissions...
+[15:38:29] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718
+────────────────────────────────────────────────────────────
+Total valid frames: 107  →  processing frame 107
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 107): 151.4 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718
+────────────────────────────────────────────────────────────
+  Total frames : 107  |  Warm-up skip : 5  |  Usable : 102
+  Duration     : 10.2s  |  dt : 0.1s  |  f_res : 0.098 Hz
+  No PS map — running ADI computation (skipping 5 warm-up frames)...
+  ADI pass — frame 107/107
+  Selected 50 PS candidates from 102 frames
+  Saved PS map → /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Extracting phase at 50 PS points...
+  Phase pass — frame 107/107
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/ps_map.png
+  Saved time series   → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/displacement_timeseries.csv
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Mode 1 Frequency  :        0.49 Hz       │
+  │  Mode 2 Frequency  :       2.353 Hz       │
+  │  Mode 3 Frequency  :       3.922 Hz       │
+  │  Displacement RMS  :    0.000435 mm       │
+  │  Max Deflection    :    0.002769 mm       │
+  │  Freq Resolution   :       0.098 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            102       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718)
+============================================================
+[15:54:54] [LoRa] Metrics loaded: RPI_python_sine_2hz_1mm_10s_continuous_20260510_153718
+[15:54:54] [LoRa] Encode → ts=2026-05-11 00:54:54  freq=0.49 Hz  rms=0.435 μm  max=2.769 μm
+[15:54:54] [LoRa] Payload hex (10 bytes): 6A00AA4E003100000003
+[15:54:55] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[15:54:55] [LoRa] → AT
+[15:54:58] [LoRa] ERROR: No response from Wio-E5 — check cable and port
+[15:55:03] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 2 done in 1140.3s
+============================================================
+[15:55:03] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    3   [2026-05-10 15:55:08]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155508
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155624
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS   -1 | DEV MAP: 15 | [MMWCAS-RF] Failed to initiate framing!
+mmw_start_frame failed (status: -1)
+[PIPELINE] ERROR: No new .mmwave.json generated — capture likely failed
+[PIPELINE] Capture failed — retrying in 10s...
+
+############################################################
+# CYCLE    4   [2026-05-10 15:56:41]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155641
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756
+
+ WARNING: Directory exists but contains NO files!
+   This usually means data capture failed.
+
+  WARNING: No files found in capture directory!
+
+  Skipping .mmwave.json generation.
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756 completed successfully!
+============================================================
+[15:58:15] Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756)
+============================================================
+[15:58:15] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+[15:58:16] Fixing permissions...
+[15:58:16] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756
+────────────────────────────────────────────────────────────
+[PIPELINE] ERROR during processing: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756/master_0000_idx.bin'
+Traceback (most recent call last):
+  File "/home/imrsl/mmwave-cli/pipeline.py", line 190, in run_processing
+    mod.process_capture(data_folder)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/imrsl/IoSAR-EdgeProcessing/mimo_processing.py", line 508, in process_capture
+    num_valid = get_valid_num_frames(idx_file)
+  File "/home/imrsl/IoSAR-EdgeProcessing/mimo_processing.py", line 118, in get_valid_num_frames
+    with open(idx_file_path, 'rb') as fh:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756/master_0000_idx.bin'
+
+============================================================
+  STEP 4 — PS Monitoring  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756
+────────────────────────────────────────────────────────────
+[PIPELINE] ERROR during PS monitoring: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756/master_0000_idx.bin'
+Traceback (most recent call last):
+  File "/home/imrsl/mmwave-cli/pipeline.py", line 231, in run_ps_monitoring
+    return mod.run_ps_monitoring(data_folder, ps_map_file)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/imrsl/IoSAR-EdgeProcessing/ps_monitoring.py", line 530, in run_ps_monitoring
+    num_frames = mp.get_valid_num_frames(idx_file)
+  File "/home/imrsl/IoSAR-EdgeProcessing/mimo_processing.py", line 118, in get_valid_num_frames
+    with open(idx_file_path, 'rb') as fh:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756/master_0000_idx.bin'
+
+============================================================
+  STEP 5 — LoRa Uplink  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756)
+============================================================
+[PIPELINE] ERROR: ps_metrics.json not found: /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155756/ps_metrics.json
+
+============================================================
+  Cycle 4 done in 94.6s
+============================================================
+[15:58:16] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    5   [2026-05-10 15:58:21]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155821
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  82.5M
+  master_0000_idx.bin                                    5.2K
+  slave1_0000_data.bin                                  82.5M
+  slave1_0000_idx.bin                                    5.2K
+  slave2_0000_data.bin                                  82.5M
+  slave2_0000_idx.bin                                    5.2K
+  slave3_0000_data.bin                                  82.5M
+  slave3_0000_idx.bin                                    5.2K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936 completed successfully!
+============================================================
+[15:59:56] Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936
+
+============================================================
+  STEP 2 — Transfer Data  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936)
+============================================================
+[15:59:56] SCP  root@192.168.33.180:/mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936  →  /home/imrsl/IoSAR-EdgeProcessing/PostProc/
+slave2_0000_idx.bin                             100% 5304     6.1MB/s   00:00    
+master_0000_idx.bin                             100% 5304     6.3MB/s   00:00    
+slave1_0000_idx.bin                             100% 5304     6.2MB/s   00:00    
+slave3_0000_idx.bin                             100% 5304     6.2MB/s   00:00    
+slave2_0000_data.bin                            100%   83MB   6.3MB/s   00:13    
+slave1_0000_data.bin                            100%   83MB   6.4MB/s   00:12    
+master_0000_data.bin                            100%   83MB   6.4MB/s   00:12    
+slave3_0000_data.bin                            100%   83MB   6.5MB/s   00:12    
+[16:00:48] Fixing permissions...
+[16:00:48] Moved config JSON → /home/imrsl/IoSAR-EdgeProcessing/PostProc/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936.mmwave.json
+
+============================================================
+  STEP 3 — Edge Processing  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936)
+============================================================
+
+────────────────────────────────────────────────────────────
+Capture : RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936
+Output  : /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936
+────────────────────────────────────────────────────────────
+Total valid frames: 110  →  processing frame 110
+Reading ADC binary data...
+  ADC data shape: (256, 16, 16, 12)  dtype: complex64
+Applying frequency + phase calibration...
+Running range FFT + Doppler FFT...
+  TX 4/12 done
+  TX 8/12 done
+  TX 12/12 done
+Computing 2D range-azimuth image...
+Peak signal (Frame 110): 151.3 dB
+Saved SLC → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/SLC.png
+Saved range profile → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/range-profile.png
+
+============================================================
+  STEP 4 — PS Monitoring  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936)
+============================================================
+
+────────────────────────────────────────────────────────────
+PS Monitoring : RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936
+────────────────────────────────────────────────────────────
+  Total frames : 110  |  Warm-up skip : 5  |  Usable : 105
+  Duration     : 10.5s  |  dt : 0.1s  |  f_res : 0.095 Hz
+  PS map found: /home/imrsl/IoSAR-EdgeProcessing/ps_map.json
+  Loaded 50 PS candidates (created 2026-05-10T15:47:04.349205)
+  Extracting phase at 50 PS points...
+  Phase pass — frame 110/110
+  Saved displacement plot → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/displacement.png
+  Saved FFT spectrum  → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/fft_spectrum.png
+  Saved PS map image  → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/ps_map.png
+  Saved time series   → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/displacement_timeseries.csv
+  Saved PS metrics    → /home/imrsl/IoSAR-EdgeProcessing/python-result/RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936/ps_metrics.json
+
+  ┌──────────────────────────────────────────┐
+  │  Mode 1 Frequency  :       1.048 Hz       │
+  │  Mode 2 Frequency  :       1.905 Hz       │
+  │  Mode 3 Frequency  :       4.571 Hz       │
+  │  Displacement RMS  :    0.000418 mm       │
+  │  Max Deflection    :    0.002839 mm       │
+  │  Freq Resolution   :       0.095 Hz       │
+  │  PS with peak      :          50/50       │
+  │  Frames used       :            105       │
+  └──────────────────────────────────────────┘
+
+============================================================
+  STEP 5 — LoRa Uplink  (RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936)
+============================================================
+[16:09:32] [LoRa] Metrics loaded: RPI_python_sine_2hz_1mm_10s_continuous_20260510_155936
+[16:09:32] [LoRa] Encode → ts=2026-05-11 01:09:32  freq=1.05 Hz  rms=0.418 μm  max=2.839 μm
+[16:09:32] [LoRa] Payload hex (10 bytes): 6A00ADBC006900000003
+[16:09:33] [LoRa] Opened /dev/ttyUSB0 @ 9600 baud
+[16:09:33] [LoRa] → AT
+[16:09:33] [LoRa] ← +AT: OK
+[16:09:33] [LoRa] → AT+KEY=APPKEY,"562AD0AB720BA25D830E20164D3CC1B3"
+[16:09:33] [LoRa] ← +KEY: APPKEY 562AD0AB720BA25D830E20164D3CC1B3
+[16:09:36] [LoRa] Checking join status...
+[16:09:36] [LoRa] → AT+JOIN
+[16:09:36] [LoRa] ← +JOIN: Start
+[16:09:36] [LoRa] ← +JOIN: NORMAL
+[16:09:42] [LoRa] ← +JOIN: Network joined
+[16:09:44] [LoRa] Sending payload...
+[16:09:44] [LoRa] → AT+MSGHEX="6A00ADBC006900000003"
+[16:09:44] [LoRa] ← +MSGHEX: Start
+[16:09:50] [LoRa] ← +MSGHEX: FPENDING
+[16:09:50] [LoRa] ← +MSGHEX: RXWIN1, RSSI -58, SNR 8.0
+[16:09:50] [LoRa] ← +MSGHEX: Done
+[16:09:50] [LoRa] ✓ Uplink sent successfully — payload: 6A00ADBC006900000003
+[16:09:55] [LoRa] Serial port /dev/ttyUSB0 closed
+
+============================================================
+  Cycle 5 done in 694.1s
+============================================================
+[16:09:55] Waiting 5.0s before next cycle...
+
+############################################################
+# CYCLE    6   [2026-05-10 16:10:00]
+############################################################
+
+============================================================
+  STEP 1 — Radar Capture  (10.0s)
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_161000
+Capture duration: 10.0 seconds
+Number of loops  : 1
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] TDA Connected!
+STATUS    0 | DEV MAP:  1 | [MASTER] Power up successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Firmware successfully uploaded!
+STATUS    0 | DEV MAP:  1 | [MASTER] CRC type has been set!
+STATUS    0 | DEV MAP:  1 | [MASTER] RF successfully enabled!
+STATUS    0 | DEV MAP:  1 | [MASTER] Channels successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] ADC output format successfully configured!
+STATUS    0 | DEV MAP:  1 | [MASTER] Init completed with sucess
+STATUS    0 | DEV MAP:  2 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  4 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP:  8 | [SLAVE] Power up successful!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Firmware successfully uploaded!
+STATUS    0 | DEV MAP: 14 | [SLAVE] CRC type has been set!
+STATUS    0 | DEV MAP: 14 | [SLAVE] RF successfully enabled!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Channels successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] ADC output format successfully configured!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Init completed with sucess
+STATUS    0 | DEV MAP: 15 | [ALL] RF deivce configured!
+STATUS    0 | DEV MAP: 15 | [ALL] LDO Bypass configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Data format configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Low Power Mode configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] RF successfully initialized!
+STATUS    0 | DEV MAP: 15 | [ALL] Datapath configuration successful!
+STATUS    0 | DEV MAP: 15 | [ALL] Profile configuration successful!
+[CHIRP CONFIG] dev 0, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 0, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 1, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 4, status: 0
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+[CHIRP CONFIG] dev 2, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 2, chirp idx 11, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 0, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 1, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 2, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 3, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 4, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 5, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 6, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 7, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 8, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 9, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 10, status: 0
+[CHIRP CONFIG] dev 3, chirp idx 11, status: 0
+STATUS    0 | DEV MAP: 15 | [ALL] Chirp configuration successful!
+STATUS    0 | DEV MAP:  1 | [MASTER] Frame configuration completed!
+STATUS    0 | DEV MAP: 14 | [SLAVE] Frame configuration completed!
+
+
+  Interrupt received (Ctrl+C). Finishing current capture and shutting down...
+
+============================================================
+CAPTURE LOOP 1 of 1
+============================================================
+Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_161114
+Recording duration: 10.0 seconds
+============================================================
+STATUS    0 | DEV MAP: 32 | [MMWCAS-DSP] Arming TDA
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Framing ...
+
+ Capturing... (10.0s)
+^C
+
+[PIPELINE] Interrupt received — stopping after current cycle...
+STATUS    0 | DEV MAP: 15 | [MMWCAS-RF] Stopped Frame ...
+
+
+  Interrupt received (Ctrl+C). Finishing current capture and shutting down...
+STATUS    0 | DEV MAP: 32 | [MMWCAS-RF] Stop recording
+
+============================================================
+Verifying data capture...
+============================================================
+
+============================================================
+Checking captured files on TDA board...
+============================================================
+Remote path: /mnt/ssd/RPI_python_sine_2hz_1mm_10s_continuous_20260510_161114
+
+ SUCCESS: Found 8 file(s) in capture directory
+
+Captured files:
+------------------------------------------------------------
+  master_0000_data.bin                                  81.0M
+  master_0000_idx.bin                                    5.1K
+  slave1_0000_data.bin                                  81.0M
+  slave1_0000_idx.bin                                    5.1K
+  slave2_0000_data.bin                                  81.0M
+  slave2_0000_idx.bin                                    5.1K
+  slave3_0000_data.bin                                  81.0M
+  slave3_0000_idx.bin                                    5.1K
+------------------------------------------------------------
+
+Generating configuration file: mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_161114.mmwave.json
+  > Successfully saved configuration to mmwave_json_files/RPI_python_sine_2hz_1mm_10s_continuous_20260510_161114.mmwave.json
+
+============================================================
+Data capture RPI_python_sine_2hz_1mm_10s_continuous_20260510_161114 completed successfully!
+============================================================
+[16:11:34] Capture directory: RPI_python_sine_2hz_1mm_10s_continuous_20260510_161114
+
+[PIPELINE] Pipeline stopped cleanly.
+imrsl@imrslpi5-02:~/mmwave-cli $ 

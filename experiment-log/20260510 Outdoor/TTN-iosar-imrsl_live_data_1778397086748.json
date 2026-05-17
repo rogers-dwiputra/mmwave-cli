@@ -1,0 +1,491 @@
+[
+  {
+    "name": "as.up.location.forward",
+    "time": "2026-05-10T07:09:45.451716272Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          },
+          "dev_eui": "2CF7F12070100407",
+          "join_eui": "526973696E674846",
+          "dev_addr": "27FA69A6"
+        }
+      }
+    ],
+    "data": {
+      "@type": "type.googleapis.com/ttn.lorawan.v3.ApplicationUp",
+      "end_device_ids": {
+        "device_id": "gb-sar-01",
+        "application_ids": {
+          "application_id": "iosar-imrsl"
+        },
+        "dev_eui": "2CF7F12070100407",
+        "join_eui": "526973696E674846",
+        "dev_addr": "27FA69A6"
+      },
+      "correlation_ids": [
+        "gs:uplink:01KR8BGX80A646VFMH5XTJBBB5"
+      ],
+      "received_at": "2026-05-10T07:09:44.783449303Z",
+      "location_solved": {
+        "service": "frm-payload",
+        "location": {
+          "latitude": 43.8156,
+          "longitude": 140.9723,
+          "source": "SOURCE_GPS"
+        }
+      }
+    },
+    "correlation_ids": [
+      "gs:uplink:01KR8BGX80A646VFMH5XTJBBB5"
+    ],
+    "origin": "ip-10-25-6-249.ap-northeast-1.compute.internal",
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR8BGY3B43XY7F2KSY8DAKYZ"
+  },
+  {
+    "name": "end_device.update",
+    "time": "2026-05-10T07:09:45.134228759Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          },
+          "dev_eui": "2CF7F12070100407",
+          "join_eui": "526973696E674846"
+        }
+      }
+    ],
+    "data": {
+      "@type": "type.googleapis.com/google.protobuf.Value",
+      "value": [
+        "locations"
+      ]
+    },
+    "correlation_ids": [
+      "rpc:/ttn.lorawan.v3.EndDeviceRegistry/Update:10069b8f-d082-4a29-b5df-8e25901ce8d2"
+    ],
+    "origin": "ip-10-23-5-222.eu-west-1.compute.internal",
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_DEVICES_READ"
+      ]
+    },
+    "authentication": {
+      "type": "ClusterKey"
+    },
+    "remote_ip": "57.180.176.61",
+    "user_agent": "tti-lw-stack go/1.24.13 ttn/3.35.2-SNAPSHOT-58357ea7da (58357ea7da, 2026-03-20T13:38:37Z) grpc-go/1.71.0",
+    "unique_id": "01KR8BGXSENNCDE5Q05GQF9Z74"
+  },
+  {
+    "name": "as.up.data.forward",
+    "time": "2026-05-10T07:09:44.800982448Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          },
+          "dev_eui": "2CF7F12070100407",
+          "join_eui": "526973696E674846",
+          "dev_addr": "27FA69A6"
+        }
+      }
+    ],
+    "data": {
+      "@type": "type.googleapis.com/ttn.lorawan.v3.ApplicationUp",
+      "end_device_ids": {
+        "device_id": "gb-sar-01",
+        "application_ids": {
+          "application_id": "iosar-imrsl"
+        },
+        "dev_eui": "2CF7F12070100407",
+        "join_eui": "526973696E674846",
+        "dev_addr": "27FA69A6"
+      },
+      "correlation_ids": [
+        "gs:uplink:01KR8BGX80A646VFMH5XTJBBB5"
+      ],
+      "received_at": "2026-05-10T07:09:44.783449303Z",
+      "uplink_message": {
+        "session_key_id": "AZ4QuFbrrCEoidyzhrfHrQ==",
+        "f_port": 8,
+        "frm_payload": "agCtvABpAAAAAw==",
+        "decoded_payload": {
+          "displacement_rms_mm": 0,
+          "displacement_rms_um": 0,
+          "latitude": 43.8156,
+          "longitude": 140.9723,
+          "max_deflection_mm": 0.003,
+          "max_deflection_um": 3,
+          "natural_frequency_hz": 1.05,
+          "timestamp_iso": "2026-05-10T16:09:32.000Z",
+          "timestamp_unix": 1778429372
+        },
+        "rx_metadata": [
+          {
+            "gateway_ids": {
+              "gateway_id": "gw-imrsl",
+              "eui": "2CF7F11374400064"
+            },
+            "timestamp": 3278488426,
+            "rssi": -56,
+            "channel_rssi": -56,
+            "snr": 10.2,
+            "frequency_offset": "-591",
+            "uplink_token": "ChYKFAoIZ3ctaW1yc2wSCCz38RN0QABkEOqGp5sMGgwIuN6A0AYQyf7hkgIgkKyNqbXX0wE=",
+            "channel_index": 7,
+            "received_at": "2026-05-10T07:09:44.562910692Z"
+          }
+        ],
+        "settings": {
+          "data_rate": {
+            "lora": {
+              "bandwidth": 125000,
+              "spreading_factor": 10,
+              "coding_rate": "4/5"
+            }
+          },
+          "frequency": "922000000",
+          "timestamp": 3278488426
+        },
+        "received_at": "2026-05-10T07:09:44.577974816Z",
+        "consumed_airtime": "0.370688s",
+        "locations": {
+          "frm-payload": {
+            "latitude": 43.8156,
+            "longitude": 140.9723,
+            "source": "SOURCE_GPS"
+          }
+        },
+        "network_ids": {
+          "net_id": "000013",
+          "ns_id": "EC656E0000104E13",
+          "tenant_id": "imrsl",
+          "cluster_id": "as1",
+          "cluster_address": "as1.cloud.thethings.industries",
+          "tenant_address": "imrsl.as1.cloud.thethings.industries"
+        }
+      }
+    },
+    "correlation_ids": [
+      "gs:uplink:01KR8BGX80A646VFMH5XTJBBB5"
+    ],
+    "origin": "ip-10-25-6-249.ap-northeast-1.compute.internal",
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR8BGXF0EH4SM7Z2H7ZFBXM4"
+  },
+  {
+    "name": "as.up.join.forward",
+    "time": "2026-05-10T07:09:38.488917544Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          },
+          "dev_eui": "2CF7F12070100407",
+          "join_eui": "526973696E674846",
+          "dev_addr": "27FA69A6"
+        }
+      }
+    ],
+    "data": {
+      "@type": "type.googleapis.com/ttn.lorawan.v3.ApplicationUp",
+      "end_device_ids": {
+        "device_id": "gb-sar-01",
+        "application_ids": {
+          "application_id": "iosar-imrsl"
+        },
+        "dev_eui": "2CF7F12070100407",
+        "join_eui": "526973696E674846",
+        "dev_addr": "27FA69A6"
+      },
+      "correlation_ids": [
+        "gs:uplink:01KR8BGNGGRNQNNQKRDK095TA1"
+      ],
+      "received_at": "2026-05-10T07:09:38.475083883Z",
+      "join_accept": {
+        "session_key_id": "AZ4QuFbrrCEoidyzhrfHrQ==",
+        "received_at": "2026-05-10T07:09:36.657718702Z"
+      }
+    },
+    "correlation_ids": [
+      "gs:uplink:01KR8BGNGGRNQNNQKRDK095TA1"
+    ],
+    "origin": "ip-10-25-6-249.ap-northeast-1.compute.internal",
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR8BGQ9R3N3MJZA247VAHE1G"
+  },
+  {
+    "name": "ns.up.join.process",
+    "time": "2026-05-10T07:09:36.958372524Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          },
+          "dev_eui": "2CF7F12070100407",
+          "join_eui": "526973696E674846",
+          "dev_addr": "27FA69A7"
+        }
+      }
+    ],
+    "data": {
+      "@type": "type.googleapis.com/ttn.lorawan.v3.UplinkMessage",
+      "raw_payload": "AEZIZ25pc2lSBwQQcCDx9yxeAZZpRCY=",
+      "payload": {
+        "m_hdr": {},
+        "mic": "lmlEJg==",
+        "join_request_payload": {
+          "join_eui": "526973696E674846",
+          "dev_eui": "2CF7F12070100407",
+          "dev_nonce": "015E"
+        }
+      },
+      "settings": {
+        "data_rate": {
+          "lora": {
+            "bandwidth": 125000,
+            "spreading_factor": 10,
+            "coding_rate": "4/5"
+          }
+        },
+        "frequency": "923200000",
+        "timestamp": 3270569626
+      },
+      "rx_metadata": [
+        {
+          "gateway_ids": {
+            "gateway_id": "gw-imrsl",
+            "eui": "2CF7F11374400064"
+          },
+          "timestamp": 3270569626,
+          "rssi": -59,
+          "channel_rssi": -59,
+          "snr": 9.8,
+          "frequency_offset": "-590",
+          "uplink_token": "ChYKFAoIZ3ctaW1yc2wSCCz38RN0QABkEJrdw5cMGgwIsN6A0AYQyoDkuAIgkJOQ6ZfX0wE=",
+          "received_at": "2026-05-10T07:09:36.655949898Z"
+        }
+      ],
+      "received_at": "2026-05-10T07:09:36.657718702Z",
+      "correlation_ids": [
+        "gs:uplink:01KR8BGNGGRNQNNQKRDK095TA1"
+      ],
+      "consumed_airtime": "0.370688s"
+    },
+    "correlation_ids": [
+      "gs:uplink:01KR8BGNGGRNQNNQKRDK095TA1"
+    ],
+    "origin": "ip-10-25-13-120.ap-northeast-1.compute.internal",
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR8BGNSYZMVXGKPQ1FQY7J18"
+  },
+  {
+    "name": "js.join.accept",
+    "time": "2026-05-10T07:09:36.955753068Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          },
+          "dev_eui": "2CF7F12070100407",
+          "join_eui": "526973696E674846",
+          "dev_addr": "27FA69A6"
+        }
+      }
+    ],
+    "origin": "ip-10-25-12-145.ap-northeast-1.compute.internal",
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR8BGNSVDVXDZB4H8D49M0KM"
+  },
+  {
+    "name": "as.up.location.forward",
+    "time": "2026-05-10T03:20:14.943960498Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          }
+        }
+      }
+    ],
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR7YCPAZ3KBJNX9PKH215QG3"
+  },
+  {
+    "name": "end_device.update",
+    "time": "2026-05-10T03:20:14.611475576Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          }
+        }
+      }
+    ],
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_DEVICES_READ"
+      ]
+    },
+    "unique_id": "01KR7YCP0KY9Z8KRQBK3T7R0CR"
+  },
+  {
+    "name": "as.up.data.forward",
+    "time": "2026-05-10T03:20:14.280214567Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          }
+        }
+      }
+    ],
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR7YCNP8JK7JV7J8CRNRA80P"
+  },
+  {
+    "name": "as.up.join.forward",
+    "time": "2026-05-10T03:19:38.471071217Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          }
+        }
+      }
+    ],
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR7YBJQ767NV5T2FK68V2BXX"
+  },
+  {
+    "name": "ns.up.join.process",
+    "time": "2026-05-10T03:19:37.021236894Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          }
+        }
+      }
+    ],
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR7YBH9X9QJYZ9V35W2QKT01"
+  },
+  {
+    "name": "js.join.accept",
+    "time": "2026-05-10T03:19:37.017404392Z",
+    "identifiers": [
+      {
+        "device_ids": {
+          "device_id": "gb-sar-01",
+          "application_ids": {
+            "application_id": "iosar-imrsl"
+          }
+        }
+      }
+    ],
+    "context": {
+      "tenant-id": "CgVpbXJzbA=="
+    },
+    "visibility": {
+      "rights": [
+        "RIGHT_APPLICATION_TRAFFIC_READ"
+      ]
+    },
+    "unique_id": "01KR7YBH9SDEKRAHM6YXG4BE4P"
+  }
+]

@@ -32,6 +32,17 @@ DEFAULT_PORT   = '/dev/ttyUSB0'
 DEFAULT_BAUD   = 9600
 DEFAULT_APPKEY = '562AD0AB720BA25D830E20164D3CC1B3'
 
+# ADR (Adaptive Data Rate) — allow TTN to optimize SF automatically after ~5 packets.
+# Uses AT+ADR=1 (numeric form, reliable across all Wio-E5 firmware versions).
+DEFAULT_ADR    = True
+
+# Starting Data Rate for Japan 920 MHz (AS923):
+#   DR0=SF12, DR1=SF11, DR2=SF10 (firmware default), DR3=SF9, DR4=SF8, DR5=SF7
+#   DR5 (SF7) → airtime 46ms vs 371ms for SF10 — use for distances <500m.
+#   Drop to DR4 (SF8) if link margin is insufficient in the field.
+#   Setting is saved to Wio-E5 flash; sent each cycle to ensure consistent state.
+DEFAULT_DR     = 5  # SF7, BW125kHz
+
 # ─────────────────────────────────────────────
 # Paths
 # ─────────────────────────────────────────────
@@ -103,8 +114,6 @@ def encode_payload(metrics: dict) -> str:
     ts_raw = metrics.get('timestamp')
     if ts_raw:
         try:
-            # Parse ISO timestamp from ps_metrics.json
-            # e.g. "2026-04-24T11:42:25.123456"
             from datetime import timezone
             dt = datetime.fromisoformat(ts_raw)
             if dt.tzinfo is None:
@@ -116,11 +125,9 @@ def encode_payload(metrics: dict) -> str:
         ts_unix = int(time.time())
 
     # ── Values ───────────────────────────────────────────────────────
-    # Read dominant_frequency_hz; fall back to old field names for compatibility
     freq = float(metrics.get('dominant_frequency_hz')
                  or metrics.get('freq_mode_1_hz')
                  or metrics.get('natural_frequency_hz') or 0.0)
-    # Support both old (displacement_rms_um) and new (displacement_rms_mm) field names
     rms_mm = metrics.get('displacement_rms_mm')
     if rms_mm is None:
         rms_um = float(metrics.get('displacement_rms_um') or 0.0)
@@ -174,13 +181,16 @@ def find_latest_metrics() -> str | None:
 def send_lora(metrics_path: str = None,
               port: str   = DEFAULT_PORT,
               baud: int   = DEFAULT_BAUD,
-              appkey: str = DEFAULT_APPKEY) -> bool:
+              appkey: str = DEFAULT_APPKEY,
+              dr: int     = DEFAULT_DR,
+              adr: bool   = DEFAULT_ADR) -> bool:
     """
     Full LoRa uplink sequence:
       1. Test AT
       2. Set APPKEY
-      3. Join (skip if already joined)
-      4. Send MSGHEX payload
+      3. Set ADR=1 (if adr=True) and starting Data Rate
+      4. Join (OTAA) — AT+JOIN handles "already joined" transparently
+      5. Send MSGHEX payload
     Returns True on success.
     """
     # ── Load metrics ──────────────────────────────────────────────────
@@ -223,10 +233,30 @@ def send_lora(metrics_path: str = None,
         # 2 ── Set APPKEY ──────────────────────────────────────────────
         _send_at(ser, f'AT+KEY=APPKEY,"{appkey}"', timeout=3)
 
-        # 3 ── Join (OTAA) ─────────────────────────────────────────────
+        # 3a ── Enable ADR (AT+ADR=1, numeric form works on all firmware) ──
+        # TTN sends LinkADRReq after ~5 packets to lower SF if link is good.
+        if adr:
+            ok_adr, _ = _send_at(ser, 'AT+ADR=1', timeout=3, expected='ADR')
+            if not ok_adr:
+                _log('WARNING: AT+ADR=1 not confirmed — continuing...')
+
+        # 3b ── Set starting Data Rate ─────────────────────────────────
+        # Default firmware = DR2 (SF10, 371ms airtime).
+        # DR5 (SF7) = 46ms airtime for distances <500m.
+        # Setting is saved to flash; consistent state ensured each cycle.
+        ok_dr, dr_resp = _send_at(ser, f'AT+DR={dr}', timeout=3, expected='DR')
+        if ok_dr:
+            dr_line = next((l for l in dr_resp if '+DR:' in l), '')
+            _log(f'DR set: {dr_line}')
+        else:
+            _log(f'WARNING: AT+DR={dr} not confirmed — continuing...')
+
+        # 4 ── Join (OTAA) ─────────────────────────────────────────────
+        # AT+JOIN handles "already joined" transparently: returns "Network joined"
+        # quickly (~6s) without re-negotiating session keys if already in network.
         _log('Checking join status...')
         ok, resp = _send_at(ser, 'AT+JOIN', timeout=30,
-                            expected='joined')   # matches "Network joined" or "Joined already"
+                            expected='joined')   # matches "Network joined"
         if not ok:
             _log('WARNING: Join may have failed — attempting force rejoin...')
             ok, resp = _send_at(ser, 'AT+JOIN=FORCE', timeout=30, expected='joined')
@@ -239,7 +269,7 @@ def send_lora(metrics_path: str = None,
         time.sleep(2)
         ser.reset_input_buffer()
 
-        # 4 ── Send payload ────────────────────────────────────────────
+        # 5 ── Send payload ────────────────────────────────────────────
         _log('Sending payload...')
         ok, resp = _send_at(ser, f'AT+MSGHEX="{hex_payload}"',
                             timeout=15, expected='Done')
@@ -272,7 +302,14 @@ if __name__ == '__main__':
                         help='Serial baud rate')
     parser.add_argument('--appkey', default=DEFAULT_APPKEY,
                         help='LoRaWAN APPKEY (32 hex chars)')
+    parser.add_argument('--dr', type=int, default=DEFAULT_DR,
+                        choices=range(0, 6), metavar='DR',
+                        help='Starting Data Rate: DR0=SF12 … DR5=SF7 (default: %(default)s=SF7)')
+    parser.add_argument('--no-adr', action='store_true',
+                        help='Disable ADR (Adaptive Data Rate) — not recommended')
     args = parser.parse_args()
 
-    success = send_lora(args.metrics, args.port, args.baud, args.appkey)
+    success = send_lora(args.metrics, args.port, args.baud, args.appkey,
+                        dr=args.dr,
+                        adr=not args.no_adr)
     raise SystemExit(0 if success else 1)

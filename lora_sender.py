@@ -233,12 +233,13 @@ def send_lora(metrics_path: str = None,
         # 2 ── Set APPKEY ──────────────────────────────────────────────
         _send_at(ser, f'AT+KEY=APPKEY,"{appkey}"', timeout=3)
 
-        # 3a ── Enable ADR (AT+ADR=1, numeric form works on all firmware) ──
-        # TTN sends LinkADRReq after ~5 packets to lower SF if link is good.
+        # 3a ── Enable ADR — Wio-E5 v4.x firmware uses AT+ADR=ON (string) ──
+        # ADR is ON by default in firmware v4.0.11; sending explicitly each
+        # cycle ensures it stays enabled if device was manually reconfigured.
         if adr:
-            ok_adr, _ = _send_at(ser, 'AT+ADR=1', timeout=3, expected='ADR')
+            ok_adr, _ = _send_at(ser, 'AT+ADR=ON', timeout=3, expected='ADR')
             if not ok_adr:
-                _log('WARNING: AT+ADR=1 not confirmed — continuing...')
+                _log('WARNING: AT+ADR=ON not confirmed — continuing...')
 
         # 3b ── Set starting Data Rate ─────────────────────────────────
         # Default firmware = DR2 (SF10, 371ms airtime).

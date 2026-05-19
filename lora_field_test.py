@@ -86,7 +86,7 @@ def main(count, interval, port):
 
         # Configure
         _send_at(ser, f'AT+KEY=APPKEY,"{APPKEY}"', timeout=3)
-        _send_at(ser, 'AT+ADR=1',             timeout=3, expected='ADR')
+        _send_at(ser, 'AT+ADR=ON',            timeout=3, expected='ADR')
         _send_at(ser, f'AT+DR={DR}',           timeout=3, expected='DR')
         _send_at(ser, f'AT+PORT={TEST_FPORT}', timeout=3, expected='PORT')
 

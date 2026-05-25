@@ -48,9 +48,10 @@ python3 -c "import mmwcas; print('mmwcas OK')"
 
 **Key radar parameters (`mimo.py` `config_dict`):**
 - `framePeriodicity = 50 ms` → frame rate = 20 Hz
-- `numAdcSamples = 256`, `adcSamplingFrequency = 8000 ksps`
-- `frequencySlope = 79.0327 MHz/μs`, `rampEndTime = 40 μs`
+- `numAdcSamples = 512`, `adcSamplingFrequency = 8000 ksps`
+- `frequencySlope = 20 MHz/μs`, `idleTime = 5 μs`, `adcStartTime = 6 μs`, `rampEndTime = 75 μs`
 - `numLoops = 16` chirp loops per frame
+- **Bandwidth = 1.28 GHz**, **max range = 60 m**, **range resolution ≈ 11.7 cm** (10.4 cm with Hanning window)
 - `dt` in edge processing is read automatically from `.mmwave.json` per capture (falls back to `DT_DEFAULT = 0.05`)
 
 ---
@@ -167,6 +168,14 @@ tail -f ~/pipeline_*.log
 Per frame: `ADC data → Range FFT → Doppler FFT → Beamforming → SLC image [257 × 3992] complex64`
 
 SLC image axes: `[257 angle bins, 3992 range bins]`
+
+**Derived radar parameters (Mizumoto Bridge 2026-05-25 config):**
+- ADC samples: 512, sample rate: 8 MHz → ramp time = 64 μs
+- Bandwidth = 1.28 GHz → range resolution = **11.7 cm** (10.4 cm with Hanning window)
+- Max range = 60 m
+- Range FFT: 4096-point (zero-padded from 512) → range bin = 1.465 cm
+- Center frequency: 77.76 GHz → λ = 3.858 mm (ps_monitoring uses 77.4742 GHz MATLAB ref)
+- `RATIO_FFT = 512/4096 = 0.125`
 
 ---
 

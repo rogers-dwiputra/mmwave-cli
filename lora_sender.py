@@ -1,19 +1,33 @@
 #!/usr/bin/env python3
 """
 LoRa uplink sender for Bridge Health Monitoring
-Reads ps_metrics.json → encodes 10-byte payload → sends via Wio-E5 AT commands
+Reads ps_metrics.json → encodes payload → sends via Wio-E5 AT commands
 
-Payload format (10 bytes, big-endian):
-  Byte 0-3 : Unix timestamp        (uint32, seconds since epoch)
-  Byte 4-5 : dominant_frequency_hz × 100   uint16  (resolution 0.01 Hz,  max 655.35 Hz)
-  Byte 6-7 : displacement_rms_mm   × 1000  uint16  (resolution 0.001 mm, max 65.535 mm)
-  Byte 8-9 : max_deflection_mm     × 1000  uint16  (resolution 0.001 mm, max 65.535 mm)
+Payload format (variable length, big-endian):
+
+  Header (10 bytes, always present — unchanged from v1):
+    Byte 0-3 : Unix timestamp              (uint32, seconds since epoch)
+    Byte 4-5 : dominant_frequency_hz × 100 (uint16, 0.01 Hz, max 655.35 Hz)
+    Byte 6-7 : displacement_rms_mm × 1000  (uint16, 0.001 mm, max 65.535 mm)
+    Byte 8-9 : max_deflection_mm × 1000    (uint16, 0.001 mm, max 65.535 mm)
+
+  Per-PS section (present when ps_details available in ps_metrics.json):
+    Byte 10   : N_PS  (uint8, number of PS points, 0 = no per-PS data)
+    Byte 11+  : Per-PS data, 4 bytes per PS point:
+                  uint16 : ps_i dominant_frequency_hz × 100  (0 = no peak)
+                  uint16 : ps_i disp_rms_mm × 1000
+
+  Example: 5 PS points → total 11 + 5×4 = 31 bytes (well within SF7 AS923 limit)
 
 Decoder (gateway side):
   ts       = struct.unpack('>I', byte[0:4])[0]   # Unix timestamp
   freq_hz  = struct.unpack('>H', byte[4:6])[0] / 100.0
   rms_mm   = struct.unpack('>H', byte[6:8])[0] / 1000.0
   max_mm   = struct.unpack('>H', byte[8:10])[0] / 1000.0
+  n_ps     = byte[10] if len(byte) > 10 else 0
+  for i in range(n_ps):
+      freq_i = struct.unpack('>H', byte[11+4*i:13+4*i])[0] / 100.0
+      rms_i  = struct.unpack('>H', byte[13+4*i:15+4*i])[0] / 1000.0
 """
 
 import argparse
@@ -106,7 +120,7 @@ def _send_at(ser: serial.Serial, cmd: str,
 
 def encode_payload(metrics: dict) -> str:
     """
-    Pack timestamp + freq + rms + max_deflection into 10-byte big-endian payload.
+    Pack header + optional per-PS data into big-endian payload.
     Timestamp comes from metrics['timestamp'] (ISO string from capture).
     Returns uppercase hex string (no '0x' prefix).
     """
@@ -124,7 +138,7 @@ def encode_payload(metrics: dict) -> str:
     else:
         ts_unix = int(time.time())
 
-    # ── Values ───────────────────────────────────────────────────────
+    # ── Overall values (header) ───────────────────────────────────────
     freq = float(metrics.get('dominant_frequency_hz')
                  or metrics.get('freq_mode_1_hz')
                  or metrics.get('natural_frequency_hz') or 0.0)
@@ -140,12 +154,30 @@ def encode_payload(metrics: dict) -> str:
     rms_int  = min(int(round(rms_mm * 1000)), 65535)
     def_int  = min(int(round(mdef   * 1000)), 65535)
 
-    payload = struct.pack('>IHHH', ts_unix, freq_int, rms_int, def_int)
+    header = struct.pack('>IHHH', ts_unix, freq_int, rms_int, def_int)
+
+    # ── Per-PS section ────────────────────────────────────────────────
+    ps_details = metrics.get('ps_details', [])
+    n_ps = min(len(ps_details), 15)   # cap at 15 PS (max payload 11+15×4=71 bytes)
+
+    ps_bytes = b''
+    ps_log   = []
+    for i, ps in enumerate(ps_details[:n_ps]):
+        ps_freq = float(ps.get('dominant_frequency_hz') or 0.0)
+        ps_rms  = float(ps.get('disp_rms_mm') or 0.0)
+        pf_int  = min(int(round(ps_freq * 100)),  65535)
+        pr_int  = min(int(round(ps_rms  * 1000)), 65535)
+        ps_bytes += struct.pack('>HH', pf_int, pr_int)
+        ps_log.append(f'PS{i}:{ps_freq:.2f}Hz/{ps_rms*1e3:.1f}μm')
+
+    payload = header + struct.pack('>B', n_ps) + ps_bytes
     hex_str = payload.hex().upper()
 
     ts_fmt = datetime.fromtimestamp(ts_unix).strftime('%Y-%m-%d %H:%M:%S')
     _log(f'Encode → ts={ts_fmt}  freq={freq:.2f} Hz  '
-         f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm')
+         f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm  n_ps={n_ps}')
+    if ps_log:
+        _log(f'Per-PS → {" | ".join(ps_log)}')
     _log(f'Payload hex ({len(payload)} bytes): {hex_str}')
     return hex_str
 

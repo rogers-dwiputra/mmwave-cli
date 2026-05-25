@@ -78,14 +78,27 @@ def on_message(client, userdata, msg):
             .time(received_at)
         )
 
+        # Write all numeric fields including per-PS (freq_ps0, rms_ps0, …)
         for key, value in decoded.items():
+            if key in ("timestamp_iso",):
+                continue   # skip ISO string fields
             if isinstance(value, (int, float)):
                 point = point.field(key, float(value))
-            elif isinstance(value, str) and key not in ("timestamp_iso",):
-                pass  # skip non-numeric strings
 
         write_api.write(bucket=INFLUX_BUCKET, record=point)
-        print(f"[{received_at}] {device_id}: {decoded}")
+
+        # Concise log: overall + per-PS summary
+        n_ps = int(decoded.get("n_ps", 0))
+        ps_summary = ""
+        if n_ps > 0:
+            ps_parts = [
+                f"PS{i}:{decoded.get(f'freq_ps{i}', 0):.2f}Hz"
+                for i in range(n_ps)
+            ]
+            ps_summary = "  per-PS: " + " | ".join(ps_parts)
+        print(f"[{received_at}] {device_id}: "
+              f"freq={decoded.get('dominant_frequency_hz', '?')} Hz  "
+              f"rms={decoded.get('displacement_rms_mm', '?')} mm{ps_summary}")
 
     except Exception as exc:
         print(f"Error processing message: {exc}", file=sys.stderr)

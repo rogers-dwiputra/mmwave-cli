@@ -46,13 +46,15 @@ python3 -c "import mmwcas; print('mmwcas OK')"
 | LoRaWAN modem | Wio-E5 Development Kit (SeeedStudio) — `/dev/ttyUSB0`, 9600 baud, CP2102N |
 | LoRaWAN network | The Things Stack (TTN) — tenant `imrsl`, app `iosar-imrsl`, device `gb-sar-01` |
 
-**Key radar parameters (`mimo.py` `config_dict`):**
-- `framePeriodicity = 50 ms` → frame rate = 20 Hz
-- `numAdcSamples = 512`, `adcSamplingFrequency = 8000 ksps`
-- `frequencySlope = 20 MHz/μs`, `idleTime = 5 μs`, `adcStartTime = 6 μs`, `rampEndTime = 75 μs`
-- `numLoops = 16` chirp loops per frame
-- **Bandwidth = 1.28 GHz**, **max range = 60 m**, **range resolution ≈ 11.7 cm** (10.4 cm with Hanning window)
-- `dt` in edge processing is read automatically from `.mmwave.json` per capture (falls back to `DT_DEFAULT = 0.05`)
+**Key radar parameters (`mimo.py` `config_dict`) — BridgeSpan_260603 config:**
+- `framePeriodicity = 30 ms` → frame rate = 33.33 Hz
+- `numAdcSamples = 120`, `adcSamplingFrequency = 6500 ksps`
+- `frequencySlope = 90 MHz/μs`, `idleTime = 3.5 μs`, `adcStartTime = 4.45 μs`, `rampEndTime = 23.65 μs`
+- `numLoops = 10` chirp loops per frame
+- **Bandwidth = 1.6615 GHz**, **max range ≈ 10.8 m** (IQ complex ADC: R_max = c·Fs/(2·S)), **range resolution ≈ 9.0 cm**
+- **fc ≈ 78.231 GHz**, **λ ≈ 3.836 mm**, sensitivity ≈ 0.305 mm/rad
+- `dt` in edge processing is read automatically from `.mmwave.json` per capture (falls back to `DT_DEFAULT = 0.030`)
+- Calibration file: `calibrateResults_BridgeSpan0602.mat` — place in `~/IoSAR-EdgeProcessing/`
 
 ---
 
@@ -108,11 +110,19 @@ This saves ~120 s per cycle during long monitoring sessions.
 
 **Common invocations:**
 ```bash
-# Normal bridge monitoring (demo 2026-05-25)
-python3 pipeline.py --duration 15 --label RPI_python_bridge
+# BridgeSpan_260603 — 15-min cadence with suspend-to-RAM power saving
+python3 pipeline.py --duration 30 --label BridgeSpan --cycle-period 900 --suspend \
+  --ps-file ~/IoSAR-EdgeProcessing/ps_manual_bridgespan.json
+
+# BridgeSpan — 15-min cadence without suspend (time.sleep only)
+python3 pipeline.py --duration 30 --label BridgeSpan --cycle-period 900 \
+  --ps-file ~/IoSAR-EdgeProcessing/ps_manual_bridgespan.json
+
+# Normal bridge monitoring
+python3 pipeline.py --duration 30 --label BridgeSpan --ps-file ~/ps_manual.json
 
 # With manually selected PS coordinates (skip ADI computation every cycle)
-python3 pipeline.py --duration 15 --label RPI_python_bridge --ps-file ~/ps_manual.json
+python3 pipeline.py --duration 30 --label BridgeSpan --ps-file ~/ps_manual.json
 
 # Debug mode: also generates SLC and range-profile images
 python3 pipeline.py --duration 10 --label RPI_python_test --debug
@@ -152,6 +162,8 @@ tail -f ~/pipeline_*.log
 | `--skip-ps` | off | Skip PS monitoring |
 | `--skip-lora` | off | Skip LoRa uplink |
 | `--lora-port` | `/dev/ttyUSB0` | Wio-E5 serial port |
+| `--cycle-period` | `0.0` | Target total cycle time in seconds (e.g. `900` = 15 min). RPi idles for remaining time after each cycle. 0 = disabled. |
+| `--suspend` | off | During idle, use `sudo rtcwake -m mem` (suspend-to-RAM, ~0.1W) instead of `time.sleep`. Requires `sudoers` entry for rtcwake. |
 
 **Estimated cycle times (15 s capture, Raspberry Pi 5, with ps_map.json cached):**
 - Step 1 Capture: ~20 s (15 s capture + arm/disarm overhead)
@@ -169,13 +181,13 @@ Per frame: `ADC data → Range FFT → Doppler FFT → Beamforming → SLC image
 
 SLC image axes: `[257 angle bins, 3992 range bins]`
 
-**Derived radar parameters (Mizumoto Bridge 2026-05-25 config):**
-- ADC samples: 512, sample rate: 8 MHz → ramp time = 64 μs
-- Bandwidth = 1.28 GHz → range resolution = **11.7 cm** (10.4 cm with Hanning window)
-- Max range = 60 m
-- Range FFT: 4096-point (zero-padded from 512) → range bin = 1.465 cm
-- Center frequency: 77.76 GHz → λ = 3.858 mm (ps_monitoring uses 77.4742 GHz MATLAB ref)
-- `RATIO_FFT = 512/4096 = 0.125`
+**Derived radar parameters (BridgeSpan_260603 config):**
+- ADC samples: 120, sample rate: 6.5 MHz → ramp time = 18.46 μs
+- Bandwidth = 1.6615 GHz → range resolution = **9.03 cm**
+- Max range ≈ 10.8 m (IQ complex ADC: R_max = c·Fs/(2·S) = 3e8×6.5e6/(2×90e12))
+- Range FFT: 2048-point (zero-padded from 120) → range bin = 5.29 mm
+- Center frequency: 78.231 GHz → λ = 3.836 mm
+- `RATIO_FFT = 120/2048 = 0.05859`
 
 ---
 

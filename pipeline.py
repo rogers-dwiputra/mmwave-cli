@@ -78,6 +78,40 @@ def _step_done(name: str, t_start: float) -> float:
     return elapsed
 
 
+def _do_idle_sleep(seconds: float, use_suspend: bool) -> None:
+    """
+    Sleep for `seconds` to fill a fixed cycle period.
+    If use_suspend=True, calls sudo rtcwake -m mem to suspend the RPi to RAM
+    (saves ~95% power vs idle). Falls back to time.sleep on failure.
+    After rtcwake resumes, waits 10s for the Ethernet link to recover.
+    """
+    if seconds <= 0:
+        return
+    wake_at = datetime.now().strftime('%H:%M:%S')
+    import math
+    resume_ts = datetime.fromtimestamp(time.time() + seconds).strftime('%H:%M:%S')
+
+    if use_suspend:
+        secs_int = max(30, int(math.ceil(seconds)))
+        _step(f'Suspending to RAM for {secs_int}s  (resume ~{resume_ts}) — power-save mode')
+        result = subprocess.run(
+            ['sudo', 'rtcwake', '-m', 'mem', '-s', str(secs_int)],
+            timeout=secs_int + 60,
+        )
+        if result.returncode == 0:
+            _step('Resumed from suspend — waiting 10s for network...')
+            time.sleep(10)
+            return
+        print(f'[PIPELINE] WARNING: rtcwake failed (exit {result.returncode}) — falling back to time.sleep')
+
+    _step(f'Sleeping {seconds:.0f}s until next cycle  (resume ~{resume_ts})')
+    # Break into 10s chunks so Ctrl+C is responsive
+    remaining = seconds
+    while remaining > 0 and not shutdown_flag:
+        time.sleep(min(10, remaining))
+        remaining -= 10
+
+
 # ─────────────────────────────────────────────
 # Step 1 — Capture
 # ─────────────────────────────────────────────
@@ -158,8 +192,12 @@ def transfer_data(capture_dir: str, tda_ip: str) -> bool:
         return False
 
     # Fix ownership/permissions on files copied as root.
+    # chown first so chmod u+rwX actually applies to the current user.
     _step('Fixing permissions...')
-    subprocess.run(['chmod', '-R', 'u+rwx', POSTPROC_DIR], check=False)
+    current_user = os.environ.get('USER', 'imrsl')
+    capture_path_fix = os.path.join(POSTPROC_DIR, capture_dir)
+    subprocess.run(['chown', '-R', f'{current_user}:{current_user}', capture_path_fix], check=False)
+    subprocess.run(['chmod', '-R', 'u+rwX', capture_path_fix], check=False)
 
     # Move the .mmwave.json config file into the capture directory.
     json_src     = os.path.join(JSON_FILES_DIR, f'{capture_dir}.mmwave.json')
@@ -348,6 +386,14 @@ def main():
     parser.add_argument('--lora-appkey',     type=str,
                         default='562AD0AB720BA25D830E20164D3CC1B3',
                         help='LoRaWAN APPKEY (32 hex chars)')
+    parser.add_argument('--cycle-period',   type=float, default=0.0,
+                        help='Target total time per cycle in seconds (e.g. 900 for 15-min cadence). '
+                             'Pipeline sleeps for remaining time after each cycle. '
+                             '0 = disabled (run back-to-back or use --interval).')
+    parser.add_argument('--suspend',        action='store_true',
+                        help='Use sudo rtcwake (suspend-to-RAM) during idle period instead of '
+                             'time.sleep. Requires: sudo NOPASSWD for rtcwake. Saves ~95%% power '
+                             'during idle. Combine with --cycle-period.')
     args = parser.parse_args()
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
@@ -363,6 +409,8 @@ def main():
     print(f'  Capture label    : {args.label}')
     print(f'  TDA IP address   : {args.tda_ip}')
     print(f'  Cycle interval   : {args.interval}s')
+    if args.cycle_period > 0:
+        print(f'  Cycle period     : {args.cycle_period}s  ({"suspend-to-RAM" if args.suspend else "time.sleep"} during idle)')
     print(f'  PostProc dir     : {POSTPROC_DIR}')
     print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
     print(f'  PS source        : {args.ps_file if args.ps_file else ps_map_file + " (auto/ADI)"}')
@@ -458,7 +506,13 @@ def main():
         if shutdown_flag:
             break
 
-        if args.interval > 0:
+        if args.cycle_period > 0:
+            idle = args.cycle_period - elapsed
+            if idle > 10:
+                _do_idle_sleep(idle, args.suspend)
+            else:
+                _step(f'Cycle took {elapsed:.0f}s (> cycle_period {args.cycle_period:.0f}s) — starting next immediately')
+        elif args.interval > 0:
             _step(f'Waiting {args.interval}s before next cycle...')
             time.sleep(args.interval)
 

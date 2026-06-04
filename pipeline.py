@@ -148,17 +148,28 @@ def _do_idle_sleep(seconds: float, use_suspend: bool) -> None:
     resume_ts = datetime.fromtimestamp(time.time() + seconds).strftime('%H:%M:%S')
 
     if use_suspend:
-        secs_int = max(30, int(math.ceil(seconds)))
-        _step(f'Suspending to RAM for {secs_int}s  (resume ~{resume_ts}) — power-save mode')
-        result = subprocess.run(
-            ['sudo', 'rtcwake', '-m', 'mem', '-s', str(secs_int)],
-            timeout=secs_int + 60,
-        )
-        if result.returncode == 0:
-            _step('Resumed from suspend — waiting 10s for network...')
-            time.sleep(10)
-            return
-        print(f'[PIPELINE] WARNING: rtcwake failed (exit {result.returncode}) — falling back to time.sleep')
+        # Detect best available suspend state: mem > standby > freeze
+        try:
+            avail = open('/sys/power/state').read().split()
+        except OSError:
+            avail = []
+        state = next((s for s in ('mem', 'standby', 'freeze') if s in avail), None)
+
+        if state is None:
+            print('[PIPELINE] WARNING: no suspend states available in /sys/power/state '
+                  '— falling back to time.sleep (RPi 5 may need kernel support for suspend)')
+        else:
+            secs_int = max(30, int(math.ceil(seconds)))
+            _step(f'Suspending ({state}) for {secs_int}s  (resume ~{resume_ts}) — power-save mode')
+            result = subprocess.run(
+                ['sudo', '/usr/sbin/rtcwake', '-m', state, '-s', str(secs_int)],
+                timeout=secs_int + 60,
+            )
+            if result.returncode == 0:
+                _step('Resumed from suspend — waiting 10s for network...')
+                time.sleep(10)
+                return
+            print(f'[PIPELINE] WARNING: rtcwake failed (exit {result.returncode}) — falling back to time.sleep')
 
     _step(f'Sleeping {seconds:.0f}s until next cycle  (resume ~{resume_ts})')
     # Break into 10s chunks so Ctrl+C is responsive
@@ -248,11 +259,11 @@ def transfer_data(capture_dir: str, tda_ip: str) -> bool:
         return False
 
     # Fix ownership/permissions on files copied as root.
-    # chown first so chmod u+rwX actually applies to the current user.
+    # chown requires sudo (only root can change file ownership).
     _step('Fixing permissions...')
     current_user = os.environ.get('USER', 'imrsl')
     capture_path_fix = os.path.join(POSTPROC_DIR, capture_dir)
-    subprocess.run(['chown', '-R', f'{current_user}:{current_user}', capture_path_fix], check=False)
+    subprocess.run(['sudo', 'chown', '-R', f'{current_user}:{current_user}', capture_path_fix], check=False)
     subprocess.run(['chmod', '-R', 'u+rwX', capture_path_fix], check=False)
 
     # Move the .mmwave.json config file into the capture directory.

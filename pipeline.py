@@ -78,6 +78,62 @@ def _step_done(name: str, t_start: float) -> float:
     return elapsed
 
 
+def _free_gb(path: str) -> float:
+    """Return free disk space in GB for the filesystem containing `path`."""
+    st = os.statvfs(path)
+    return st.f_bavail * st.f_frsize / 1e9
+
+
+def _auto_cleanup(postproc_dir: str, label: str, min_free_gb: float) -> None:
+    """
+    Delete oldest capture directories whose name starts with `label`
+    under `postproc_dir` until free disk space >= min_free_gb.
+    Directories are sorted by name (which contains a timestamp suffix,
+    so alphabetical order = chronological order).
+    Skips deletion if fewer than 2 matching directories exist (keep at
+    least the most recent one for reference).
+    """
+    free = _free_gb(postproc_dir)
+    if free >= min_free_gb:
+        return
+
+    # Collect matching dirs sorted oldest-first (name order = time order)
+    candidates = sorted([
+        os.path.join(postproc_dir, d)
+        for d in os.listdir(postproc_dir)
+        if d.startswith(label) and os.path.isdir(os.path.join(postproc_dir, d))
+    ])
+
+    if len(candidates) < 2:
+        print(f'[CLEANUP] Only {len(candidates)} matching dir(s) — skipping auto-delete '
+              f'(free: {free:.1f} GB < {min_free_gb:.1f} GB threshold)')
+        return
+
+    print(f'[CLEANUP] Free space {free:.1f} GB < {min_free_gb:.1f} GB — '
+          f'auto-deleting oldest captures with prefix "{label}"...')
+
+    # Keep the newest one; delete oldest until threshold met
+    for path in candidates[:-1]:
+        free = _free_gb(postproc_dir)
+        if free >= min_free_gb:
+            break
+        size_gb = sum(
+            os.path.getsize(os.path.join(dp, f))
+            for dp, _, files in os.walk(path)
+            for f in files
+        ) / 1e9
+        shutil.rmtree(path, ignore_errors=True)
+        print(f'[CLEANUP]  Deleted {os.path.basename(path)}  ({size_gb:.2f} GB)  '
+              f'→ free now {_free_gb(postproc_dir):.1f} GB')
+
+    free = _free_gb(postproc_dir)
+    if free < min_free_gb:
+        print(f'[CLEANUP] WARNING: still only {free:.1f} GB free after cleanup — '
+              f'consider manual cleanup of {postproc_dir}')
+    else:
+        print(f'[CLEANUP] Done — free space now {free:.1f} GB')
+
+
 def _do_idle_sleep(seconds: float, use_suspend: bool) -> None:
     """
     Sleep for `seconds` to fill a fixed cycle period.
@@ -394,6 +450,10 @@ def main():
                         help='Use sudo rtcwake (suspend-to-RAM) during idle period instead of '
                              'time.sleep. Requires: sudo NOPASSWD for rtcwake. Saves ~95%% power '
                              'during idle. Combine with --cycle-period.')
+    parser.add_argument('--min-free-gb',   type=float, default=0.0,
+                        help='Auto-delete oldest PostProc directories matching --label when free '
+                             'disk space drops below this value in GB (e.g. 5.0). '
+                             '0 = disabled. Only deletes dirs whose name starts with --label.')
     args = parser.parse_args()
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
@@ -411,6 +471,8 @@ def main():
     print(f'  Cycle interval   : {args.interval}s')
     if args.cycle_period > 0:
         print(f'  Cycle period     : {args.cycle_period}s  ({"suspend-to-RAM" if args.suspend else "time.sleep"} during idle)')
+    if args.min_free_gb > 0:
+        print(f'  Auto-cleanup     : delete oldest "{args.label}_*" dirs when free < {args.min_free_gb:.1f} GB')
     print(f'  PostProc dir     : {POSTPROC_DIR}')
     print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
     print(f'  PS source        : {args.ps_file if args.ps_file else ps_map_file + " (auto/ADI)"}')
@@ -498,9 +560,15 @@ def main():
         else:
             _step('Step 5 — LoRa Uplink skipped (--skip-lora)')
 
+        # ── Auto-cleanup (disk space management) ────────────────────
+        if args.min_free_gb > 0:
+            _auto_cleanup(POSTPROC_DIR, args.label, args.min_free_gb)
+
         elapsed = time.time() - t_start
         print(f'\n{"─"*60}')
         print(f'  Cycle {cycle} completed  |  Total: {elapsed:.1f}s  |  {_ts()}')
+        free_now = _free_gb(POSTPROC_DIR)
+        print(f'  Disk free        : {free_now:.1f} GB')
         print(f'{"─"*60}')
 
         if shutdown_flag:

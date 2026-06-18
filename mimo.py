@@ -9,6 +9,12 @@ from utility import check_captured_files
 from utility import signal_handler
 import os
 
+
+def _now_ms() -> str:
+    """Wall-clock timestamp with millisecond precision (for event timing / accel sync)."""
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+
 config_dict = {
     "mimo": {
         "profile": {
@@ -124,24 +130,30 @@ def main():
             print("="*60)
             
             # Arm TDA for capture
+            print(f"[TS] ARM_TDA_begin   {_now_ms()}", flush=True)
             status = mmwcas.mmw_arming_tda(capture_dir)
+            print(f"[TS] ARM_TDA_end     {_now_ms()}  status={status}", flush=True)
             if status != 0:
                 print(f"mmw_arming_tda failed (status: {status})")
                 time.sleep(1)
                 continue  # Skip to next loop
             time.sleep(2)
-            
+
             # Start frame capture
+            print(f"[TS] FRAMING_begin   {_now_ms()}", flush=True)
             status = mmwcas.mmw_start_frame()
+            # FRAMING_end ≈ t0 of the actual capture (master is triggered last in mmw_start_frame)
+            print(f"[TS] FRAMING_end     {_now_ms()}  status={status}  <-- t0 capture", flush=True)
             if status != 0:
                 print(f"mmw_start_frame failed (status: {status})")
                 time.sleep(1)
                 continue  # Skip to next loop
-            
+
             print(f"\n Capturing... ({args.duration}s)")
             time.sleep(args.duration)
 
             # Stop frame capture
+            print(f"[TS] STOP_FRAME      {_now_ms()}", flush=True)
             status = mmwcas.mmw_stop_frame()
             if status != 0:
                 print(f"mmw_stop_frame failed (status: {status})")
@@ -184,6 +196,17 @@ def main():
         import traceback
         traceback.print_exc()
         sys.exit(1)
+    finally:
+        # Clean teardown: power off devices (slaves first, master last) — mirrors TI's
+        # reference MMWL_App, which always powers off before exit. This leaves the radar in a
+        # known state so the next run starts clean (reduces RF init/enable -8 failures).
+        # No-op until mmwcas is rebuilt with mmw_power_off (make build).
+        if hasattr(mmwcas, "mmw_power_off"):
+            try:
+                mmwcas.mmw_power_off()
+                print("[MMWCAS] Radar powered off (teardown).")
+            except Exception as e:
+                print(f"[MMWCAS] WARNING: power-off teardown failed: {e}")
 
 if __name__ == "__main__":
     main()

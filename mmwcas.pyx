@@ -152,6 +152,7 @@ cdef extern from "ti/mmwave/mmwave.h":
     int MMWL_StartFrame(unsigned char deviceMap)
     int MMWL_StopFrame(unsigned char deviceMap)
     int MMWL_DeArmingTDA()
+    int MMWL_powerOff(unsigned char deviceMap)
     int MMWL_TDAInit(unsigned char *ipAddr , unsigned int port,uint8_t deviceMap)
 
 
@@ -789,4 +790,28 @@ cpdef int mmw_dearming_tda():
     check(status,
         b"[MMWCAS-RF] Stop recording",
         b"[MMWCAS-RF] Failed to de-arm TDA board!", 32, 0)
+    return status
+
+cpdef int mmw_power_off():
+    """@brief Power off all radar devices in TI teardown order (slaves first, master last).
+
+    Mirrors the reference sample mmw_monitoring.c :: MMWL_App teardown, which always powers
+    off every device before disconnecting. Leaving devices powered/configured between runs
+    (as the previous code did) contributes to RF init/enable (-8) failures on the next run.
+
+    Order: slave3 (8) -> slave2 (4) -> slave1 (2) -> master (1). The master powerOff calls
+    rlDevicePowerOff(), which de-initialises the mmwavelink link and destroys the async-event
+    mutex, so call this ONLY at the END of a session (process exit) -- never between captures
+    within a single live session.
+    """
+    cdef int status = 0
+    cdef int i
+    # Slaves first: device maps 8, 4, 2
+    for i in range(3, 0, -1):
+        status += MMWL_powerOff(1 << i)
+    # Master last: device map 1 (this tears down the link + async mutex)
+    status += MMWL_powerOff(1)
+    check(status,
+        b"[MMWCAS] Power off (teardown)",
+        b"[MMWCAS] Power off failed!", 32, 0)
     return status

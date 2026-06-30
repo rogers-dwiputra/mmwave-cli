@@ -14,12 +14,12 @@ config_dict = {
         "profile": {
             "id": 0,
             "startFrequency": 77,           # Chirp start frequency in GHz
-            "frequencySlope": 90,           # Frequency slope in MHz/us  (BridgeSpan_260603)
-            "idleTime": 3.5,                # Chirp idle time in us
-            "adcStartTime": 4.45,           # ADC start time in us
-            "numAdcSamples": 120,           # Number of ADC samples per chirp
-            "adcSamplingFrequency": 6500,   # ADC sampling frequency in ksps
-            "rampEndTime": 23.65,           # Chirp ramp end time in us
+            "frequencySlope": 11,      # Frequency slope in MHz/us
+            "idleTime": 5,                  # Chrip Idle time in us
+            "adcStartTime": 6,              # ADC start time in us
+            "numAdcSamples": 512,           # Number of ADC samples per chirp
+            "adcSamplingFrequency": 8000,   # ADC sampling frequency in ksps
+            "rampEndTime": 75,              # Chirp ramp end time in us
             "rxGain": 48,                   # dB
             "txStartTime": 0,               # TX starttime in us
             "hpfCornerFreq1": 0,            # 0: 175kHz

@@ -14,7 +14,7 @@ config_dict = {
         "profile": {
             "id": 0,
             "startFrequency": 77,           # Chirp start frequency in GHz
-            "frequencySlope": 20,      # Frequency slope in MHz/us
+            "frequencySlope": 11,      # Frequency slope in MHz/us
             "idleTime": 5,                  # Chrip Idle time in us
             "adcStartTime": 6,              # ADC start time in us
             "numAdcSamples": 512,           # Number of ADC samples per chirp

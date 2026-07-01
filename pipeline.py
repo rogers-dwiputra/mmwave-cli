@@ -130,7 +130,7 @@ def run_capture(duration: float, tda_ip: str, label: str) -> str | None:
 # Step 2 — Transfer
 # ─────────────────────────────────────────────
 
-def transfer_data(capture_dir: str, tda_ip: str) -> bool:
+def transfer_data(capture_dir: str, tda_ip: str, keep_ssd: bool = False) -> bool:
     """
     SCP capture data from TDA board → PostProc,
     fix permissions, and move the .mmwave.json into the capture folder.
@@ -174,21 +174,24 @@ def transfer_data(capture_dir: str, tda_ip: str) -> bool:
 
     # Delete raw data from TDA SSD after successful transfer to free space.
     # Raw .bin files are now safely stored on RPi (PostProc dir).
-    _step(f'Deleting from TDA SSD: /mnt/ssd/{capture_dir}')
-    ssh_cmd = [
-        'ssh',
-        '-oHostKeyAlgorithms=+ssh-rsa',
-        '-oPubkeyAcceptedAlgorithms=+ssh-rsa',
-        '-oStrictHostKeyChecking=no',
-        f'root@{tda_ip}',
-        f'rm -rf /mnt/ssd/{capture_dir}',
-    ]
-    del_result = subprocess.run(ssh_cmd)
-    if del_result.returncode == 0:
-        _step(f'TDA SSD cleaned — /mnt/ssd/{capture_dir} deleted')
+    if keep_ssd:
+        _step(f'TDA SSD kept (--keep-ssd): /mnt/ssd/{capture_dir} NOT deleted')
     else:
-        print(f'[PIPELINE] WARNING: TDA delete failed (exit {del_result.returncode}) '
-              f'— manual cleanup may be needed: rm -rf /mnt/ssd/{capture_dir}')
+        _step(f'Deleting from TDA SSD: /mnt/ssd/{capture_dir}')
+        ssh_cmd = [
+            'ssh',
+            '-oHostKeyAlgorithms=+ssh-rsa',
+            '-oPubkeyAcceptedAlgorithms=+ssh-rsa',
+            '-oStrictHostKeyChecking=no',
+            f'root@{tda_ip}',
+            f'rm -rf /mnt/ssd/{capture_dir}',
+        ]
+        del_result = subprocess.run(ssh_cmd)
+        if del_result.returncode == 0:
+            _step(f'TDA SSD cleaned — /mnt/ssd/{capture_dir} deleted')
+        else:
+            print(f'[PIPELINE] WARNING: TDA delete failed (exit {del_result.returncode}) '
+                  f'— manual cleanup may be needed: rm -rf /mnt/ssd/{capture_dir}')
 
     return True
 
@@ -340,6 +343,8 @@ def main():
                              'Skips ADI computation — use after first manual PS selection.')
     parser.add_argument('--reset-ps',        action='store_true',
                         help='Delete PS map so it is recomputed on the next cycle (ignored when --ps-file is set)')
+    parser.add_argument('--keep-ssd',         action='store_true',
+                        help='Keep raw data on TDA SSD after transfer (do not delete)')
     parser.add_argument('--skip-lora',       action='store_true',
                         help='Skip LoRa uplink step')
     parser.add_argument('--lora-port',       type=str,
@@ -397,7 +402,7 @@ def main():
         # ── 2. Transfer ─────────────────────────────────────────────
         if not args.skip_transfer:
             t2 = _step_start(f'Step 2 — Transfer ({capture_dir})')
-            ok = transfer_data(capture_dir, args.tda_ip)
+            ok = transfer_data(capture_dir, args.tda_ip, keep_ssd=args.keep_ssd)
             if not ok:
                 print('[PIPELINE] Transfer failed — skipping processing for this cycle')
                 if args.interval > 0:

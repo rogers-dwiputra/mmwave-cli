@@ -26,9 +26,9 @@ config_dict = {
             "hpfCornerFreq2": 0,            # 0: 350kHz
         },
         "frame": {
-            "numLoops": 16,                 # Number of chirp loop per frame
-            "numFrames": 0,                 # Number of frames to record
-            "framePeriodicity": 50,        # Frame periodicity in ms (Inter_Frame_Interval)
+            "numLoops": 10,                 # Number of chirp loops per frame
+            "numFrames": 0,                 # Number of frames to record (0 = duration-controlled)
+            "framePeriodicity": 30,         # Frame periodicity in ms → Fs = 33.33 Hz
         },
         "channel": {
             "rxChannelEn": 0x0F,            # Enable all 4 RX channels

@@ -94,7 +94,7 @@ def main():
     status = mmwcas.mmw_set_config(config_dict)
     if status != 0:
         print(f"Configuration error: {status}")
-        raise ValueError(f"mmw_set_config failed with status {status}")
+        sys.exit(2)
     
     # Initialize radar (heavy phase). With the non-exiting mmwcas, a failure
     # here returns a status code instead of killing the interpreter.

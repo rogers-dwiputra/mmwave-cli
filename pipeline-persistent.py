@@ -291,12 +291,9 @@ def main():
             break
 
         # ── 5. LoRa uplink ──────────────────────────────────────────
-        if not args.skip_lora:
-            t5 = P._step_start('Step 5 — LoRa Uplink')
-            P.run_lora_send(capture_dir, args.lora_port, args.lora_appkey)
-            P._step_done('Step 5 — LoRa Uplink', t5)
-        else:
-            P._step('Step 5 — LoRa Uplink skipped (--skip-lora)')
+        t5 = P._step_start('Step 5 — LoRa Uplink')
+        P.run_lora_step(capture_dir, args.lora_port, args.lora_appkey, skip_send=args.skip_lora)
+        P._step_done('Step 5 — LoRa Uplink', t5)
 
         # ── Auto-cleanup ────────────────────────────────────────────
         if args.min_free_gb > 0:

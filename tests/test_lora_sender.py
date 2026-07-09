@@ -58,7 +58,11 @@ def test_open_session_joins(monkeypatch):
 def test_open_session_join_failed_returns_none(monkeypatch):
     _no_sleep(monkeypatch)
     script = dict(JOIN_OK)
-    script['AT+JOIN'] = ['+JOIN: Join failed']
+    # '+JOIN: Join failed' alone doesn't match expected='joined' nor the
+    # ERROR/+ERR terminal tokens _send_at checks for, so it would otherwise
+    # spin for the full 30 s timeout (twice: JOIN then JOIN=FORCE). Add a
+    # trailing ERROR line so _send_at's existing early-exit path fires.
+    script['AT+JOIN'] = ['+JOIN: Join failed', '+JOIN: ERROR']
     fake = FakeSerial(script)
     ses = lora_sender.open_session(ser_factory=lambda: fake)
     assert ses is None

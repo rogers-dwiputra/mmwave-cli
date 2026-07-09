@@ -230,6 +230,7 @@ def open_session(port: str = DEFAULT_PORT,
 
     time.sleep(0.5)
     ser.reset_input_buffer()
+    _log(f'Opened {port} @ {baud} baud')
 
     ok = False
     for _retry in range(4):
@@ -247,10 +248,14 @@ def open_session(port: str = DEFAULT_PORT,
         ok_adr, _ = _send_at(ser, 'AT+ADR=ON', timeout=3, expected='ADR')
         if not ok_adr:
             _log('WARNING: AT+ADR=ON not confirmed — continuing...')
-    ok_dr, _ = _send_at(ser, f'AT+DR={dr}', timeout=3, expected='DR')
-    if not ok_dr:
+    ok_dr, dr_resp = _send_at(ser, f'AT+DR={dr}', timeout=3, expected='DR')
+    if ok_dr:
+        dr_line = next((l for l in dr_resp if '+DR:' in l), '')
+        _log(f'DR set: {dr_line}')
+    else:
         _log(f'WARNING: AT+DR={dr} not confirmed — continuing...')
 
+    _log('Checking join status...')
     ok, _ = _send_at(ser, 'AT+JOIN', timeout=30, expected='joined')
     if not ok:
         _log('WARNING: Join may have failed — attempting force rejoin...')

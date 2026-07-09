@@ -96,9 +96,17 @@ def main():
         print(f"Configuration error: {status}")
         raise ValueError(f"mmw_set_config failed with status {status}")
     
-    # Initialize radar
-    status = mmwcas.mmw_init()
-    assert status == 0, ValueError("mmw_init failed")
+    # Initialize radar (heavy phase). With the non-exiting mmwcas, a failure
+    # here returns a status code instead of killing the interpreter.
+    status = mmwcas.mmw_init(args.tda_ip)
+    if status != 0:
+        print(f"mmw_init failed (status: {status}) — powering off and exiting")
+        if hasattr(mmwcas, "mmw_power_off"):
+            try:
+                mmwcas.mmw_power_off()
+            except Exception as e:
+                print(f"[MMWCAS] WARNING: power-off after failed init failed: {e}")
+        sys.exit(2)
     time.sleep(2)
 
     os.makedirs("mmwave_json_files", exist_ok=True)

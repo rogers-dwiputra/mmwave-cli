@@ -469,9 +469,9 @@ cdef void check(int status, char* success_msg, char* error_msg,
             #printf(CRESET)
             printf("\n")
         
-        # 如果 is_required 为非零，则退出程序
-        if is_required != 0:
-            exit(status)
+        # Never exit() from C level: return control to Python so the caller
+        # (pipeline recovery ladder) can decide. is_required kept for signature
+        # compatibility; failure is signalled by the returned status upstream.
 
 
 cdef int32_t initMaster(rlChanCfg_t channelCfg,rlAdcOutCfg_t adcOutCfg):
@@ -483,31 +483,43 @@ cdef int32_t initMaster(rlChanCfg_t channelCfg,rlAdcOutCfg_t adcOutCfg):
     check(status,
         b"[MASTER] Power up successful!",
         b"[MASTER] Error: Failed to power up device!", masterMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_firmwareDownload(masterMap)
     check(status,
         b"[MASTER] Firmware successfully uploaded!",
         b"[MASTER] Error: Firmware upload failed!", masterMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_setDeviceCrcType(masterMap)
     check(status,
         b"[MASTER] CRC type has been set!",
         b"[MASTER] Error: Unable to set CRC type!", masterMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_rfEnable(masterMap)
     check(status,
         b"[MASTER] RF successfully enabled!",
         b"[MASTER] Error: Failed to enable master RF", masterMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_channelConfig(masterMap, channelCfg.cascading, channelCfg)
     check(status,
         b"[MASTER] Channels successfully configured!",
         b"[MASTER] Error: Channels configuration failed!", masterMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_adcOutConfig(masterMap, adcOutCfg)
     check(status,
         b"[MASTER] ADC output format successfully configured!",
         b"[MASTER] Error: ADC output format configuration failed!", masterMap, TRUE)
+    if status != 0:
+        return status
 
     check(status,
         b"[MASTER] Init completed with sucess",
@@ -529,32 +541,44 @@ cdef int32_t initSlaves(rlChanCfg_t channelCfg, rlAdcOutCfg_t adcOutCfg):
         check(status,
             b"[SLAVE] Power up successful!",
             b"[SLAVE] Error: Failed to power up device!", slaveMap, TRUE)
+        if status != 0:
+            return status
 
     #Config of all slaves together
     status += MMWL_firmwareDownload(slavesMap)
     check(status,
         b"[SLAVE] Firmware successfully uploaded!",
         b"[SLAVE] Error: Firmware upload failed!", slavesMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_setDeviceCrcType(slavesMap)
     check(status,
         b"[SLAVE] CRC type has been set!",
         b"[SLAVE] Error: Unable to set CRC type!", slavesMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_rfEnable(slavesMap)
     check(status,
         b"[SLAVE] RF successfully enabled!",
         b"[SLAVE] Error: Failed to enable master RF", slavesMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_channelConfig(slavesMap, channelCfg.cascading,channelCfg)
     check(status,
         b"[SLAVE] Channels successfully configured!",
         b"[SLAVE] Error: Channels configuration failed!", slavesMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_adcOutConfig(slavesMap, adcOutCfg)
     check(status,
         b"[SLAVE] ADC output format successfully configured!",
         b"[SLAVE] Error: ADC output format configuration failed!", slavesMap, TRUE)
+    if status != 0:
+        return status
 
     check(status,
         b"[SLAVE] Init completed with sucess",
@@ -565,27 +589,39 @@ cdef uint32_t configure (devConfig_t config):
     cdef int status = 0
     cdef int devId = 0
     status += initMaster(config.channelCfg, config.adcOutCfg)
+    if status != 0:
+        return status
     status += initSlaves(config.channelCfg, config.adcOutCfg)
+    if status != 0:
+        return status
 
     status += MMWL_RFDeviceConfig(config.deviceMap)
     check(status,
         b"[ALL] RF deivce configured!",
         b"[ALL] RF device configuration failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_ldoBypassConfig(config.deviceMap, config.ldoCfg)
     check(status,
         b"[ALL] LDO Bypass configuration successful!",
         b"[ALL] LDO Bypass configuration failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_dataFmtConfig(config.deviceMap, config.dataFmtCfg)
     check(status,
         b"[ALL] Data format configuration successful!",
         b"[ALL] Data format configuration failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_lowPowerConfig(config.deviceMap, config.lpmCfg)
     check(status,
         b"[ALL] Low Power Mode configuration successful!",
         b"[ALL] Low Power Mode configuration failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_ApllSynthBwConfig(config.deviceMap)
     status += MMWL_setMiscConfig(config.deviceMap, config.miscCfg)
@@ -593,6 +629,8 @@ cdef uint32_t configure (devConfig_t config):
     check(status,
         b"[ALL] RF successfully initialized!",
         b"[ALL] RF init failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_dataPathConfig(config.deviceMap, config.datapathCfg)
     status += MMWL_hsiClockConfig(config.deviceMap, config.datapathClkCfg, config.hsClkCfg)
@@ -600,11 +638,15 @@ cdef uint32_t configure (devConfig_t config):
     check(status,
         b"[ALL] Datapath configuration successful!",
         b"[ALL] Datapath configuration failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     status += MMWL_profileConfig(config.deviceMap, config.profileCfg)
     check(status,
         b"[ALL] Profile configuration successful!",
         b"[ALL] Profile configuration failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     # MIMO Chirp configuration
     for devId in range(4):
@@ -613,6 +655,8 @@ cdef uint32_t configure (devConfig_t config):
     check(status,
         b"[ALL] Chirp configuration successful!",
         b"[ALL] Chirp configuration failed!", config.deviceMap, TRUE)
+    if status != 0:
+        return status
 
     #Master frame config.
     status += MMWL_frameConfig(
@@ -626,13 +670,15 @@ cdef uint32_t configure (devConfig_t config):
     check(status,
         b"[MASTER] Frame configuration completed!",
         b"[MASTER] Frame configuration failed!", config.masterMap, TRUE)
+    if status != 0:
+        return status
 
     #Slaves frame config
     status += MMWL_frameConfig(
         config.slavesMap,
         config.frameCfg,
         config.channelCfg,
-        config.adcOutCfg,  
+        config.adcOutCfg,
         config.datapathCfg,
         config.profileCfg
     )
@@ -723,8 +769,10 @@ cpdef int mmw_init(
     check(status,
         b"[MMWCAS-DSP] TDA Connected!",
         b"[MMWCAS-DSP] Couldn't connect to TDA board!", 32, TRUE)
+    if status != 0:
+        return status
 
-    configure(config) 
+    status = <int>configure(config)
     return status
 
 cpdef int mmw_arming_tda(str capture_path):

@@ -207,6 +207,82 @@ def find_latest_metrics() -> str | None:
 
 
 # ═════════════════════════════════════════════
+# Session + confirmed uplink  (used by lora_queue drain)
+# ═════════════════════════════════════════════
+
+def open_session(port: str = DEFAULT_PORT,
+                 baud: int = DEFAULT_BAUD,
+                 appkey: str = DEFAULT_APPKEY,
+                 dr: int = DEFAULT_DR,
+                 adr: bool = DEFAULT_ADR,
+                 ser_factory=None):
+    """
+    Open the Wio-E5 serial port, configure (APPKEY/ADR/DR) and join OTAA.
+    Returns a ready serial handle for repeated sends, or None on failure.
+    Caller is responsible for closing the returned handle.
+    `ser_factory` allows tests to inject a fake serial object.
+    """
+    try:
+        ser = ser_factory() if ser_factory else serial.Serial(port, baud, timeout=1)
+    except serial.SerialException as exc:
+        _log(f'ERROR: Cannot open {port}: {exc}')
+        return None
+
+    time.sleep(0.5)
+    ser.reset_input_buffer()
+
+    ok = False
+    for _retry in range(4):
+        ok, _ = _send_at(ser, 'AT', timeout=3, expected='OK')
+        if ok:
+            break
+        _log(f'AT no response — retry {_retry + 1}/4...')
+    if not ok:
+        _log('ERROR: No response from Wio-E5 — check cable and port')
+        ser.close()
+        return None
+
+    _send_at(ser, f'AT+KEY=APPKEY,"{appkey}"', timeout=3)
+    if adr:
+        ok_adr, _ = _send_at(ser, 'AT+ADR=ON', timeout=3, expected='ADR')
+        if not ok_adr:
+            _log('WARNING: AT+ADR=ON not confirmed — continuing...')
+    ok_dr, _ = _send_at(ser, f'AT+DR={dr}', timeout=3, expected='DR')
+    if not ok_dr:
+        _log(f'WARNING: AT+DR={dr} not confirmed — continuing...')
+
+    ok, _ = _send_at(ser, 'AT+JOIN', timeout=30, expected='joined')
+    if not ok:
+        _log('WARNING: Join may have failed — attempting force rejoin...')
+        ok, _ = _send_at(ser, 'AT+JOIN=FORCE', timeout=30, expected='joined')
+        if not ok:
+            _log('ERROR: Join failed')
+            ser.close()
+            return None
+
+    # Let all join response lines finish before the first send
+    # (avoids "+JOIN: Done" leaking into the next response buffer)
+    time.sleep(2)
+    ser.reset_input_buffer()
+    return ser
+
+
+def send_payload_confirmed(ser, hex_payload: str, timeout: float = 30.0) -> bool:
+    """
+    Confirmed uplink via AT+CMSGHEX. True only when the network ACK arrives.
+    Without ACK (gateway down, out of range) the Wio-E5 prints '+CMSGHEX: Done'
+    but never 'ACK Received' — that is a delivery failure.
+    """
+    ok, _ = _send_at(ser, f'AT+CMSGHEX="{hex_payload}"',
+                     timeout=timeout, expected='ACK Received')
+    if ok:
+        _log(f'✓ Confirmed uplink delivered (ACK) — {hex_payload}')
+    else:
+        _log('✗ No ACK received — delivery failed, message stays queued')
+    return ok
+
+
+# ═════════════════════════════════════════════
 # Main send function
 # ═════════════════════════════════════════════
 
@@ -240,69 +316,13 @@ def send_lora(metrics_path: str = None,
 
     hex_payload = encode_payload(metrics)
 
-    # ── Open serial port ──────────────────────────────────────────────
-    try:
-        ser = serial.Serial(port, baud, timeout=1)
-        time.sleep(0.5)
-        ser.reset_input_buffer()
-        _log(f'Opened {port} @ {baud} baud')
-    except serial.SerialException as exc:
-        _log(f'ERROR: Cannot open {port}: {exc}')
+    # ── Open + join session ───────────────────────────────────────────
+    ser = open_session(port=port, baud=baud, appkey=appkey, dr=dr, adr=adr)
+    if ser is None:
         return False
 
     try:
-        # 1 ── Test connectivity (retry — Wio-E5 needs 1-2 ATs to wake up) ──
-        ok = False
-        for _retry in range(4):
-            ok, _ = _send_at(ser, 'AT', timeout=3, expected='OK')
-            if ok:
-                break
-            _log(f'AT no response — retry {_retry + 1}/4...')
-        if not ok:
-            _log('ERROR: No response from Wio-E5 — check cable and port')
-            return False
-
-        # 2 ── Set APPKEY ──────────────────────────────────────────────
-        _send_at(ser, f'AT+KEY=APPKEY,"{appkey}"', timeout=3)
-
-        # 3a ── Enable ADR — Wio-E5 v4.x firmware uses AT+ADR=ON (string) ──
-        # ADR is ON by default in firmware v4.0.11; sending explicitly each
-        # cycle ensures it stays enabled if device was manually reconfigured.
-        if adr:
-            ok_adr, _ = _send_at(ser, 'AT+ADR=ON', timeout=3, expected='ADR')
-            if not ok_adr:
-                _log('WARNING: AT+ADR=ON not confirmed — continuing...')
-
-        # 3b ── Set starting Data Rate ─────────────────────────────────
-        # Default firmware = DR2 (SF10, 371ms airtime).
-        # DR5 (SF7) = 46ms airtime for distances <500m.
-        # Setting is saved to flash; consistent state ensured each cycle.
-        ok_dr, dr_resp = _send_at(ser, f'AT+DR={dr}', timeout=3, expected='DR')
-        if ok_dr:
-            dr_line = next((l for l in dr_resp if '+DR:' in l), '')
-            _log(f'DR set: {dr_line}')
-        else:
-            _log(f'WARNING: AT+DR={dr} not confirmed — continuing...')
-
-        # 4 ── Join (OTAA) ─────────────────────────────────────────────
-        # AT+JOIN handles "already joined" transparently: returns "Network joined"
-        # quickly (~6s) without re-negotiating session keys if already in network.
-        _log('Checking join status...')
-        ok, resp = _send_at(ser, 'AT+JOIN', timeout=30,
-                            expected='joined')   # matches "Network joined"
-        if not ok:
-            _log('WARNING: Join may have failed — attempting force rejoin...')
-            ok, resp = _send_at(ser, 'AT+JOIN=FORCE', timeout=30, expected='joined')
-            if not ok:
-                _log('ERROR: Join failed')
-                return False
-
-        # Wait for all join response lines to finish before sending
-        # (avoids "+JOIN: Done" leaking into MSGHEX response buffer)
-        time.sleep(2)
-        ser.reset_input_buffer()
-
-        # 5 ── Send payload ────────────────────────────────────────────
+        # ── Send payload (unconfirmed, legacy path) ────────────────────
         _log('Sending payload...')
         ok, resp = _send_at(ser, f'AT+MSGHEX="{hex_payload}"',
                             timeout=15, expected='Done')
@@ -310,9 +330,7 @@ def send_lora(metrics_path: str = None,
             _log(f'✓ Uplink sent successfully — payload: {hex_payload}')
         else:
             _log('WARNING: No "Done" received — packet may not have been sent')
-
         return ok
-
     finally:
         ser.close()
         _log(f'Serial port {port} closed')

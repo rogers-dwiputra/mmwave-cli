@@ -45,3 +45,46 @@ def test_enqueue_without_timestamp_still_works(tmp_path):
     spool = str(tmp_path)
     path = lora_queue.enqueue({'capture': 'NoTs_1'}, spool_dir=spool)
     assert os.path.isfile(path)
+
+
+def test_drain_oldest_first_and_stops_on_failure(tmp_path):
+    spool = str(tmp_path)
+    for i in range(4):
+        lora_queue.enqueue(_metrics(f'2026-07-04T10:0{i}:00', f'Cap_{i}'), spool_dir=spool)
+
+    results = iter([True, True, False])   # 3rd send fails → drain must stop
+    sent_payloads = []
+
+    def send_fn(hex_payload):
+        sent_payloads.append(hex_payload)
+        return next(results)
+
+    sent, remaining = lora_queue.drain(send_fn, spool_dir=spool, sleep_fn=lambda s: None)
+    assert sent == 2
+    assert remaining == 2                  # Cap_2 (failed) and Cap_3 stay pending
+    assert len(sent_payloads) == 3
+    pending_names = [p.split('_')[-1] for p in lora_queue.list_pending(spool)]
+    assert pending_names == ['2.json', '3.json']
+
+
+def test_drain_respects_max_send_and_spacing(tmp_path):
+    spool = str(tmp_path)
+    for i in range(5):
+        lora_queue.enqueue(_metrics(f'2026-07-04T10:0{i}:00', f'Cap_{i}'), spool_dir=spool)
+    sleeps = []
+    sent, remaining = lora_queue.drain(lambda h: True, spool_dir=spool,
+                                       max_send=3, spacing_s=10.0,
+                                       sleep_fn=sleeps.append)
+    assert (sent, remaining) == (3, 2)
+    assert sleeps == [10.0, 10.0]          # spacing between sends, not before the first
+
+
+def test_drain_moves_corrupt_file_to_failed(tmp_path):
+    spool = str(tmp_path)
+    lora_queue.enqueue(_metrics('2026-07-04T10:00:00', 'Good_1'), spool_dir=spool)
+    bad = os.path.join(spool, 'pending', '0000000001_bad.json')
+    with open(bad, 'w') as fh:
+        fh.write('{not json')
+    sent, remaining = lora_queue.drain(lambda h: True, spool_dir=spool, sleep_fn=lambda s: None)
+    assert (sent, remaining) == (1, 0)
+    assert os.listdir(os.path.join(spool, 'failed')) == ['0000000001_bad.json']

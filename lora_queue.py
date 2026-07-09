@@ -69,3 +69,34 @@ def mark_sent(path, spool_dir=None, keep=SENT_KEEP):
     for n in names[:-keep]:
         os.remove(os.path.join(sent, n))
     return dst
+
+
+def drain(send_fn, spool_dir=None, max_send=20, spacing_s=10.0, sleep_fn=time.sleep):
+    """
+    Send pending messages oldest-first via send_fn(hex_payload) -> bool.
+    Stops at the first failure (link considered down) or after max_send.
+    Corrupt files are moved to failed/ so they never block the queue.
+    Returns (sent_count, remaining_count).
+    """
+    from lora_sender import encode_payload  # lazy: keeps lora_queue importable without pyserial
+    _, _, failed_dir = _dirs(spool_dir)
+    sent_count = 0
+    for path in list_pending(spool_dir):
+        if sent_count >= max_send:
+            print(f'[QUEUE] max_send={max_send} reached — remaining backlog drains next cycle')
+            break
+        try:
+            with open(path) as fh:
+                metrics = json.load(fh)
+            hex_payload = encode_payload(metrics)
+        except (json.JSONDecodeError, OSError, ValueError) as exc:
+            print(f'[QUEUE] Corrupt spool file {os.path.basename(path)} ({exc}) — moving to failed/')
+            shutil.move(path, os.path.join(failed_dir, os.path.basename(path)))
+            continue
+        if sent_count > 0:
+            sleep_fn(spacing_s)
+        if not send_fn(hex_payload):
+            break
+        mark_sent(path, spool_dir)
+        sent_count += 1
+    return sent_count, len(list_pending(spool_dir))

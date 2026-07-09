@@ -92,3 +92,98 @@ def preflight(ip, run=None, min_free_mb=200, log_path=None):
         log_event('preflight_apps_down', 'apps.out not running', path=log_path)
         return False
     return True
+
+
+LIGHT_BACKOFFS_S = (5, 15, 45)
+REINIT_ATTEMPTS = 2
+REBOOT_WAIT_S = 180
+BOOT_POLL_S = 10
+POST_BOOT_GRACE_S = 20
+LADDER_EXHAUSTED_SLEEP_S = 600
+
+
+class RecoveryPolicy:
+    """Escalating recovery ladder (design spec Part 1b).
+
+    Call on_failure() after every failed capture/pre-flight and on_success()
+    after every good capture. Each on_failure() performs ONE ladder action
+    (including its waiting) and returns; the caller then simply retries the
+    cycle. The ladder never raises — the pipeline must never crash.
+    """
+
+    def __init__(self, tda_ip, reinit_fn=None, power_cycle_cmd=None,
+                 run=None, shell_fn=None, sleep_fn=time.sleep, log_path=None):
+        self.tda_ip = tda_ip
+        self.reinit_fn = reinit_fn                  # persistent mode only
+        self.power_cycle_cmd = power_cycle_cmd      # e.g. relay toggle command
+        self.run = run or ssh_run
+        # shell=True is intentional and safe here: power_cycle_cmd is written by
+        # the operator on their own CLI (--power-cycle-cmd), never interpolated
+        # with untrusted data, and legitimately needs shell features
+        # (e.g. "plug-off && sleep 5 && plug-on").
+        self.shell = shell_fn or (lambda cmd: subprocess.run(cmd, shell=True).returncode)
+        self.sleep = sleep_fn
+        self.log_path = log_path
+        self.streak = 0
+        self.schedule = self._build_schedule()
+
+    def _build_schedule(self):
+        sched = [('light_retry', b) for b in LIGHT_BACKOFFS_S]
+        if self.reinit_fn is not None:
+            sched += [('software_reinit', 5)] * REINIT_ATTEMPTS
+        sched.append(('tda_reboot', None))
+        if self.power_cycle_cmd:
+            sched.append(('power_cycle', None))
+        return sched
+
+    def on_success(self):
+        if self.streak:
+            log_event('recovered', f'after {self.streak} failure(s)',
+                      path=self.log_path)
+        self.streak = 0
+
+    def on_failure(self):
+        if self.streak >= len(self.schedule):
+            log_event('ladder_exhausted',
+                      f'sleeping {LADDER_EXHAUSTED_SLEEP_S}s, then restarting ladder',
+                      streak=self.streak, path=self.log_path)
+            self.sleep(LADDER_EXHAUSTED_SLEEP_S)
+            self.streak = 0
+            return 'ladder_exhausted'
+
+        action, backoff = self.schedule[self.streak]
+        self.streak += 1
+        log_event(action, f'backoff={backoff}', streak=self.streak,
+                  path=self.log_path)
+
+        if action == 'light_retry':
+            self.sleep(backoff)
+        elif action == 'software_reinit':
+            self.sleep(backoff)
+            try:
+                self.reinit_fn()
+            except Exception as exc:
+                log_event('software_reinit_error', str(exc), path=self.log_path)
+        elif action == 'tda_reboot':
+            try:
+                self.run(self.tda_ip, 'reboot')
+            except Exception as exc:
+                log_event('tda_reboot_error', str(exc), path=self.log_path)
+            self._wait_board_up()
+        elif action == 'power_cycle':
+            try:
+                self.shell(self.power_cycle_cmd)
+            except Exception as exc:
+                log_event('power_cycle_error', str(exc), path=self.log_path)
+            self._wait_board_up()
+        return action
+
+    def _wait_board_up(self):
+        """Poll the TDA over SSH until it answers or REBOOT_WAIT_S elapses,
+        then give apps.out a grace period to start listening."""
+        for _ in range(REBOOT_WAIT_S // BOOT_POLL_S):
+            rc, _out = self.run(self.tda_ip, 'echo UP', timeout=BOOT_POLL_S)
+            if rc == 0:
+                break
+            self.sleep(BOOT_POLL_S)
+        self.sleep(POST_BOOT_GRACE_S)

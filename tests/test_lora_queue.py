@@ -88,3 +88,14 @@ def test_drain_moves_corrupt_file_to_failed(tmp_path):
     sent, remaining = lora_queue.drain(lambda h: True, spool_dir=spool, sleep_fn=lambda s: None)
     assert (sent, remaining) == (1, 0)
     assert os.listdir(os.path.join(spool, 'failed')) == ['0000000001_bad.json']
+
+
+def test_drain_quarantines_record_that_breaks_encoding(tmp_path):
+    spool = str(tmp_path)
+    bad = _metrics('2026-07-04T10:00:00', 'Neg_1')
+    bad['dominant_frequency_hz'] = -5.0     # struct.error in encode_payload
+    lora_queue.enqueue(bad, spool_dir=spool)
+    lora_queue.enqueue(_metrics('2026-07-04T10:01:00', 'Good_2'), spool_dir=spool)
+    sent, remaining = lora_queue.drain(lambda h: True, spool_dir=spool, sleep_fn=lambda s: None)
+    assert (sent, remaining) == (1, 0)
+    assert len(os.listdir(os.path.join(spool, 'failed'))) == 1

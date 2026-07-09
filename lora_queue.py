@@ -89,7 +89,7 @@ def drain(send_fn, spool_dir=None, max_send=20, spacing_s=10.0, sleep_fn=time.sl
             with open(path) as fh:
                 metrics = json.load(fh)
             hex_payload = encode_payload(metrics)
-        except (json.JSONDecodeError, OSError, ValueError) as exc:
+        except Exception as exc:
             print(f'[QUEUE] Corrupt spool file {os.path.basename(path)} ({exc}) — moving to failed/')
             shutil.move(path, os.path.join(failed_dir, os.path.basename(path)))
             continue

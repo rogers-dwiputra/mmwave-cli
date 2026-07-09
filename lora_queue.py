@@ -100,3 +100,29 @@ def drain(send_fn, spool_dir=None, max_send=20, spacing_s=10.0, sleep_fn=time.sl
         mark_sent(path, spool_dir)
         sent_count += 1
     return sent_count, len(list_pending(spool_dir))
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='LoRa store-and-forward queue')
+    parser.add_argument('--status', action='store_true', help='Show queue counts')
+    parser.add_argument('--drain', action='store_true', help='Send all pending now')
+    parser.add_argument('--port', default='/dev/ttyUSB0')
+    parser.add_argument('--appkey', default=None)
+    args = parser.parse_args()
+
+    if args.drain:
+        import lora_sender
+        ses = lora_sender.open_session(
+            port=args.port, appkey=args.appkey or lora_sender.DEFAULT_APPKEY)
+        if ses is None:
+            raise SystemExit('LoRa link unavailable')
+        try:
+            sent, remaining = drain(
+                lambda h: lora_sender.send_payload_confirmed(ses, h))
+        finally:
+            ses.close()
+        print(f'drained: {sent} sent, {remaining} pending')
+    else:
+        print(f'pending: {len(list_pending())}')

@@ -14,6 +14,7 @@ Press Ctrl+C to stop gracefully after the current cycle completes.
 import argparse
 import glob
 import importlib.util
+import json
 import os
 import shutil
 import signal
@@ -380,37 +381,47 @@ def run_ps_monitoring(capture_dir: str, ps_map_file: str,
 
 
 # ─────────────────────────────────────────────
-# Step 5 — LoRa uplink (Wio-E5)
+# Step 5 — LoRa uplink via store-and-forward queue (Wio-E5)
 # ─────────────────────────────────────────────
 
-def run_lora_send(capture_dir: str,
-                  port: str, appkey: str) -> bool:
-    """Send ps_metrics.json for this capture via LoRaWAN."""
+def run_lora_step(capture_dir: str, port: str, appkey: str,
+                  skip_send: bool = False) -> bool:
+    """Enqueue this cycle's metrics, then drain the spool (oldest-first,
+    confirmed uplinks). Enqueue always happens — even with --skip-lora —
+    so no data is ever lost. Returns True when the spool is empty afterwards."""
+    import lora_queue
+    import lora_sender
+
     _banner(f'STEP 5 — LoRa Uplink  ({capture_dir})')
 
-    metrics_path = os.path.join(
-        EDGE_DIR, 'python-result', capture_dir, 'ps_metrics.json'
-    )
-    if not os.path.isfile(metrics_path):
-        print(f'[PIPELINE] ERROR: ps_metrics.json not found: {metrics_path}')
-        return False
+    metrics_path = os.path.join(EDGE_DIR, 'python-result', capture_dir, 'ps_metrics.json')
+    if os.path.isfile(metrics_path):
+        with open(metrics_path) as fh:
+            metrics = json.load(fh)
+        spooled = lora_queue.enqueue(metrics)
+        _step(f'Queued → {os.path.basename(spooled)}')
+    else:
+        print(f'[PIPELINE] WARNING: ps_metrics.json not found: {metrics_path} — nothing to queue')
 
-    try:
-        # Import lora_sender from the same directory as pipeline.py
-        import importlib.util as _ilu
-        _spec = _ilu.spec_from_file_location(
-            'lora_sender',
-            os.path.join(SCRIPT_DIR, 'lora_sender.py'),
-        )
-        _mod = _ilu.module_from_spec(_spec)
-        _spec.loader.exec_module(_mod)
-        return _mod.send_lora(metrics_path=metrics_path,
-                              port=port, appkey=appkey)
-    except Exception as exc:
-        import traceback
-        print(f'[PIPELINE] ERROR during LoRa send: {exc}')
-        traceback.print_exc()
+    pending = lora_queue.list_pending()
+    if skip_send:
+        _step(f'LoRa send skipped (--skip-lora) — {len(pending)} message(s) queued')
+        return True
+    if not pending:
+        _step('LoRa queue empty — nothing to send')
+        return True
+
+    ses = lora_sender.open_session(port=port, appkey=appkey)
+    if ses is None:
+        _step(f'LoRa link unavailable — {len(pending)} message(s) remain queued')
         return False
+    try:
+        sent, remaining = lora_queue.drain(
+            lambda hex_payload: lora_sender.send_payload_confirmed(ses, hex_payload))
+    finally:
+        ses.close()
+    _step(f'LoRa drain: {sent} sent, {remaining} still pending')
+    return remaining == 0
 
 
 # ─────────────────────────────────────────────
@@ -446,7 +457,7 @@ def main():
     parser.add_argument('--reset-ps',        action='store_true',
                         help='Delete PS map so it is recomputed on the next cycle (ignored when --ps-file is set)')
     parser.add_argument('--skip-lora',       action='store_true',
-                        help='Skip LoRa uplink step')
+                        help='Skip LoRa sending (metrics are still queued in ~/lora_queue for later drain)')
     parser.add_argument('--lora-port',       type=str,
                         default='/dev/ttyUSB0',
                         help='Serial port of Wio-E5 LoRa module')
@@ -563,13 +574,11 @@ def main():
         if shutdown_flag:
             break
 
-        # ── 5. LoRa uplink ──────────────────────────────────────────
-        if not args.skip_lora:
-            t5 = _step_start('Step 5 — LoRa Uplink')
-            run_lora_send(capture_dir, args.lora_port, args.lora_appkey)
-            _step_done('Step 5 — LoRa Uplink', t5)
-        else:
-            _step('Step 5 — LoRa Uplink skipped (--skip-lora)')
+        # ── 5. LoRa uplink (store-and-forward) ──────────────────────
+        t5 = _step_start('Step 5 — LoRa Uplink')
+        run_lora_step(capture_dir, args.lora_port, args.lora_appkey,
+                      skip_send=args.skip_lora)
+        _step_done('Step 5 — LoRa Uplink', t5)
 
         # ── Auto-cleanup (disk space management) ────────────────────
         if args.min_free_gb > 0:

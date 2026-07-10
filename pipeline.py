@@ -194,7 +194,7 @@ def _ladder_sleep(seconds: float) -> None:
 # Step 1 — Capture
 # ─────────────────────────────────────────────
 
-def run_capture(duration: float, tda_ip: str, label: str) -> str | None:
+def run_capture(duration: float, tda_ip: str, label: str, finite_framing: bool = False) -> str | None:
     """
     Execute one capture cycle via mimo.py.
     Returns the capture directory name (e.g. 'RPI_python_sine_2hz_1mm_10s_20260510_144105'),
@@ -213,6 +213,8 @@ def run_capture(duration: float, tda_ip: str, label: str) -> str | None:
         '--num-loops', '1',
         '--directory', label,
     ]
+    if finite_framing:
+        cmd.append('--finite-framing')
     result = subprocess.run(cmd)
 
     if result.returncode != 0:
@@ -244,13 +246,17 @@ def run_capture(duration: float, tda_ip: str, label: str) -> str | None:
 # arm→frame→stop→dearm per capture. See TIDEP-01012.md §7.2.
 # ─────────────────────────────────────────────
 
-def init_radar(tda_ip: str) -> bool:
+def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False) -> bool:
     """Heavy phase, done once per process: TDA connect → power-up → firmware
     → RF init calibration → frame config."""
     import mmwcas
     from mimo import config_dict
 
     _banner('INIT — Radar configure + init (persistent mode, ONCE)')
+    if finite_framing and duration:
+        from utility import finite_num_frames
+        fp = config_dict['mimo']['frame']['framePeriodicity']
+        config_dict['mimo']['frame']['numFrames'] = finite_num_frames(duration, fp)
     status = mmwcas.mmw_set_config(config_dict)
     if status != 0:
         print(f'[PIPELINE] ERROR: mmw_set_config failed (status {status})')
@@ -264,7 +270,7 @@ def init_radar(tda_ip: str) -> bool:
     return True
 
 
-def capture_once(duration: float, tda_ip: str, label: str) -> str | None:
+def capture_once(duration: float, tda_ip: str, label: str, finite_framing: bool = False) -> str | None:
     """One capture WITHOUT re-init (arm → frame → stop → dearm).
     Returns capture directory name, or None on failure."""
     import mmwcas
@@ -289,11 +295,14 @@ def capture_once(duration: float, tda_ip: str, label: str) -> str | None:
         return None
 
     print(f' Capturing... ({duration}s)', flush=True)
-    time.sleep(duration)
+    time.sleep(duration + (2.0 if finite_framing else 0.0))
 
-    status = mmwcas.mmw_stop_frame()
-    if status != 0:
-        print(f'[PIPELINE] WARNING: mmw_stop_frame failed (status {status})')
+    if finite_framing:
+        print('[PIPELINE] stop_frame skipped (finite framing)')
+    else:
+        status = mmwcas.mmw_stop_frame()
+        if status != 0:
+            print(f'[PIPELINE] WARNING: mmw_stop_frame failed (status {status})')
     status = mmwcas.mmw_dearming_tda()
     if status != 0:
         print(f'[PIPELINE] WARNING: mmw_dearming_tda failed (status {status})')
@@ -568,6 +577,9 @@ def main():
                              'arm→frame→stop→dearm (TI 2-phase sequence, avoids the '
                              'per-cycle -8 re-init failures — TIDEP-01012.md §7.2). '
                              'Default off until field-validated.')
+    parser.add_argument('--finite-framing', action='store_true',
+                        help='Use finite framing (numFrames from --duration) instead of '
+                             'infinite framing + manual StopFrame. Eliminates -2 errors.')
     args = parser.parse_args()
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
@@ -598,7 +610,7 @@ def main():
     os.makedirs(POSTPROC_DIR,   exist_ok=True)
     os.makedirs(JSON_FILES_DIR, exist_ok=True)
 
-    reinit_fn = (lambda: init_radar(args.tda_ip)) if args.persistent else None
+    reinit_fn = (lambda: init_radar(args.tda_ip, args.duration, args.finite_framing)) if args.persistent else None
     policy = tda_recovery.RecoveryPolicy(args.tda_ip,
                                          reinit_fn=reinit_fn,
                                          power_cycle_cmd=args.power_cycle_cmd,
@@ -606,7 +618,7 @@ def main():
     stats = {'ok': 0, 'failed': 0}
 
     if args.persistent:
-        while not shutdown_flag and not init_radar(args.tda_ip):
+        while not shutdown_flag and not init_radar(args.tda_ip, args.duration, args.finite_framing):
             stats['failed'] += 1
             _step(f'Initial radar init failed — recovery: {policy.on_failure()}')
 
@@ -628,9 +640,9 @@ def main():
         # ── 1. Capture ──────────────────────────────────────────────
         t1 = _step_start(f'Step 1 — Capture ({args.duration}s)')
         if args.persistent:
-            capture_dir = capture_once(args.duration, args.tda_ip, args.label)
+            capture_dir = capture_once(args.duration, args.tda_ip, args.label, args.finite_framing)
         else:
-            capture_dir = run_capture(args.duration, args.tda_ip, args.label)
+            capture_dir = run_capture(args.duration, args.tda_ip, args.label, args.finite_framing)
         if capture_dir is None:
             stats['failed'] += 1
             _step(f'Capture failed — recovery: {policy.on_failure()}')

@@ -360,6 +360,18 @@ def export_config_to_json(config_dict, filename, num_devices=4):
     except IOError as e:
         print(f"ERROR: Failed to save JSON file: {e}", file=sys.stderr)
 
+def finite_num_frames(duration_s: float, frame_period_ms: float) -> int:
+    """Frames needed to cover duration_s at frame_period_ms, rounded up (min 1).
+    Raises ValueError beyond the AWR2243 uint16 numFrames limit."""
+    import math
+    n = max(1, math.ceil(duration_s * 1000.0 / frame_period_ms))
+    if n > 65535:
+        raise ValueError(f'numFrames {n} exceeds uint16 limit 65535 '
+                         f'(max duration {65535 * frame_period_ms / 1000.0:.0f}s '
+                         f'at {frame_period_ms}ms period)')
+    return n
+
+
 def signal_handler(sig, frame):
     """Handle Ctrl+C gracefully"""
     global shutdown_flag

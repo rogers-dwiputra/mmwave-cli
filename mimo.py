@@ -84,7 +84,11 @@ def main():
                         type=float,
                         default=60.0,
                         help='Delay between capture loops in seconds (default: 60.0)')
-    
+    parser.add_argument('--finite-framing', action='store_true',
+                        help='Program numFrames from --duration (TI official workflow) '
+                             'instead of infinite framing + manual StopFrame. '
+                             'Eliminates -2 stop-frame errors. Default: off.')
+
     args = parser.parse_args()
 
     # Register signal handler for Ctrl+C
@@ -104,7 +108,14 @@ def main():
     print(f"Number of loops  : {'Infinite (until Ctrl+C)' if args.num_loops == 0 else args.num_loops}")
     if args.num_loops != 1:
         print(f"Inter-loop delay : {args.inter_loop_time} seconds")
-    
+
+    if args.finite_framing:
+        from utility import finite_num_frames
+        fp = config_dict["mimo"]["frame"]["framePeriodicity"]
+        nf = finite_num_frames(args.duration, fp)
+        config_dict["mimo"]["frame"]["numFrames"] = nf
+        print(f"Finite framing: numFrames={nf} ({args.duration}s @ {fp}ms/frame)")
+
     # Configure radar
     status = mmwcas.mmw_set_config(config_dict)
     if status != 0:
@@ -170,15 +181,20 @@ def main():
             print(f"[TS] FRAMING_end     {_now_ms()}  <-- t0 capture", flush=True)
 
             print(f"\n Capturing... ({args.duration}s)")
-            time.sleep(args.duration)
+            # Finite framing: frames stop by themselves after numFrames;
+            # +2s margin lets the last frame land before de-arm.
+            time.sleep(args.duration + (2.0 if args.finite_framing else 0.0))
 
             # Stop frame capture
-            print(f"[TS] STOP_FRAME      {_now_ms()}", flush=True)
-            status = mmwcas.mmw_stop_frame()
-            if status != 0:
-                print(f"mmw_stop_frame failed (status: {status})")
-                time.sleep(1)
-                continue  # Skip to next loop
+            if args.finite_framing:
+                print(f"[TS] STOP_FRAME skipped (finite framing) {_now_ms()}", flush=True)
+            else:
+                print(f"[TS] STOP_FRAME      {_now_ms()}", flush=True)
+                status = mmwcas.mmw_stop_frame()
+                if status != 0:
+                    print(f"mmw_stop_frame failed (status: {status})")
+                    time.sleep(1)
+                    continue  # Skip to next loop
             
             # De-arm TDA
             status = mmwcas.mmw_dearming_tda()

@@ -38,9 +38,13 @@ def log_event(action, detail='', streak=None, path=None):
            'action': action, 'detail': detail}
     if streak is not None:
         rec['streak'] = streak
-    with open(path or RECOVERY_LOG, 'a') as fh:
-        fh.write(json.dumps(rec) + '\n')
-    print(f'[RECOVERY] {action}  {detail}', flush=True)
+    note = ''
+    try:
+        with open(path or RECOVERY_LOG, 'a') as fh:
+            fh.write(json.dumps(rec) + '\n')
+    except OSError as exc:
+        note = f'  (log write failed: {exc})'
+    print(f'[RECOVERY] {action}  {detail}{note}', flush=True)
 
 
 def ssh_run(ip, cmd, timeout=30):
@@ -182,7 +186,10 @@ class RecoveryPolicy:
         """Poll the TDA over SSH until it answers or REBOOT_WAIT_S elapses,
         then give apps.out a grace period to start listening."""
         for _ in range(REBOOT_WAIT_S // BOOT_POLL_S):
-            rc, _out = self.run(self.tda_ip, 'echo UP', timeout=BOOT_POLL_S)
+            try:
+                rc, _out = self.run(self.tda_ip, 'echo UP', timeout=BOOT_POLL_S)
+            except Exception:
+                rc = 255  # board still down (or run() itself is broken) — keep polling
             if rc == 0:
                 break
             self.sleep(BOOT_POLL_S)

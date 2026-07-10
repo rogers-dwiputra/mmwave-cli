@@ -114,3 +114,25 @@ def test_reboot_waits_for_board(tmp_path):
     assert pol.on_failure() == 'tda_reboot'
     # 3 light backoffs + 2×10s down-polls + 20s post-boot grace
     assert sleeps == [5, 15, 45, 10, 10, 20]
+
+
+def test_wait_board_up_survives_raising_run(tmp_path):
+    calls = []
+    def raising_run(ip, cmd, timeout=30):
+        calls.append(cmd)
+        if cmd == 'reboot':
+            return 0, ''
+        if len(calls) < 4:
+            raise RuntimeError('ssh blew up')
+        return 0, 'UP\n'
+    pol, sleeps = _policy(tmp_path, run=raising_run)
+    for _ in range(3):
+        pol.on_failure()
+    assert pol.on_failure() == 'tda_reboot'   # must not raise
+    assert 20 in sleeps                        # post-boot grace still applied
+
+
+def test_log_event_never_raises_on_unwritable_path(tmp_path, capsys):
+    bad = str(tmp_path / 'no_such_dir' / 'rec.jsonl')
+    tda_recovery.log_event('light_retry', 'x', path=bad)   # must not raise
+    assert '[RECOVERY] light_retry' in capsys.readouterr().out

@@ -182,6 +182,14 @@ def _do_idle_sleep(seconds: float, use_suspend: bool) -> None:
         remaining -= 10
 
 
+def _ladder_sleep(seconds: float) -> None:
+    """Interruptible sleep for recovery-ladder waits: returns early once the
+    shutdown flag is set (plain time.sleep resumes after SIGINT, PEP 475)."""
+    end = time.time() + seconds
+    while not shutdown_flag and time.time() < end:
+        time.sleep(min(1.0, end - time.time()))
+
+
 # ─────────────────────────────────────────────
 # Step 1 — Capture
 # ─────────────────────────────────────────────
@@ -515,7 +523,8 @@ def main():
     os.makedirs(JSON_FILES_DIR, exist_ok=True)
 
     policy = tda_recovery.RecoveryPolicy(args.tda_ip,
-                                         power_cycle_cmd=args.power_cycle_cmd)
+                                         power_cycle_cmd=args.power_cycle_cmd,
+                                         sleep_fn=_ladder_sleep)
     stats = {'ok': 0, 'failed': 0}
 
     cycle = 0

@@ -23,6 +23,8 @@ import sys
 import time
 from datetime import datetime
 
+import tda_recovery
+
 # ─────────────────────────────────────────────
 # Paths  (resolved relative to this script)
 # ─────────────────────────────────────────────
@@ -476,6 +478,13 @@ def main():
                         help='Auto-delete oldest PostProc directories matching --label when free '
                              'disk space drops below this value in GB (e.g. 5.0). '
                              '0 = disabled. Only deletes dirs whose name starts with --label.')
+    parser.add_argument('--power-cycle-cmd', type=str, default=None,
+                        help='Shell command that hard power-cycles the TDA (relay/smart '
+                             'plug). Used as the last recovery-ladder level. Unset = level '
+                             'disabled (no relay installed yet).')
+    parser.add_argument('--min-tda-free-mb', type=int, default=200,
+                        help='Pre-flight: auto-clean Trace_TDA_*.txt on the TDA when its '
+                             'rootfs free space drops below this many MB.')
     args = parser.parse_args()
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
@@ -505,6 +514,10 @@ def main():
     os.makedirs(POSTPROC_DIR,   exist_ok=True)
     os.makedirs(JSON_FILES_DIR, exist_ok=True)
 
+    policy = tda_recovery.RecoveryPolicy(args.tda_ip,
+                                         power_cycle_cmd=args.power_cycle_cmd)
+    stats = {'ok': 0, 'failed': 0}
+
     cycle = 0
     while not shutdown_flag:
         cycle += 1
@@ -514,13 +527,21 @@ def main():
         print(f'# CYCLE {cycle:4d}   [{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}]')
         print(f'{"#"*60}')
 
+        # ── 0. Pre-flight (TDA reachable, apps.out alive, rootfs not full) ──
+        if not tda_recovery.preflight(args.tda_ip, min_free_mb=args.min_tda_free_mb):
+            stats['failed'] += 1
+            _step(f'Pre-flight failed — recovery: {policy.on_failure()}')
+            continue
+
         # ── 1. Capture ──────────────────────────────────────────────
         t1 = _step_start(f'Step 1 — Capture ({args.duration}s)')
         capture_dir = run_capture(args.duration, args.tda_ip, args.label)
         if capture_dir is None:
-            print('[PIPELINE] Capture failed — retrying in 10s...')
-            time.sleep(10)
+            stats['failed'] += 1
+            _step(f'Capture failed — recovery: {policy.on_failure()}')
             continue
+        policy.on_success()
+        stats['ok'] += 1
         _step_done('Step 1 — Capture', t1)
 
         if shutdown_flag:
@@ -589,6 +610,9 @@ def main():
         print(f'  Cycle {cycle} completed  |  Total: {elapsed:.1f}s  |  {_ts()}')
         free_now = _free_gb(POSTPROC_DIR)
         print(f'  Disk free        : {free_now:.1f} GB')
+        total = stats['ok'] + stats['failed']
+        print(f'  Capture success  : {stats["ok"]}/{total} cycles '
+              f'({100.0 * stats["ok"] / max(1, total):.0f}%)')
         print(f'{"─"*60}')
 
         if shutdown_flag:

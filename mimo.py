@@ -15,6 +15,21 @@ def _now_ms() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
 
+def _try_with_backoff(fn, name, backoffs=(5, 15, 45)):
+    """Run fn() -> status up to len(backoffs) times.
+    Sleeps backoffs[i] after the i-th failure. True on first success."""
+    for i, wait in enumerate(backoffs):
+        status = fn()
+        if status == 0:
+            return True
+        last = (i == len(backoffs) - 1)
+        print(f'{name} failed (status: {status})'
+              + (' — giving up' if last else f' — retrying in {wait}s'))
+        if not last:
+            time.sleep(wait)
+    return False
+
+
 config_dict = {
     "mimo": {
         "profile": {
@@ -137,25 +152,22 @@ def main():
             print(f"Recording duration: {args.duration} seconds")
             print("="*60)
             
-            # Arm TDA for capture
+            # Arm TDA for capture (light retry — see design spec Part 1d)
             print(f"[TS] ARM_TDA_begin   {_now_ms()}", flush=True)
-            status = mmwcas.mmw_arming_tda(capture_dir)
-            print(f"[TS] ARM_TDA_end     {_now_ms()}  status={status}", flush=True)
-            if status != 0:
-                print(f"mmw_arming_tda failed (status: {status})")
-                time.sleep(1)
+            if not _try_with_backoff(lambda: mmwcas.mmw_arming_tda(capture_dir),
+                                     'mmw_arming_tda'):
                 continue  # Skip to next loop
+            print(f"[TS] ARM_TDA_end     {_now_ms()}", flush=True)
             time.sleep(2)
 
-            # Start frame capture
+            # Start frame capture (light retry)
             print(f"[TS] FRAMING_begin   {_now_ms()}", flush=True)
-            status = mmwcas.mmw_start_frame()
-            # FRAMING_end ≈ t0 of the actual capture (master is triggered last in mmw_start_frame)
-            print(f"[TS] FRAMING_end     {_now_ms()}  status={status}  <-- t0 capture", flush=True)
-            if status != 0:
-                print(f"mmw_start_frame failed (status: {status})")
-                time.sleep(1)
+            if not _try_with_backoff(mmwcas.mmw_start_frame, 'mmw_start_frame'):
+                mmwcas.mmw_stop_frame()
+                mmwcas.mmw_dearming_tda()
                 continue  # Skip to next loop
+            # FRAMING_end ≈ t0 of the actual capture (master is triggered last)
+            print(f"[TS] FRAMING_end     {_now_ms()}  <-- t0 capture", flush=True)
 
             print(f"\n Capturing... ({args.duration}s)")
             time.sleep(args.duration)

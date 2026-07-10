@@ -68,6 +68,8 @@ mmwave-cli/                         ← this repo (runs on Raspberry Pi ~/mmwave
 ├── setup.py                        ← build mmwcas Cython extension
 ├── makefile                        ← build C binary + Cython extension
 ├── pipeline.py                     ← automated 5-step pipeline (main entry point)
+├── tda_recovery.py                 ← TDA pre-flight + escalating recovery ladder (Step 0)
+├── lora_queue.py                   ← LoRa store-and-forward file spool (~/lora_queue/)
 ├── lora_sender.py                  ← LoRaWAN uplink via Wio-E5 AT commands (Step 5)
 ├── utility.py                      ← check_captured_files(), export_config_to_json(), signal_handler()
 ├── mmwave_json_files/              ← generated .mmwave.json config files (per capture, moved into capture dir after SCP)
@@ -138,6 +140,10 @@ python3 pipeline.py --skip-transfer --skip-ps --debug  # SLC only on already-tra
 
 # Test LoRa send with latest result
 python3 lora_sender.py
+
+# Persistent mode (init once) + reliability features, 15-min cadence
+python3 pipeline.py --persistent --duration 30 --label BridgeSpan --cycle-period 900 \
+  --ps-file ~/IoSAR-EdgeProcessing/ps_manual_bridgespan.json
 ```
 
 **Run with nohup (long monitoring sessions):**
@@ -164,6 +170,10 @@ tail -f ~/pipeline_*.log
 | `--lora-port` | `/dev/ttyUSB0` | Wio-E5 serial port |
 | `--cycle-period` | `0.0` | Target total cycle time in seconds (e.g. `900` = 15 min). RPi idles for remaining time after each cycle. 0 = disabled. |
 | `--suspend` | off | During idle, use `sudo rtcwake -m mem` (suspend-to-RAM, ~0.1W) instead of `time.sleep`. Requires `sudoers` entry for rtcwake. |
+| `--persistent` | off | Init radar ONCE at start; cycles only arm→frame→stop→dearm (TI 2-phase). ~90 s faster/cycle, avoids per-cycle -8. |
+| `--power-cycle-cmd` | None | Shell command to hard power-cycle the TDA (relay). Last recovery-ladder level. |
+| `--min-tda-free-mb` | `200` | Pre-flight auto-clean of TDA `Trace_TDA_*.txt` below this free space. |
+| `--finite-framing` | off | numFrames from duration (TI workflow); eliminates -2 stop-frame errors. |
 
 **Estimated cycle times (15 s capture, Raspberry Pi 5, with ps_map.json cached):**
 - Step 1 Capture: ~20 s (15 s capture + arm/disarm overhead)
@@ -265,6 +275,8 @@ DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.
 
 **Backward compatibility:** `lora_sender.py` reads `dominant_frequency_hz`, falls back to `freq_mode_1_hz`, then `natural_frequency_hz`.
 
+**Store-and-forward queue (lora_queue.py):** every cycle's metrics are enqueued to `~/lora_queue/pending/` before sending. Delivery uses confirmed uplinks (`AT+CMSGHEX`, success = network ACK). On ACK the file moves to `sent/` (newest 200 kept); on failure draining stops and the backlog is retried oldest-first next cycle (max 20 uplinks/drain, 10 s spacing). `--skip-lora` still enqueues. Manual tools: `python3 lora_queue.py --status` / `--drain`.
+
 ---
 
 ## Cloud Monitoring Stack
@@ -322,6 +334,9 @@ from(bucket: "iosar")
 | `+JOIN: Done` matched MSGHEX "Done" | Join response leaked into MSGHEX buffer | `time.sleep(2) + reset_input_buffer()` after join |
 | TDA SSD fills up during long sessions | Raw data not deleted after transfer | Auto `rm -rf /mnt/ssd/<dir>` via SSH after SCP succeeds |
 | process_vibration_experiment.py crash | `summary[0]` when 0 captures found | `if not summary: return` guard added |
+| ~48% capture failure outdoors (STATUS -8) | Full re-init every cycle (3× -8 chances) | `--persistent` init-once mode + recovery ladder (`tda_recovery.py`) |
+| Uplinks lost when gateway/modem down | Unconfirmed send, no retry | Store-and-forward spool + confirmed uplink (`lora_queue.py`) |
+| TDA rootfs fills with Trace_TDA_*.txt → total failure | apps.out busy-loop logging | Pre-flight auto-cleanup (`--min-tda-free-mb`) |
 
 ---
 

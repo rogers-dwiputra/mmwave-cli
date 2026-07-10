@@ -334,6 +334,7 @@ from(bucket: "iosar")
 | `+JOIN: Done` matched MSGHEX "Done" | Join response leaked into MSGHEX buffer | `time.sleep(2) + reset_input_buffer()` after join |
 | TDA SSD fills up during long sessions | Raw data not deleted after transfer | Auto `rm -rf /mnt/ssd/<dir>` via SSH after SCP succeeds |
 | process_vibration_experiment.py crash | `summary[0]` when 0 captures found | `if not summary: return` guard added |
+| Default-mode behavior changed by reliability branch | Step 5 now uses confirmed uplinks + queue; 3 consecutive capture failures auto-reboot the TDA | Intentional (spec §1c/§2c) — disable ladder reboot only by code change |
 | ~48% capture failure outdoors (STATUS -8) | Full re-init every cycle (3× -8 chances) | `--persistent` init-once mode + recovery ladder (`tda_recovery.py`) |
 | Uplinks lost when gateway/modem down | Unconfirmed send, no retry | Store-and-forward spool + confirmed uplink (`lora_queue.py`) |
 | TDA rootfs fills with Trace_TDA_*.txt → total failure | apps.out busy-loop logging | Pre-flight auto-cleanup (`--min-tda-free-mb`) |

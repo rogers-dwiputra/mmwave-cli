@@ -33,3 +33,35 @@ def test_link_down_keeps_backlog(tmp_path, monkeypatch):
     ok = pipeline.run_lora_step(cap, port='/dev/null', appkey='X')
     assert ok is False
     assert len(lora_queue.list_pending()) == 1
+
+
+def test_happy_path_sends_and_drains_queue(tmp_path, monkeypatch):
+    import lora_sender
+
+    class _DummySession:
+        def close(self):
+            pass
+
+    monkeypatch.setattr(lora_queue, 'DEFAULT_SPOOL_DIR', str(tmp_path / 'spool'))
+    monkeypatch.setattr(pipeline, 'EDGE_DIR', str(tmp_path))
+    monkeypatch.setattr(lora_sender, 'open_session', lambda **kw: _DummySession())
+    monkeypatch.setattr(lora_sender, 'send_payload_confirmed', lambda ses, h: True)
+    cap = 'T_260704_100002'
+    _write_metrics(tmp_path, cap)
+    ok = pipeline.run_lora_step(cap, port='/dev/null', appkey='X')
+    assert ok is True
+    assert len(lora_queue.list_pending()) == 0
+
+
+def test_enqueue_failure_does_not_crash(tmp_path, monkeypatch):
+    monkeypatch.setattr(lora_queue, 'DEFAULT_SPOOL_DIR', str(tmp_path / 'spool'))
+    monkeypatch.setattr(pipeline, 'EDGE_DIR', str(tmp_path))
+
+    def _raise(*a, **kw):
+        raise OSError('disk full')
+
+    monkeypatch.setattr(lora_queue, 'enqueue', _raise)
+    cap = 'T_260704_100003'
+    _write_metrics(tmp_path, cap)
+    ok = pipeline.run_lora_step(cap, port='/dev/null', appkey='X')
+    assert ok is False

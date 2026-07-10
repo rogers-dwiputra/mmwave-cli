@@ -58,6 +58,12 @@ signal.signal(signal.SIGTERM, _handle_signal)
 def _ts() -> str:
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+def _now_ms() -> str:
+    """Wall-clock timestamp with millisecond precision (for event timing /
+    accel sync) — mirrors mimo.py's _now_ms() without importing mimo
+    (pipeline.py must stay importable without mmwcas)."""
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+
 def _banner(title: str) -> None:
     ts = _ts()
     print(f'\n{"="*60}')
@@ -187,7 +193,7 @@ def _ladder_sleep(seconds: float) -> None:
     shutdown flag is set (plain time.sleep resumes after SIGINT, PEP 475)."""
     end = time.time() + seconds
     while not shutdown_flag and time.time() < end:
-        time.sleep(min(1.0, end - time.time()))
+        time.sleep(max(0.0, min(1.0, end - time.time())))
 
 
 # ─────────────────────────────────────────────
@@ -256,7 +262,11 @@ def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False
     if finite_framing and duration:
         from utility import finite_num_frames
         fp = config_dict['mimo']['frame']['framePeriodicity']
-        config_dict['mimo']['frame']['numFrames'] = finite_num_frames(duration, fp)
+        try:
+            config_dict['mimo']['frame']['numFrames'] = finite_num_frames(duration, fp)
+        except ValueError as exc:
+            print(f'[PIPELINE] ERROR: --finite-framing: {exc}')
+            return False
     status = mmwcas.mmw_set_config(config_dict)
     if status != 0:
         print(f'[PIPELINE] ERROR: mmw_set_config failed (status {status})')
@@ -270,6 +280,18 @@ def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False
     return True
 
 
+def reinit_radar(tda_ip: str, duration: float = None, finite_framing: bool = False) -> bool:
+    """Ladder software_reinit rung: power off (best effort) then full re-init
+    (spec §1b). Re-initing a still-powered radar is the -8 scenario."""
+    import mmwcas
+    if hasattr(mmwcas, 'mmw_power_off'):
+        try:
+            mmwcas.mmw_power_off()
+        except Exception as exc:
+            print(f'[PIPELINE] WARNING: power-off before reinit failed: {exc}')
+    return init_radar(tda_ip, duration, finite_framing)
+
+
 def capture_once(duration: float, tda_ip: str, label: str, finite_framing: bool = False) -> str | None:
     """One capture WITHOUT re-init (arm → frame → stop → dearm).
     Returns capture directory name, or None on failure."""
@@ -281,18 +303,23 @@ def capture_once(duration: float, tda_ip: str, label: str, finite_framing: bool 
     capture_dir = f'{label}_{timestamp}'
     _banner(f'STEP 1 — Capture (persistent, {duration}s)  {capture_dir}')
 
+    print(f'[TS] ARM_TDA_begin   {_now_ms()}', flush=True)
     status = mmwcas.mmw_arming_tda(capture_dir)
     if status != 0:
         print(f'[PIPELINE] mmw_arming_tda failed (status {status})')
         return None
+    print(f'[TS] ARM_TDA_end     {_now_ms()}', flush=True)
     time.sleep(2)
 
+    print(f'[TS] FRAMING_begin   {_now_ms()}', flush=True)
     status = mmwcas.mmw_start_frame()
     if status != 0:
         print(f'[PIPELINE] mmw_start_frame failed (status {status})')
         mmwcas.mmw_stop_frame()
         mmwcas.mmw_dearming_tda()
         return None
+    # FRAMING_end ≈ t0 of the actual capture (master is triggered last)
+    print(f'[TS] FRAMING_end     {_now_ms()}  <-- t0 capture', flush=True)
 
     print(f' Capturing... ({duration}s)', flush=True)
     time.sleep(duration + (2.0 if finite_framing else 0.0))
@@ -477,40 +504,48 @@ def run_lora_step(capture_dir: str, port: str, appkey: str,
                   skip_send: bool = False) -> bool:
     """Enqueue this cycle's metrics, then drain the spool (oldest-first,
     confirmed uplinks). Enqueue always happens — even with --skip-lora —
-    so no data is ever lost. Returns True when the spool is empty afterwards."""
-    import lora_queue
-    import lora_sender
+    so no data is ever lost. Returns True when the spool is empty afterwards.
 
-    _banner(f'STEP 5 — LoRa Uplink  ({capture_dir})')
-
-    metrics_path = os.path.join(EDGE_DIR, 'python-result', capture_dir, 'ps_metrics.json')
-    if os.path.isfile(metrics_path):
-        with open(metrics_path) as fh:
-            metrics = json.load(fh)
-        spooled = lora_queue.enqueue(metrics)
-        _step(f'Queued → {os.path.basename(spooled)}')
-    else:
-        print(f'[PIPELINE] WARNING: ps_metrics.json not found: {metrics_path} — nothing to queue')
-
-    pending = lora_queue.list_pending()
-    if skip_send:
-        _step(f'LoRa send skipped (--skip-lora) — {len(pending)} message(s) queued')
-        return True
-    if not pending:
-        _step('LoRa queue empty — nothing to send')
-        return True
-
-    ses = lora_sender.open_session(port=port, appkey=appkey)
-    if ses is None:
-        _step(f'LoRa link unavailable — {len(pending)} message(s) remain queued')
-        return False
+    The whole body is guarded — a LoRa/queue failure (disk full, truncated
+    JSON, serial error) must never crash an unattended pipeline run
+    (design spec §3a)."""
     try:
-        sent, remaining = lora_queue.drain(
-            lambda hex_payload: lora_sender.send_payload_confirmed(ses, hex_payload))
-    finally:
-        ses.close()
-    _step(f'LoRa drain: {sent} sent, {remaining} still pending')
-    return remaining == 0
+        import lora_queue
+        import lora_sender
+
+        _banner(f'STEP 5 — LoRa Uplink  ({capture_dir})')
+
+        metrics_path = os.path.join(EDGE_DIR, 'python-result', capture_dir, 'ps_metrics.json')
+        if os.path.isfile(metrics_path):
+            with open(metrics_path) as fh:
+                metrics = json.load(fh)
+            spooled = lora_queue.enqueue(metrics)
+            _step(f'Queued → {os.path.basename(spooled)}')
+        else:
+            print(f'[PIPELINE] WARNING: ps_metrics.json not found: {metrics_path} — nothing to queue')
+
+        pending = lora_queue.list_pending()
+        if skip_send:
+            _step(f'LoRa send skipped (--skip-lora) — {len(pending)} message(s) queued')
+            return True
+        if not pending:
+            _step('LoRa queue empty — nothing to send')
+            return True
+
+        ses = lora_sender.open_session(port=port, appkey=appkey)
+        if ses is None:
+            _step(f'LoRa link unavailable — {len(pending)} message(s) remain queued')
+            return False
+        try:
+            sent, remaining = lora_queue.drain(
+                lambda hex_payload: lora_sender.send_payload_confirmed(ses, hex_payload))
+        finally:
+            ses.close()
+        _step(f'LoRa drain: {sent} sent, {remaining} still pending')
+        return remaining == 0
+    except Exception as exc:
+        print(f'[PIPELINE] WARNING: LoRa step failed: {exc}')
+        return False
 
 
 # ─────────────────────────────────────────────
@@ -582,6 +617,21 @@ def main():
                              'infinite framing + manual StopFrame. Eliminates -2 errors.')
     args = parser.parse_args()
 
+    # Validate --finite-framing up front so a bad --duration exits cleanly
+    # (parser.error → exit 2) before any hardware/ladder is touched.
+    # pipeline.py must stay importable without mmwcas (`import mimo` pulls
+    # in mmwcas) — skip validation when mmwcas isn't available on this host;
+    # mimo.py validates again at capture time in that case.
+    if args.finite_framing:
+        try:
+            from mimo import config_dict as _mimo_cfg
+            from utility import finite_num_frames
+            finite_num_frames(args.duration, _mimo_cfg['mimo']['frame']['framePeriodicity'])
+        except ImportError:
+            pass  # no mmwcas on this host; mimo.py validates again at capture time
+        except ValueError as exc:
+            parser.error(f'--finite-framing: {exc}')
+
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
     ps_map_file = os.path.join(EDGE_DIR, 'ps_map.json')
     if args.reset_ps and args.ps_file is None and os.path.isfile(ps_map_file):
@@ -610,7 +660,7 @@ def main():
     os.makedirs(POSTPROC_DIR,   exist_ok=True)
     os.makedirs(JSON_FILES_DIR, exist_ok=True)
 
-    reinit_fn = (lambda: init_radar(args.tda_ip, args.duration, args.finite_framing)) if args.persistent else None
+    reinit_fn = (lambda: reinit_radar(args.tda_ip, args.duration, args.finite_framing)) if args.persistent else None
     policy = tda_recovery.RecoveryPolicy(args.tda_ip,
                                          reinit_fn=reinit_fn,
                                          power_cycle_cmd=args.power_cycle_cmd,

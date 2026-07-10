@@ -112,7 +112,11 @@ def main():
     if args.finite_framing:
         from utility import finite_num_frames
         fp = config_dict["mimo"]["frame"]["framePeriodicity"]
-        nf = finite_num_frames(args.duration, fp)
+        try:
+            nf = finite_num_frames(args.duration, fp)
+        except ValueError as exc:
+            print(f"--finite-framing: {exc}")
+            sys.exit(1)
         config_dict["mimo"]["frame"]["numFrames"] = nf
         print(f"Finite framing: numFrames={nf} ({args.duration}s @ {fp}ms/frame)")
 

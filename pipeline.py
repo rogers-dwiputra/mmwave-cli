@@ -239,6 +239,76 @@ def run_capture(duration: float, tda_ip: str, label: str) -> str | None:
 
 
 # ─────────────────────────────────────────────
+# Step 1 (persistent mode) — init once, capture without re-init
+# TI's documented 2-phase sequence: heavy init ONCE, then light
+# arm→frame→stop→dearm per capture. See TIDEP-01012.md §7.2.
+# ─────────────────────────────────────────────
+
+def init_radar(tda_ip: str) -> bool:
+    """Heavy phase, done once per process: TDA connect → power-up → firmware
+    → RF init calibration → frame config."""
+    import mmwcas
+    from mimo import config_dict
+
+    _banner('INIT — Radar configure + init (persistent mode, ONCE)')
+    status = mmwcas.mmw_set_config(config_dict)
+    if status != 0:
+        print(f'[PIPELINE] ERROR: mmw_set_config failed (status {status})')
+        return False
+    status = mmwcas.mmw_init(tda_ip)
+    if status != 0:
+        print(f'[PIPELINE] ERROR: mmw_init failed (status {status})')
+        return False
+    time.sleep(2)
+    _step('Radar initialised — persistent capture loop ready')
+    return True
+
+
+def capture_once(duration: float, tda_ip: str, label: str) -> str | None:
+    """One capture WITHOUT re-init (arm → frame → stop → dearm).
+    Returns capture directory name, or None on failure."""
+    import mmwcas
+    from mimo import config_dict
+    from utility import check_captured_files, export_config_to_json
+
+    timestamp = datetime.now().strftime('%y%m%d_%H%M%S')
+    capture_dir = f'{label}_{timestamp}'
+    _banner(f'STEP 1 — Capture (persistent, {duration}s)  {capture_dir}')
+
+    status = mmwcas.mmw_arming_tda(capture_dir)
+    if status != 0:
+        print(f'[PIPELINE] mmw_arming_tda failed (status {status})')
+        return None
+    time.sleep(2)
+
+    status = mmwcas.mmw_start_frame()
+    if status != 0:
+        print(f'[PIPELINE] mmw_start_frame failed (status {status})')
+        mmwcas.mmw_stop_frame()
+        mmwcas.mmw_dearming_tda()
+        return None
+
+    print(f' Capturing... ({duration}s)', flush=True)
+    time.sleep(duration)
+
+    status = mmwcas.mmw_stop_frame()
+    if status != 0:
+        print(f'[PIPELINE] WARNING: mmw_stop_frame failed (status {status})')
+    status = mmwcas.mmw_dearming_tda()
+    if status != 0:
+        print(f'[PIPELINE] WARNING: mmw_dearming_tda failed (status {status})')
+
+    success, _, _ = check_captured_files(capture_dir, tda_ip)
+    if not success:
+        print('[PIPELINE] WARNING: no files found on TDA — capture produced no data')
+        return None
+
+    json_path = os.path.join(JSON_FILES_DIR, f'{capture_dir}.mmwave.json')
+    export_config_to_json(config_dict, json_path)
+    return capture_dir
+
+
+# ─────────────────────────────────────────────
 # Step 2 — Transfer
 # ─────────────────────────────────────────────
 
@@ -493,6 +563,11 @@ def main():
     parser.add_argument('--min-tda-free-mb', type=int, default=200,
                         help='Pre-flight: auto-clean Trace_TDA_*.txt on the TDA when its '
                              'rootfs free space drops below this many MB.')
+    parser.add_argument('--persistent', action='store_true',
+                        help='Init the radar ONCE at start; each cycle only does '
+                             'arm→frame→stop→dearm (TI 2-phase sequence, avoids the '
+                             'per-cycle -8 re-init failures — TIDEP-01012.md §7.2). '
+                             'Default off until field-validated.')
     args = parser.parse_args()
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
@@ -517,15 +592,23 @@ def main():
     print(f'  PS source        : {args.ps_file if args.ps_file else ps_map_file + " (auto/ADI)"}')
     print(f'  Debug mode       : {"ON (SLC + range-profile enabled)" if args.debug else "OFF (PS metrics only)"}')
     print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
+    print(f'  Capture mode     : {"PERSISTENT (init once)" if args.persistent else "spawn mimo.py per cycle"}')
     print(f'  Press Ctrl+C to stop after the current cycle.')
 
     os.makedirs(POSTPROC_DIR,   exist_ok=True)
     os.makedirs(JSON_FILES_DIR, exist_ok=True)
 
+    reinit_fn = (lambda: init_radar(args.tda_ip)) if args.persistent else None
     policy = tda_recovery.RecoveryPolicy(args.tda_ip,
+                                         reinit_fn=reinit_fn,
                                          power_cycle_cmd=args.power_cycle_cmd,
                                          sleep_fn=_ladder_sleep)
     stats = {'ok': 0, 'failed': 0}
+
+    if args.persistent:
+        while not shutdown_flag and not init_radar(args.tda_ip):
+            stats['failed'] += 1
+            _step(f'Initial radar init failed — recovery: {policy.on_failure()}')
 
     cycle = 0
     while not shutdown_flag:
@@ -544,7 +627,10 @@ def main():
 
         # ── 1. Capture ──────────────────────────────────────────────
         t1 = _step_start(f'Step 1 — Capture ({args.duration}s)')
-        capture_dir = run_capture(args.duration, args.tda_ip, args.label)
+        if args.persistent:
+            capture_dir = capture_once(args.duration, args.tda_ip, args.label)
+        else:
+            capture_dir = run_capture(args.duration, args.tda_ip, args.label)
         if capture_dir is None:
             stats['failed'] += 1
             _step(f'Capture failed — recovery: {policy.on_failure()}')
@@ -636,6 +722,15 @@ def main():
         elif args.interval > 0:
             _step(f'Waiting {args.interval}s before next cycle...')
             time.sleep(args.interval)
+
+    if args.persistent:
+        import mmwcas
+        if hasattr(mmwcas, 'mmw_power_off'):
+            print('[PIPELINE] Power-off teardown (slaves → master)...')
+            try:
+                mmwcas.mmw_power_off()
+            except Exception as exc:
+                print(f'[PIPELINE] WARNING: power-off teardown failed: {exc}')
 
     print('\n[PIPELINE] Pipeline stopped cleanly.')
 

@@ -101,9 +101,18 @@ def preflight(ip, run=None, min_free_mb=200, log_path=None):
 LIGHT_BACKOFFS_S = (5, 15, 45)
 REINIT_ATTEMPTS = 2
 REBOOT_WAIT_S = 180
+SHUTDOWN_WAIT_S = 60      # after issuing reboot, wait this long for the board to actually drop
 BOOT_POLL_S = 10
 POST_BOOT_GRACE_S = 20
 LADDER_EXHAUSTED_SLEEP_S = 600
+
+# The TDA runs systemd with a bare login PATH over non-interactive SSH, so a plain
+# `reboot` is "command not found" (rc 127, /sbin not on PATH) and silently no-ops
+# (field-verified 2026-07-13). systemctl (in /bin) works; the rest are forced fallbacks.
+REBOOT_CMD = ('systemctl reboot -i 2>/dev/null'
+              ' || /sbin/reboot -f 2>/dev/null'
+              ' || reboot -f 2>/dev/null'
+              ' || echo b > /proc/sysrq-trigger')
 
 
 class RecoveryPolicy:
@@ -135,8 +144,15 @@ class RecoveryPolicy:
         sched = [('light_retry', b) for b in LIGHT_BACKOFFS_S]
         if self.reinit_fn is not None:
             sched += [('software_reinit', 5)] * REINIT_ATTEMPTS
-        sched.append(('tda_reboot', None))
+        # The soft reboot rung is gated behind a configured power-cycle relay.
+        # On the TDA2XX, `systemctl reboot` HALTS the board without bringing it
+        # back (field-verified 2026-07-13) — so with no relay to recover it, a
+        # reboot would strand the radar until a manual power-cycle. Only arm the
+        # reboot rung when the relay that follows it can revive a board that
+        # fails to return. Without a relay the ladder is retry/reinit only, then
+        # ladder_exhausted (which sleeps and restarts) — the board stays alive.
         if self.power_cycle_cmd:
+            sched.append(('tda_reboot', None))
             sched.append(('power_cycle', None))
         return sched
 
@@ -170,7 +186,10 @@ class RecoveryPolicy:
                 log_event('software_reinit_error', str(exc), path=self.log_path)
         elif action == 'tda_reboot':
             try:
-                self.run(self.tda_ip, 'reboot')
+                rc, _out = self.run(self.tda_ip, REBOOT_CMD)
+                if rc != 0:
+                    log_event('tda_reboot_cmd_nonzero', f'rc={rc}',
+                              path=self.log_path)
             except Exception as exc:
                 log_event('tda_reboot_error', str(exc), path=self.log_path)
             self._wait_board_up()
@@ -183,8 +202,25 @@ class RecoveryPolicy:
         return action
 
     def _wait_board_up(self):
-        """Poll the TDA over SSH until it answers or REBOOT_WAIT_S elapses,
-        then give apps.out a grace period to start listening."""
+        """After issuing a reboot/power-cycle: first wait for the board to
+        actually go DOWN, then poll until it answers again, then give apps.out
+        a grace period to start listening.
+
+        The down-wait matters: a reboot takes a few seconds to sever SSH, so
+        without it the first up-poll sees the not-yet-rebooted board, returns
+        immediately, and the ladder proceeds as if the reboot completed
+        (field-verified failure mode, 2026-07-13). The down-wait is bounded, so
+        a reboot command that never takes effect only costs SHUTDOWN_WAIT_S."""
+        # Phase 1 — wait for the board to drop.
+        for _ in range(SHUTDOWN_WAIT_S // BOOT_POLL_S):
+            try:
+                rc, _out = self.run(self.tda_ip, 'echo UP', timeout=BOOT_POLL_S)
+            except Exception:
+                rc = 255
+            if rc != 0:
+                break  # board is down — reboot is under way
+            self.sleep(BOOT_POLL_S)
+        # Phase 2 — wait for the board to come back.
         for _ in range(REBOOT_WAIT_S // BOOT_POLL_S):
             try:
                 rc, _out = self.run(self.tda_ip, 'echo UP', timeout=BOOT_POLL_S)

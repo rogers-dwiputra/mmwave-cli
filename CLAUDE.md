@@ -171,7 +171,7 @@ tail -f ~/pipeline_*.log
 | `--cycle-period` | `0.0` | Target total cycle time in seconds (e.g. `900` = 15 min). RPi idles for remaining time after each cycle. 0 = disabled. |
 | `--suspend` | off | During idle, use `sudo rtcwake -m mem` (suspend-to-RAM, ~0.1W) instead of `time.sleep`. Requires `sudoers` entry for rtcwake. |
 | `--persistent` | off | Init radar ONCE at start; cycles only arm→frame→stop→dearm (TI 2-phase). ~90 s faster/cycle, avoids per-cycle -8. |
-| `--power-cycle-cmd` | None | Shell command to hard power-cycle the TDA (relay). Last recovery-ladder level. |
+| `--power-cycle-cmd` | None | Shell command to hard power-cycle the TDA (relay). Last recovery-ladder level. **Also gates the `tda_reboot` rung**: without this set, the ladder never issues a soft reboot (the TDA2XX halts on `systemctl reboot`, so a reboot with no relay to revive it would strand the board). |
 | `--min-tda-free-mb` | `200` | Pre-flight auto-clean of TDA `Trace_TDA_*.txt` below this free space. |
 | `--finite-framing` | off | numFrames from duration (TI workflow); eliminates -2 stop-frame errors. |
 
@@ -334,7 +334,8 @@ from(bucket: "iosar")
 | `+JOIN: Done` matched MSGHEX "Done" | Join response leaked into MSGHEX buffer | `time.sleep(2) + reset_input_buffer()` after join |
 | TDA SSD fills up during long sessions | Raw data not deleted after transfer | Auto `rm -rf /mnt/ssd/<dir>` via SSH after SCP succeeds |
 | process_vibration_experiment.py crash | `summary[0]` when 0 captures found | `if not summary: return` guard added |
-| Default-mode behavior changed by reliability branch | Step 5 now uses confirmed uplinks + queue; 3 consecutive capture failures auto-reboot the TDA | Intentional (spec §1c/§2c) — disable ladder reboot only by code change |
+| Default-mode behavior changed by reliability branch | Step 5 now uses confirmed uplinks + queue; recovery ladder engages on capture failures | Intentional (spec §1c/§2c) — ladder = light-retry (+reinit in `--persistent`), then `tda_reboot`+`power_cycle` only if `--power-cycle-cmd` is set |
+| Soft `reboot` never rebooted the TDA | `reboot` lives in `/sbin` (not on the non-interactive SSH PATH) → rc 127 no-op; and `systemctl reboot` HALTS the TDA2XX (no autonomous return, needs power-cycle) — field-verified 2026-07-13 | Ladder uses `systemctl reboot -i` (+fallbacks) and gates the reboot rung behind `--power-cycle-cmd`; hardware recovery needs the power-cycle relay (LR7843 MOSFET, planned) |
 | ~48% capture failure outdoors (STATUS -8) | Full re-init every cycle (3× -8 chances) | `--persistent` init-once mode + recovery ladder (`tda_recovery.py`) |
 | Uplinks lost when gateway/modem down | Unconfirmed send, no retry | Store-and-forward spool + confirmed uplink (`lora_queue.py`) |
 | TDA rootfs fills with Trace_TDA_*.txt → total failure | apps.out busy-loop logging | Pre-flight auto-cleanup (`--min-tda-free-mb`) |

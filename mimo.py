@@ -88,6 +88,10 @@ def main():
                         help='Program numFrames from --duration (TI official workflow) '
                              'instead of infinite framing + manual StopFrame. '
                              'Eliminates -2 stop-frame errors. Default: off.')
+    parser.add_argument('--config', type=str, default=None,
+                        help='Radar-config TOML. Merges [mimo.profile]/[mimo.frame]/'
+                             '[mimo.channel] over the built-in default (config_dict). '
+                             'Without it, the built-in default is used.')
 
     args = parser.parse_args()
 
@@ -98,7 +102,21 @@ def main():
     if args.num_loops < 0:
         print("Error: --num-loops must be >= 0")
         sys.exit(1)
-    
+
+    # Resolve radar config: merged TOML if --config given, else the default.
+    cfg = config_dict
+    if args.config:
+        import radar_config
+        try:
+            cfg = radar_config.load_and_merge(args.config, config_dict)
+        except (FileNotFoundError, ValueError) as exc:
+            print(f"--config: {exc}")
+            sys.exit(2)
+        except Exception as exc:                      # tomllib.TOMLDecodeError, etc.
+            print(f"--config: failed to parse {args.config}: {exc}")
+            sys.exit(2)
+        print(f"Loaded radar config: {args.config}")
+
     # Generate capture directory name with timestamp (2-digit year, e.g. 260510_141438)
     timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
     capture_dir = f"{args.directory}_{timestamp}"
@@ -111,17 +129,17 @@ def main():
 
     if args.finite_framing:
         from utility import finite_num_frames
-        fp = config_dict["mimo"]["frame"]["framePeriodicity"]
+        fp = cfg["mimo"]["frame"]["framePeriodicity"]
         try:
             nf = finite_num_frames(args.duration, fp)
         except ValueError as exc:
             print(f"--finite-framing: {exc}")
             sys.exit(1)
-        config_dict["mimo"]["frame"]["numFrames"] = nf
+        cfg["mimo"]["frame"]["numFrames"] = nf
         print(f"Finite framing: numFrames={nf} ({args.duration}s @ {fp}ms/frame)")
 
     # Configure radar
-    status = mmwcas.mmw_set_config(config_dict)
+    status = mmwcas.mmw_set_config(cfg)
     if status != 0:
         print(f"Configuration error: {status}")
         sys.exit(2)
@@ -222,7 +240,7 @@ def main():
             # Generate configuration JSON file only if capture was successful
             json_filename = os.path.join("mmwave_json_files", f"{capture_dir}.mmwave.json")
             print(f"\nGenerating configuration file: {json_filename}")
-            export_config_to_json(config_dict, json_filename)
+            export_config_to_json(cfg, json_filename)
             
             print("\n" + "="*60)
             print(f"Data capture {capture_dir} completed successfully!")

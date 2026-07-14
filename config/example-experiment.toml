@@ -1,0 +1,16 @@
+# Example experiment radar config for the Python capture path.
+#
+# Only [mimo.profile] / [mimo.frame] / [mimo.channel] are read. List ONLY the
+# fields that differ from the built-in default (config_dict in mimo.py) —
+# everything else is inherited. The effective (merged) config is written to the
+# capture's .mmwave.json, so every capture is reproducible.
+#
+#   python3 mimo.py --config config/example-experiment.toml -t 5 --directory MyExp
+#   python3 pipeline.py --persistent --config config/example-experiment.toml ...
+
+[mimo.profile]
+frequencySlope = 65.854    # MHz/us  (wider sweep than the 90 default)
+numAdcSamples  = 256
+
+[mimo.frame]
+framePeriodicity = 50      # ms  -> 20 Hz frame rate

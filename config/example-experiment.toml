@@ -9,8 +9,8 @@
 #   python3 pipeline.py --persistent --config config/example-experiment.toml ...
 
 [mimo.profile]
-frequencySlope = 65.854    # MHz/us  (wider sweep than the 90 default)
-numAdcSamples  = 256
+frequencySlope = 65.854    # MHz/us  (narrower sweep than the 90 default -> coarser range resolution)
+numAdcSamples  = 64        # fewer samples per chirp (default 120) -> shorter capture window
 
 [mimo.frame]
 framePeriodicity = 50      # ms  -> 20 Hz frame rate

@@ -200,7 +200,8 @@ def _ladder_sleep(seconds: float) -> None:
 # Step 1 — Capture
 # ─────────────────────────────────────────────
 
-def run_capture(duration: float, tda_ip: str, label: str, finite_framing: bool = False) -> str | None:
+def run_capture(duration: float, tda_ip: str, label: str,
+                finite_framing: bool = False, config_path: str = None) -> str | None:
     """
     Execute one capture cycle via mimo.py.
     Returns the capture directory name (e.g. 'RPI_python_sine_2hz_1mm_10s_20260510_144105'),
@@ -221,6 +222,8 @@ def run_capture(duration: float, tda_ip: str, label: str, finite_framing: bool =
     ]
     if finite_framing:
         cmd.append('--finite-framing')
+    if config_path:
+        cmd += ['--config', config_path]
     result = subprocess.run(cmd)
 
     if result.returncode != 0:
@@ -252,22 +255,24 @@ def run_capture(duration: float, tda_ip: str, label: str, finite_framing: bool =
 # arm→frame→stop→dearm per capture. See TIDEP-01012.md §7.2.
 # ─────────────────────────────────────────────
 
-def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False) -> bool:
+def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False,
+               config: dict = None) -> bool:
     """Heavy phase, done once per process: TDA connect → power-up → firmware
     → RF init calibration → frame config."""
     import mmwcas
-    from mimo import config_dict
+    if config is None:
+        from mimo import config_dict as config
 
     _banner('INIT — Radar configure + init (persistent mode, ONCE)')
     if finite_framing and duration:
         from utility import finite_num_frames
-        fp = config_dict['mimo']['frame']['framePeriodicity']
+        fp = config['mimo']['frame']['framePeriodicity']
         try:
-            config_dict['mimo']['frame']['numFrames'] = finite_num_frames(duration, fp)
+            config['mimo']['frame']['numFrames'] = finite_num_frames(duration, fp)
         except ValueError as exc:
             print(f'[PIPELINE] ERROR: --finite-framing: {exc}')
             return False
-    status = mmwcas.mmw_set_config(config_dict)
+    status = mmwcas.mmw_set_config(config)
     if status != 0:
         print(f'[PIPELINE] ERROR: mmw_set_config failed (status {status})')
         return False
@@ -280,7 +285,8 @@ def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False
     return True
 
 
-def reinit_radar(tda_ip: str, duration: float = None, finite_framing: bool = False) -> bool:
+def reinit_radar(tda_ip: str, duration: float = None, finite_framing: bool = False,
+                 config: dict = None) -> bool:
     """Ladder software_reinit rung: power off (best effort) then full re-init
     (spec §1b). Re-initing a still-powered radar is the -8 scenario."""
     import mmwcas
@@ -289,14 +295,16 @@ def reinit_radar(tda_ip: str, duration: float = None, finite_framing: bool = Fal
             mmwcas.mmw_power_off()
         except Exception as exc:
             print(f'[PIPELINE] WARNING: power-off before reinit failed: {exc}')
-    return init_radar(tda_ip, duration, finite_framing)
+    return init_radar(tda_ip, duration, finite_framing, config)
 
 
-def capture_once(duration: float, tda_ip: str, label: str, finite_framing: bool = False) -> str | None:
+def capture_once(duration: float, tda_ip: str, label: str,
+                 finite_framing: bool = False, config: dict = None) -> str | None:
     """One capture WITHOUT re-init (arm → frame → stop → dearm).
     Returns capture directory name, or None on failure."""
     import mmwcas
-    from mimo import config_dict
+    if config is None:
+        from mimo import config_dict as config
     from utility import check_captured_files, export_config_to_json
 
     timestamp = datetime.now().strftime('%y%m%d_%H%M%S')
@@ -340,7 +348,7 @@ def capture_once(duration: float, tda_ip: str, label: str, finite_framing: bool 
         return None
 
     json_path = os.path.join(JSON_FILES_DIR, f'{capture_dir}.mmwave.json')
-    export_config_to_json(config_dict, json_path)
+    export_config_to_json(config, json_path)
     return capture_dir
 
 
@@ -615,6 +623,10 @@ def main():
     parser.add_argument('--finite-framing', action='store_true',
                         help='Use finite framing (numFrames from --duration) instead of '
                              'infinite framing + manual StopFrame. Eliminates -2 errors.')
+    parser.add_argument('--config', type=str, default=None,
+                        help='Radar-config TOML (merges [mimo.profile]/[mimo.frame]/'
+                             '[mimo.channel] over the built-in default). Forwarded to '
+                             'mimo.py in default mode; merged in-process in --persistent.')
     args = parser.parse_args()
 
     # Validate --finite-framing up front so a bad --duration exits cleanly
@@ -631,6 +643,9 @@ def main():
             pass  # no mmwcas on this host; mimo.py validates again at capture time
         except ValueError as exc:
             parser.error(f'--finite-framing: {exc}')
+
+    if args.config and not os.path.isfile(args.config):
+        parser.error(f'--config: file not found: {args.config}')
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
     ps_map_file = os.path.join(EDGE_DIR, 'ps_map.json')
@@ -655,12 +670,25 @@ def main():
     print(f'  Debug mode       : {"ON (SLC + range-profile enabled)" if args.debug else "OFF (PS metrics only)"}')
     print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
     print(f'  Capture mode     : {"PERSISTENT (init once)" if args.persistent else "spawn mimo.py per cycle"}')
+    if args.config:
+        print(f'  Radar config     : {args.config} (merged over default)')
     print(f'  Press Ctrl+C to stop after the current cycle.')
 
     os.makedirs(POSTPROC_DIR,   exist_ok=True)
     os.makedirs(JSON_FILES_DIR, exist_ok=True)
 
-    reinit_fn = (lambda: reinit_radar(args.tda_ip, args.duration, args.finite_framing)) if args.persistent else None
+    radar_cfg = None
+    if args.persistent and args.config:
+        import radar_config
+        from mimo import config_dict
+        try:
+            radar_cfg = radar_config.load_and_merge(args.config, config_dict)
+        except (FileNotFoundError, ValueError) as exc:
+            parser.error(f'--config: {exc}')
+        except Exception as exc:                       # tomllib.TOMLDecodeError, etc.
+            parser.error(f'--config: failed to parse {args.config}: {exc}')
+
+    reinit_fn = (lambda: reinit_radar(args.tda_ip, args.duration, args.finite_framing, radar_cfg)) if args.persistent else None
     policy = tda_recovery.RecoveryPolicy(args.tda_ip,
                                          reinit_fn=reinit_fn,
                                          power_cycle_cmd=args.power_cycle_cmd,
@@ -668,7 +696,7 @@ def main():
     stats = {'ok': 0, 'failed': 0}
 
     if args.persistent:
-        while not shutdown_flag and not init_radar(args.tda_ip, args.duration, args.finite_framing):
+        while not shutdown_flag and not init_radar(args.tda_ip, args.duration, args.finite_framing, radar_cfg):
             stats['failed'] += 1
             _step(f'Initial radar init failed — recovery: {policy.on_failure()}')
 
@@ -690,9 +718,9 @@ def main():
         # ── 1. Capture ──────────────────────────────────────────────
         t1 = _step_start(f'Step 1 — Capture ({args.duration}s)')
         if args.persistent:
-            capture_dir = capture_once(args.duration, args.tda_ip, args.label, args.finite_framing)
+            capture_dir = capture_once(args.duration, args.tda_ip, args.label, args.finite_framing, radar_cfg)
         else:
-            capture_dir = run_capture(args.duration, args.tda_ip, args.label, args.finite_framing)
+            capture_dir = run_capture(args.duration, args.tda_ip, args.label, args.finite_framing, args.config)
         if capture_dir is None:
             stats['failed'] += 1
             _step(f'Capture failed — recovery: {policy.on_failure()}')

@@ -201,7 +201,8 @@ def _ladder_sleep(seconds: float) -> None:
 # ─────────────────────────────────────────────
 
 def run_capture(duration: float, tda_ip: str, label: str,
-                finite_framing: bool = False, config_path: str = None) -> str | None:
+                finite_framing: bool = False, config_path: str = None,
+                num_frames: int = 0, frame_period: float = None) -> str | None:
     """
     Execute one capture cycle via mimo.py.
     Returns the capture directory name (e.g. 'RPI_python_sine_2hz_1mm_10s_20260510_144105'),
@@ -222,6 +223,10 @@ def run_capture(duration: float, tda_ip: str, label: str,
     ]
     if finite_framing:
         cmd.append('--finite-framing')
+    if num_frames and num_frames > 0:
+        cmd += ['--num-frames', str(num_frames)]
+    if frame_period is not None:
+        cmd += ['--frame-period', str(frame_period)]
     if config_path:
         cmd += ['--config', config_path]
     result = subprocess.run(cmd)
@@ -256,7 +261,7 @@ def run_capture(duration: float, tda_ip: str, label: str,
 # ─────────────────────────────────────────────
 
 def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False,
-               config: dict = None) -> bool:
+               config: dict = None, num_frames: int = 0, frame_period: float = None) -> bool:
     """Heavy phase, done once per process: TDA connect → power-up → firmware
     → RF init calibration → frame config."""
     import mmwcas
@@ -264,9 +269,19 @@ def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False
         from mimo import config_dict as config
 
     _banner('INIT — Radar configure + init (persistent mode, ONCE)')
-    if finite_framing and duration:
+    # --frame-period override first (affects Fs, TDA arm period, finite capture length).
+    if frame_period is not None:
+        config['mimo']['frame']['framePeriodicity'] = frame_period
+    fp = config['mimo']['frame']['framePeriodicity']
+    # Direct frame count wins over duration-derived finite framing.
+    if num_frames and num_frames > 0:
+        if num_frames > 65535:
+            print(f'[PIPELINE] ERROR: --num-frames {num_frames} exceeds uint16 limit 65535')
+            return False
+        config['mimo']['frame']['numFrames'] = int(num_frames)
+        print(f'[PIPELINE] Finite framing: numFrames={num_frames} (direct) @ {fp}ms/frame')
+    elif finite_framing and duration:
         from utility import finite_num_frames
-        fp = config['mimo']['frame']['framePeriodicity']
         try:
             config['mimo']['frame']['numFrames'] = finite_num_frames(duration, fp)
         except ValueError as exc:
@@ -286,7 +301,7 @@ def init_radar(tda_ip: str, duration: float = None, finite_framing: bool = False
 
 
 def reinit_radar(tda_ip: str, duration: float = None, finite_framing: bool = False,
-                 config: dict = None) -> bool:
+                 config: dict = None, num_frames: int = 0, frame_period: float = None) -> bool:
     """Ladder software_reinit rung: power off (best effort) then full re-init
     (spec §1b). Re-initing a still-powered radar is the -8 scenario."""
     import mmwcas
@@ -295,7 +310,7 @@ def reinit_radar(tda_ip: str, duration: float = None, finite_framing: bool = Fal
             mmwcas.mmw_power_off()
         except Exception as exc:
             print(f'[PIPELINE] WARNING: power-off before reinit failed: {exc}')
-    return init_radar(tda_ip, duration, finite_framing, config)
+    return init_radar(tda_ip, duration, finite_framing, config, num_frames, frame_period)
 
 
 def capture_once(duration: float, tda_ip: str, label: str,
@@ -623,6 +638,12 @@ def main():
     parser.add_argument('--finite-framing', action='store_true',
                         help='Use finite framing (numFrames from --duration) instead of '
                              'infinite framing + manual StopFrame. Eliminates -2 errors.')
+    parser.add_argument('--num-frames', type=int, default=0,
+                        help='Capture EXACTLY N frames per cycle (direct count; implies finite '
+                             'framing; overrides --duration for capture length). 0 = disabled.')
+    parser.add_argument('--frame-period', type=float, default=None,
+                        help='Override inter-frame period in ms (framePeriodicity). '
+                             'With --num-frames this fixes the exact capture length.')
     parser.add_argument('--config', type=str, default=None,
                         help='Radar-config TOML (merges [mimo.profile]/[mimo.frame]/'
                              '[mimo.channel] over the built-in default). Forwarded to '
@@ -643,6 +664,14 @@ def main():
             pass  # no mmwcas on this host; mimo.py validates again at capture time
         except ValueError as exc:
             parser.error(f'--finite-framing: {exc}')
+
+    # Validate direct frame-count / frame-period options.
+    if args.num_frames < 0:
+        parser.error('--num-frames must be >= 0')
+    if args.num_frames > 65535:
+        parser.error('--num-frames exceeds AWR2243 uint16 limit 65535')
+    if args.frame_period is not None and args.frame_period <= 0:
+        parser.error('--frame-period must be > 0')
 
     if args.config and not os.path.isfile(args.config):
         parser.error(f'--config: file not found: {args.config}')
@@ -688,7 +717,8 @@ def main():
         except Exception as exc:                       # tomllib.TOMLDecodeError, etc.
             parser.error(f'--config: failed to parse {args.config}: {exc}')
 
-    reinit_fn = (lambda: reinit_radar(args.tda_ip, args.duration, args.finite_framing, radar_cfg)) if args.persistent else None
+    reinit_fn = (lambda: reinit_radar(args.tda_ip, args.duration, args.finite_framing, radar_cfg,
+                                      args.num_frames, args.frame_period)) if args.persistent else None
     policy = tda_recovery.RecoveryPolicy(args.tda_ip,
                                          reinit_fn=reinit_fn,
                                          power_cycle_cmd=args.power_cycle_cmd,
@@ -696,9 +726,21 @@ def main():
     stats = {'ok': 0, 'failed': 0}
 
     if args.persistent:
-        while not shutdown_flag and not init_radar(args.tda_ip, args.duration, args.finite_framing, radar_cfg):
+        while not shutdown_flag and not init_radar(args.tda_ip, args.duration, args.finite_framing,
+                                                   radar_cfg, args.num_frames, args.frame_period):
             stats['failed'] += 1
             _step(f'Initial radar init failed — recovery: {policy.on_failure()}')
+
+    # Effective capture length for persistent capture_once:
+    # finite → numFrames × framePeriodicity (from the config init_radar just programmed).
+    _finite_eff = bool(args.num_frames > 0 or args.finite_framing)
+    _cap_dur = args.duration
+    if args.persistent and _finite_eff and not shutdown_flag:
+        _pcfg = radar_cfg
+        if _pcfg is None:
+            from mimo import config_dict as _pcfg
+        _fp = _pcfg['mimo']['frame']['framePeriodicity']
+        _cap_dur = _pcfg['mimo']['frame']['numFrames'] * _fp / 1000.0
 
     cycle = 0
     while not shutdown_flag:
@@ -718,9 +760,10 @@ def main():
         # ── 1. Capture ──────────────────────────────────────────────
         t1 = _step_start(f'Step 1 — Capture ({args.duration}s)')
         if args.persistent:
-            capture_dir = capture_once(args.duration, args.tda_ip, args.label, args.finite_framing, radar_cfg)
+            capture_dir = capture_once(_cap_dur, args.tda_ip, args.label, _finite_eff, radar_cfg)
         else:
-            capture_dir = run_capture(args.duration, args.tda_ip, args.label, args.finite_framing, args.config)
+            capture_dir = run_capture(args.duration, args.tda_ip, args.label, args.finite_framing,
+                                      args.config, args.num_frames, args.frame_period)
         if capture_dir is None:
             stats['failed'] += 1
             _step(f'Capture failed — recovery: {policy.on_failure()}')

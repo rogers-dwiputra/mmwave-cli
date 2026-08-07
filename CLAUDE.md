@@ -174,6 +174,8 @@ tail -f ~/pipeline_*.log
 | `--power-cycle-cmd` | None | Shell command to hard power-cycle the TDA (relay). Last recovery-ladder level. **Also gates the `tda_reboot` rung**: without this set, the ladder never issues a soft reboot (the TDA2XX halts on `systemctl reboot`, so a reboot with no relay to revive it would strand the board). |
 | `--min-tda-free-mb` | `200` | Pre-flight auto-clean of TDA `Trace_TDA_*.txt` below this free space. |
 | `--finite-framing` | off | numFrames from duration (TI workflow); eliminates -2 stop-frame errors. |
+| `--num-frames` | `0` | Capture EXACTLY N frames (direct count; implies finite framing; overrides `--duration` for capture length). 0 = disabled. Max 65535. |
+| `--frame-period` | None | Override inter-frame period in ms (`framePeriodicity`); Fs = 1000/period Hz. With `--num-frames`, fixes exact capture length = N × period. |
 
 **Estimated cycle times (15 s capture, Raspberry Pi 5, with ps_map.json cached):**
 - Step 1 Capture: ~20 s (15 s capture + arm/disarm overhead)

@@ -88,6 +88,14 @@ def main():
                         help='Program numFrames from --duration (TI official workflow) '
                              'instead of infinite framing + manual StopFrame. '
                              'Eliminates -2 stop-frame errors. Default: off.')
+    parser.add_argument('--num-frames', type=int, default=0,
+                        help='Capture EXACTLY N frames (direct frame count; implies finite '
+                             'framing; overrides --duration for capture length). '
+                             '0 = disabled. Max 65535 (AWR2243 uint16).')
+    parser.add_argument('--frame-period', type=float, default=None,
+                        help='Override inter-frame period in ms (framePeriodicity). '
+                             'Sets Fs = 1000/period Hz; with --num-frames this fixes the '
+                             'exact capture length = numFrames x period.')
     parser.add_argument('--config', type=str, default=None,
                         help='Radar-config TOML. Merges [mimo.profile]/[mimo.frame]/'
                              '[mimo.channel] over the built-in default (config_dict). '
@@ -127,16 +135,45 @@ def main():
     if args.num_loops != 1:
         print(f"Inter-loop delay : {args.inter_loop_time} seconds")
 
-    if args.finite_framing:
+    # Apply --frame-period override first (affects Fs, TDA arm period, finite capture length).
+    if args.frame_period is not None:
+        if args.frame_period <= 0:
+            print("--frame-period must be > 0")
+            sys.exit(1)
+        cfg["mimo"]["frame"]["framePeriodicity"] = args.frame_period
+        print(f"Frame period override: {args.frame_period} ms  (Fs={1000.0/args.frame_period:.2f} Hz)")
+
+    fp = float(cfg["mimo"]["frame"]["framePeriodicity"])
+
+    # Finite framing: numFrames from a DIRECT count (--num-frames) or from --duration
+    # (--finite-framing). Direct count wins. finite => device auto-stops, StopFrame skipped.
+    if args.num_frames < 0:
+        print("--num-frames must be >= 0")
+        sys.exit(1)
+    if args.num_frames > 0:
+        if args.num_frames > 65535:
+            print(f"--num-frames {args.num_frames} exceeds AWR2243 uint16 limit 65535")
+            sys.exit(1)
+        cfg["mimo"]["frame"]["numFrames"] = int(args.num_frames)
+        finite = True
+        print(f"Finite framing: numFrames={args.num_frames} (direct) @ {fp}ms/frame "
+              f"→ {args.num_frames * fp / 1000.0:.2f}s")
+    elif args.finite_framing:
         from utility import finite_num_frames
-        fp = cfg["mimo"]["frame"]["framePeriodicity"]
         try:
             nf = finite_num_frames(args.duration, fp)
         except ValueError as exc:
             print(f"--finite-framing: {exc}")
             sys.exit(1)
         cfg["mimo"]["frame"]["numFrames"] = nf
+        finite = True
         print(f"Finite framing: numFrames={nf} ({args.duration}s @ {fp}ms/frame)")
+    else:
+        finite = False
+
+    # Effective capture wait: finite → numFrames × framePeriodicity; else → --duration.
+    num_frames_eff = cfg["mimo"]["frame"]["numFrames"] if finite else 0
+    capture_wait = (num_frames_eff * fp / 1000.0) if finite else args.duration
 
     # Configure radar
     status = mmwcas.mmw_set_config(cfg)
@@ -202,13 +239,16 @@ def main():
             # FRAMING_end ≈ t0 of the actual capture (master is triggered last)
             print(f"[TS] FRAMING_end     {_now_ms()}  <-- t0 capture", flush=True)
 
-            print(f"\n Capturing... ({args.duration}s)")
+            if finite:
+                print(f"\n Capturing... ({num_frames_eff} frames, ~{capture_wait:.2f}s)")
+            else:
+                print(f"\n Capturing... ({capture_wait}s)")
             # Finite framing: frames stop by themselves after numFrames;
             # +2s margin lets the last frame land before de-arm.
-            time.sleep(args.duration + (2.0 if args.finite_framing else 0.0))
+            time.sleep(capture_wait + (2.0 if finite else 0.0))
 
             # Stop frame capture
-            if args.finite_framing:
+            if finite:
                 print(f"[TS] STOP_FRAME skipped (finite framing) {_now_ms()}", flush=True)
             else:
                 print(f"[TS] STOP_FRAME      {_now_ms()}", flush=True)

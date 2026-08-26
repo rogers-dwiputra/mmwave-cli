@@ -80,3 +80,53 @@ def test_send_confirmed_no_ack_is_failure(monkeypatch):
     _no_sleep(monkeypatch)
     fake = FakeSerial({'AT+CMSGHEX': ['+CMSGHEX: Start', '+CMSGHEX: Done']})
     assert lora_sender.send_payload_confirmed(fake, 'AABB', timeout=0.5) is False
+
+
+def test_read_module_temp_parses_response(monkeypatch):
+    _no_sleep(monkeypatch)
+    fake = FakeSerial({'AT+TEMP': ['+TEMP: 32.4']})
+    assert lora_sender.read_module_temp(fake) == 32.4
+
+
+def test_read_module_temp_returns_none_on_module_error(monkeypatch):
+    _no_sleep(monkeypatch)
+    fake = FakeSerial({'AT+TEMP': ['+AT: ERROR(-10)']})
+    assert lora_sender.read_module_temp(fake) is None
+
+
+def test_read_module_temp_returns_none_when_serial_broken(monkeypatch):
+    _no_sleep(monkeypatch)
+
+    class Broken:
+        pass
+
+    assert lora_sender.read_module_temp(Broken()) is None
+
+
+def _base_metrics():
+    return {'timestamp': '2026-07-04T10:00:00', 'dominant_frequency_hz': 2.03,
+            'displacement_rms_mm': 0.0008, 'max_deflection_mm': 0.002}
+
+
+def test_encode_payload_without_temp_is_unchanged():
+    hex_str = lora_sender.encode_payload(_base_metrics())
+    assert len(hex_str) == 22          # 10-byte header + 1-byte n_ps(=0), unchanged from v1
+
+
+def test_encode_payload_appends_signed_temp_byte_when_given():
+    hex_no_temp   = lora_sender.encode_payload(_base_metrics())
+    hex_with_temp = lora_sender.encode_payload(_base_metrics(), module_temp_c=32.4)
+    assert hex_with_temp[:-2] == hex_no_temp
+    assert bytes.fromhex(hex_with_temp[-2:]) == (32).to_bytes(1, 'big', signed=True)
+
+
+def test_encode_payload_temp_byte_handles_negative_values():
+    hex_str = lora_sender.encode_payload(_base_metrics(), module_temp_c=-5.6)
+    assert bytes.fromhex(hex_str[-2:]) == (-6).to_bytes(1, 'big', signed=True)
+
+
+def test_encode_payload_temp_byte_clamped_to_int8_range():
+    hex_hot  = lora_sender.encode_payload(_base_metrics(), module_temp_c=200.0)
+    hex_cold = lora_sender.encode_payload(_base_metrics(), module_temp_c=-200.0)
+    assert bytes.fromhex(hex_hot[-2:])  == (127).to_bytes(1, 'big', signed=True)
+    assert bytes.fromhex(hex_cold[-2:]) == (-128).to_bytes(1, 'big', signed=True)

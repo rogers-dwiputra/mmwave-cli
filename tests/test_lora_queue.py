@@ -90,6 +90,37 @@ def test_drain_moves_corrupt_file_to_failed(tmp_path):
     assert os.listdir(os.path.join(spool, 'failed')) == ['0000000001_bad.json']
 
 
+def test_drain_appends_live_module_temp_when_ser_given(tmp_path, monkeypatch):
+    import lora_sender
+    spool = str(tmp_path)
+    lora_queue.enqueue(_metrics(), spool_dir=spool)
+    monkeypatch.setattr(lora_sender, 'read_module_temp', lambda ser: 31.6)
+
+    sent_payloads = []
+
+    def send_fn(hex_payload):
+        sent_payloads.append(hex_payload)
+        return True
+
+    sent, remaining = lora_queue.drain(send_fn, spool_dir=spool,
+                                       sleep_fn=lambda s: None, ser=object())
+    assert (sent, remaining) == (1, 0)
+    assert bytes.fromhex(sent_payloads[0][-2:]) == (32).to_bytes(1, 'big', signed=True)
+
+
+def test_drain_without_ser_omits_temp_byte(tmp_path):
+    spool = str(tmp_path)
+    lora_queue.enqueue(_metrics(), spool_dir=spool)
+    sent_payloads = []
+
+    def send_fn(hex_payload):
+        sent_payloads.append(hex_payload)
+        return True
+
+    lora_queue.drain(send_fn, spool_dir=spool, sleep_fn=lambda s: None)
+    assert len(sent_payloads[0]) == 22   # unchanged length — no temp byte appended
+
+
 def test_drain_quarantines_record_that_breaks_encoding(tmp_path):
     spool = str(tmp_path)
     bad = _metrics('2026-07-04T10:00:00', 'Neg_1')

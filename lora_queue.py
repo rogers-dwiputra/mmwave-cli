@@ -71,15 +71,19 @@ def mark_sent(path, spool_dir=None, keep=SENT_KEEP):
     return dst
 
 
-def drain(send_fn, spool_dir=None, max_send=20, spacing_s=10.0, sleep_fn=time.sleep):
+def drain(send_fn, spool_dir=None, max_send=20, spacing_s=10.0, sleep_fn=time.sleep, ser=None):
     """
     Send pending messages oldest-first via send_fn(hex_payload) -> bool.
     Stops at the first failure (link considered down) or after max_send.
     Corrupt files are moved to failed/ so they never block the queue.
+    `ser`, if given (an open, joined Wio-E5 session), is queried once via
+    AT+TEMP and the reading is stamped onto every payload sent this drain.
     Returns (sent_count, remaining_count).
     """
-    from lora_sender import encode_payload  # lazy: keeps lora_queue importable without pyserial
+    # lazy: keeps lora_queue importable without pyserial
+    from lora_sender import encode_payload, read_module_temp
     _, _, failed_dir = _dirs(spool_dir)
+    module_temp_c = read_module_temp(ser) if ser is not None else None
     sent_count = 0
     for path in list_pending(spool_dir):
         if sent_count >= max_send:
@@ -88,7 +92,7 @@ def drain(send_fn, spool_dir=None, max_send=20, spacing_s=10.0, sleep_fn=time.sl
         try:
             with open(path) as fh:
                 metrics = json.load(fh)
-            hex_payload = encode_payload(metrics)
+            hex_payload = encode_payload(metrics, module_temp_c=module_temp_c)
         except Exception as exc:
             print(f'[QUEUE] Corrupt spool file {os.path.basename(path)} ({exc}) — moving to failed/')
             shutil.move(path, os.path.join(failed_dir, os.path.basename(path)))
@@ -120,7 +124,7 @@ if __name__ == '__main__':
             raise SystemExit('LoRa link unavailable')
         try:
             sent, remaining = drain(
-                lambda h: lora_sender.send_payload_confirmed(ses, h))
+                lambda h: lora_sender.send_payload_confirmed(ses, h), ser=ses)
         finally:
             ses.close()
         print(f'drained: {sent} sent, {remaining} pending')

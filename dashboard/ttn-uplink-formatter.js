@@ -11,8 +11,9 @@
 //   Bytes 11+ : Per-PS data, 4 bytes each:
 //                 uint16 : ps_i freq × 100   (0 = no peak detected)
 //                 uint16 : ps_i rms_mm × 1000
-//
-// temperature_c is a static placeholder until hardware sensor is available
+//   Byte 11+4×N_PS : module_temp_c (int8, signed) — Wio-E5 internal MCU temp
+//                     via AT+TEMP, present only when a live session was open
+//                     at send time. Diagnostic only (self-heating biased).
 
 function decodeUplink(input) {
   var b = input.bytes;
@@ -40,7 +41,7 @@ function decodeUplink(input) {
     displacement_rms_um:   Math.round(disp_rms_mm * 1000),
     max_deflection_mm:     max_defl_mm,
     max_deflection_um:     Math.round(max_defl_mm * 1000),
-    temperature_c:         22.0,   // static placeholder — replace with sensor value later
+    temperature_c:         null,   // filled in below when the trailing byte is present
     latitude:              43.8156,
     longitude:             140.9723,
     n_ps:                  0
@@ -64,6 +65,13 @@ function decodeUplink(input) {
       out["freq_ps" + i]    = ps_freq_hz;
       out["rms_ps" + i]     = ps_rms_mm;
       out["rms_um_ps" + i]  = Math.round(ps_rms_mm * 1000);
+    }
+
+    // ── Trailing module temperature byte (signed int8) ────────────────────
+    var tempOffset = 11 + n_ps * 4;
+    if (b.length > tempOffset) {
+      var rawTemp = b[tempOffset];
+      out.temperature_c = rawTemp > 127 ? rawTemp - 256 : rawTemp;
     }
   }
 

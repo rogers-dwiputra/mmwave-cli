@@ -17,7 +17,11 @@ Payload format (variable length, big-endian):
                   uint16 : ps_i dominant_frequency_hz × 100  (0 = no peak)
                   uint16 : ps_i disp_rms_mm × 1000
 
-  Example: 5 PS points → total 11 + 5×4 = 31 bytes (well within SF7 AS923 limit)
+  Trailing byte (present when a live Wio-E5 session was available at send time):
+    Byte 11+4×N_PS : module_temp_c  (int8, signed, whole °C — Wio-E5 internal
+                      MCU temp via AT+TEMP; diagnostic only, self-heating biased)
+
+  Example: 5 PS points + temp → total 11 + 5×4 + 1 = 32 bytes (within SF7 AS923 limit)
 
 Decoder (gateway side):
   ts       = struct.unpack('>I', byte[0:4])[0]   # Unix timestamp
@@ -28,6 +32,8 @@ Decoder (gateway side):
   for i in range(n_ps):
       freq_i = struct.unpack('>H', byte[11+4*i:13+4*i])[0] / 100.0
       rms_i  = struct.unpack('>H', byte[13+4*i:15+4*i])[0] / 1000.0
+  temp_off = 11 + 4 * n_ps
+  temp_c   = struct.unpack('>b', byte[temp_off:temp_off+1])[0] if len(byte) > temp_off else None
 """
 
 import argparse
@@ -118,11 +124,11 @@ def _send_at(ser: serial.Serial, cmd: str,
 # Payload encoding
 # ═════════════════════════════════════════════
 
-def encode_payload(metrics: dict) -> str:
+def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
     """
-    Pack header + optional per-PS data into big-endian payload.
-    Timestamp comes from metrics['timestamp'] (ISO string from capture).
-    Returns uppercase hex string (no '0x' prefix).
+    Pack header + optional per-PS data (+ optional trailing module temp byte)
+    into big-endian payload. Timestamp comes from metrics['timestamp'] (ISO
+    string from capture). Returns uppercase hex string (no '0x' prefix).
     """
     # ── Timestamp ────────────────────────────────────────────────────
     ts_raw = metrics.get('timestamp')
@@ -171,11 +177,19 @@ def encode_payload(metrics: dict) -> str:
         ps_log.append(f'PS{i}:{ps_freq:.2f}Hz/{ps_rms*1e3:.1f}μm')
 
     payload = header + struct.pack('>B', n_ps) + ps_bytes
+
+    # ── Optional trailing module temperature ────────────────────────────
+    temp_log = ''
+    if module_temp_c is not None:
+        temp_int = max(-128, min(127, int(round(module_temp_c))))
+        payload += struct.pack('>b', temp_int)
+        temp_log = f'  module_temp={temp_int}°C'
+
     hex_str = payload.hex().upper()
 
     ts_fmt = datetime.fromtimestamp(ts_unix).strftime('%Y-%m-%d %H:%M:%S')
     _log(f'Encode → ts={ts_fmt}  freq={freq:.2f} Hz  '
-         f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm  n_ps={n_ps}')
+         f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm  n_ps={n_ps}{temp_log}')
     if ps_log:
         _log(f'Per-PS → {" | ".join(ps_log)}')
     _log(f'Payload hex ({len(payload)} bytes): {hex_str}')
@@ -287,6 +301,27 @@ def send_payload_confirmed(ser, hex_payload: str, timeout: float = 30.0) -> bool
     return ok
 
 
+def read_module_temp(ser, timeout: float = 2.0) -> float | None:
+    """
+    Query the Wio-E5's internal MCU temperature via AT+TEMP (°C).
+    Diagnostic only — never let a read failure block an uplink, so any
+    error (module error reply, broken/mock serial handle) returns None.
+    """
+    try:
+        ok, lines = _send_at(ser, 'AT+TEMP', timeout=timeout, expected='TEMP')
+    except Exception:
+        return None
+    if not ok:
+        return None
+    for line in lines:
+        if 'TEMP' in line.upper():
+            try:
+                return float(line.split(':', 1)[1].strip())
+            except (IndexError, ValueError):
+                return None
+    return None
+
+
 # ═════════════════════════════════════════════
 # Main send function
 # ═════════════════════════════════════════════
@@ -319,14 +354,16 @@ def send_lora(metrics_path: str = None,
     capture = metrics.get('capture', os.path.basename(os.path.dirname(metrics_path)))
     _log(f'Metrics loaded: {capture}')
 
-    hex_payload = encode_payload(metrics)
-
     # ── Open + join session ───────────────────────────────────────────
     ser = open_session(port=port, baud=baud, appkey=appkey, dr=dr, adr=adr)
     if ser is None:
         return False
 
     try:
+        # ── Encode payload (session is open — can read live module temp) ──
+        module_temp_c = read_module_temp(ser)
+        hex_payload = encode_payload(metrics, module_temp_c=module_temp_c)
+
         # ── Send payload (unconfirmed, legacy path) ────────────────────
         _log('Sending payload...')
         ok, resp = _send_at(ser, f'AT+MSGHEX="{hex_payload}"',

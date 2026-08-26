@@ -561,7 +561,8 @@ def run_lora_step(capture_dir: str, port: str, appkey: str,
             return False
         try:
             sent, remaining = lora_queue.drain(
-                lambda hex_payload: lora_sender.send_payload_confirmed(ses, hex_payload))
+                lambda hex_payload: lora_sender.send_payload_confirmed(ses, hex_payload),
+                ser=ses)
         finally:
             ses.close()
         _step(f'LoRa drain: {sent} sent, {remaining} still pending')

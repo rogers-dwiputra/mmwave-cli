@@ -520,6 +520,46 @@ def run_ps_monitoring(capture_dir: str, ps_map_file: str,
 
 
 # ─────────────────────────────────────────────
+# Step 4b — Long-term Displacement (cross-capture, stable PS)
+# ─────────────────────────────────────────────
+
+_longterm_monitoring_mod = None
+
+def _load_longterm_monitoring():
+    global _longterm_monitoring_mod
+    if _longterm_monitoring_mod is not None:
+        return _longterm_monitoring_mod
+    mod_path = os.path.join(EDGE_DIR, 'longterm_monitoring.py')
+    if not os.path.isfile(mod_path):
+        raise FileNotFoundError(f'longterm_monitoring.py not found at {mod_path}')
+    spec = importlib.util.spec_from_file_location('longterm_monitoring', mod_path)
+    mod  = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    _longterm_monitoring_mod = mod
+    return mod
+
+
+def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
+                            history_file: str) -> dict:
+    """Run cross-capture cumulative displacement tracking for one capture directory."""
+    _banner(f'STEP 4b — Long-term Displacement  ({capture_dir})')
+
+    data_folder = os.path.join(POSTPROC_DIR, capture_dir)
+    if not os.path.isdir(data_folder):
+        print(f'[PIPELINE] ERROR: Capture directory not found: {data_folder}')
+        return {}
+
+    try:
+        mod = _load_longterm_monitoring()
+        return mod.run_longterm_monitoring(data_folder, longterm_ps_file, history_file)
+    except Exception as exc:
+        import traceback
+        print(f'[PIPELINE] ERROR during long-term monitoring: {exc}')
+        traceback.print_exc()
+        return {}
+
+
+# ─────────────────────────────────────────────
 # Step 5 — LoRa uplink via store-and-forward queue (Wio-E5)
 # ─────────────────────────────────────────────
 
@@ -602,6 +642,11 @@ def main():
     parser.add_argument('--ps-file',         type=str, default=None,
                         help='Path to manually-selected PS JSON (from select_ps_manual.m). '
                              'Skips ADI computation — use after first manual PS selection.')
+    parser.add_argument('--longterm-ps-file', type=str, default=None,
+                        help='Path to manually-selected STABLE (off-bridge) PS JSON for '
+                             'cross-capture cumulative displacement tracking. Independent '
+                             'of --ps-file/--skip-ps — runs its own Step 4b when set. '
+                             'No fallback: PS selection is manual only. Unset = disabled.')
     parser.add_argument('--reset-ps',        action='store_true',
                         help='Delete PS map so it is recomputed on the next cycle (ignored when --ps-file is set)')
     parser.add_argument('--skip-lora',       action='store_true',
@@ -683,6 +728,11 @@ def main():
         os.remove(ps_map_file)
         print(f'[PIPELINE] Deleted PS map: {ps_map_file}')
 
+    # Long-term history lives in its own subdirectory, one file per --label,
+    # so different experiments/bridges never mix (longterm_monitoring.py
+    # creates the directory itself on first write).
+    history_file = os.path.join(EDGE_DIR, 'longterm_history', f'{args.label}_longterm.jsonl')
+
     print('╔══════════════════════════════════════════════════════════╗')
     print('║        AUTOMATED MIMO RADAR PIPELINE — IMRSL            ║')
     print('╚══════════════════════════════════════════════════════════╝')
@@ -697,6 +747,9 @@ def main():
     print(f'  PostProc dir     : {POSTPROC_DIR}')
     print(f'  Results dir      : {os.path.join(EDGE_DIR, "python-result")}')
     print(f'  PS source        : {args.ps_file if args.ps_file else ps_map_file + " (auto/ADI)"}')
+    if args.longterm_ps_file:
+        print(f'  Long-term PS     : {args.longterm_ps_file}')
+        print(f'  Long-term history: {history_file}')
     print(f'  Debug mode       : {"ON (SLC + range-profile enabled)" if args.debug else "OFF (PS metrics only)"}')
     print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
     print(f'  Capture mode     : {"PERSISTENT (init once)" if args.persistent else "spawn mimo.py per cycle"}')
@@ -820,6 +873,17 @@ def main():
             _step_done('Step 4 — PS Monitoring', t4)
         else:
             _step('Step 4 — PS Monitoring skipped (--skip-ps)')
+
+        if shutdown_flag:
+            break
+
+        # ── 4b. Long-term Displacement (independent of --skip-ps) ────
+        if args.longterm_ps_file:
+            t4b = _step_start('Step 4b — Long-term Displacement')
+            run_longterm_monitoring(capture_dir, args.longterm_ps_file, history_file)
+            _step_done('Step 4b — Long-term Displacement', t4b)
+        else:
+            _step('Step 4b — Long-term Displacement skipped (no --longterm-ps-file)')
 
         if shutdown_flag:
             break

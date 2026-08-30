@@ -722,6 +722,9 @@ def main():
     if args.config and not os.path.isfile(args.config):
         parser.error(f'--config: file not found: {args.config}')
 
+    if args.longterm_ps_file and not os.path.isfile(args.longterm_ps_file):
+        parser.error(f'--longterm-ps-file: file not found: {args.longterm_ps_file}')
+
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
     ps_map_file = os.path.join(EDGE_DIR, 'ps_map.json')
     if args.reset_ps and args.ps_file is None and os.path.isfile(ps_map_file):

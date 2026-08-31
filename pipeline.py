@@ -660,6 +660,12 @@ def main():
                              'independent of --cycle-period (capture/vibration monitoring '
                              'keep their own cadence). 0 = no throttle, run every cycle '
                              '--longterm-ps-file is set (default).')
+    parser.add_argument('--postproc-dir', type=str, default=None,
+                        help='Override where raw captures are stored (default: SD card, '
+                             '~/IoSAR-EdgeProcessing/PostProc/). Must resolve to a separately '
+                             'mounted filesystem (e.g. an attached SSD) — refuses to start if '
+                             'the path is not actually mounted (would otherwise silently fall '
+                             'back onto the SD card at that path).')
     parser.add_argument('--reset-ps',        action='store_true',
                         help='Delete PS map so it is recomputed on the next cycle (ignored when --ps-file is set)')
     parser.add_argument('--skip-lora',       action='store_true',
@@ -737,6 +743,22 @@ def main():
 
     if args.longterm_ps_file and not os.path.isfile(args.longterm_ps_file):
         parser.error(f'--longterm-ps-file: file not found: {args.longterm_ps_file}')
+
+    if args.postproc_dir:
+        global POSTPROC_DIR
+        ancestor = os.path.abspath(args.postproc_dir)
+        while not os.path.exists(ancestor):
+            parent = os.path.dirname(ancestor)
+            if parent == ancestor:
+                break
+            ancestor = parent
+        if os.stat(ancestor).st_dev == os.stat('/').st_dev:
+            parser.error(f'--postproc-dir {args.postproc_dir}: not on a separately mounted '
+                         f'filesystem (resolves to the same device as "/" — is it actually '
+                         f'mounted? refusing to silently write raw captures onto the SD card)')
+        os.makedirs(args.postproc_dir, exist_ok=True)
+        POSTPROC_DIR = args.postproc_dir
+        print(f'[PIPELINE] Raw capture storage overridden: {POSTPROC_DIR}')
 
     # PS map lives alongside mimo_processing.py in IoSAR-EdgeProcessing/
     ps_map_file = os.path.join(EDGE_DIR, 'ps_map.json')

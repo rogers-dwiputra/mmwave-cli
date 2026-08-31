@@ -540,8 +540,13 @@ def _load_longterm_monitoring():
 
 
 def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
-                            history_file: str) -> dict:
-    """Run cross-capture cumulative displacement tracking for one capture directory."""
+                            history_file: str, longterm_interval_hours: float = 0.0) -> dict:
+    """Run cross-capture cumulative displacement tracking for one capture directory.
+
+    longterm_interval_hours throttles how often the (expensive) radar-data
+    read actually happens, independent of --cycle-period: 0 = no throttle
+    (run every cycle, prior behavior); >0 = skip cycles until that many
+    hours have elapsed since the last successful long-term append."""
     _banner(f'STEP 4b — Long-term Displacement  ({capture_dir})')
 
     data_folder = os.path.join(POSTPROC_DIR, capture_dir)
@@ -551,6 +556,9 @@ def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
 
     try:
         mod = _load_longterm_monitoring()
+        if not mod.should_run_longterm(history_file, longterm_interval_hours):
+            print(f'  Not due yet (--longterm-interval-hours {longterm_interval_hours}) — skipping')
+            return {}
         return mod.run_longterm_monitoring(data_folder, longterm_ps_file, history_file)
     except Exception as exc:
         import traceback
@@ -647,6 +655,11 @@ def main():
                              'cross-capture cumulative displacement tracking. Independent '
                              'of --ps-file/--skip-ps — runs its own Step 4b when set. '
                              'No fallback: PS selection is manual only. Unset = disabled.')
+    parser.add_argument('--longterm-interval-hours', type=float, default=0.0,
+                        help='Throttle Step 4b to run at most once per this many hours, '
+                             'independent of --cycle-period (capture/vibration monitoring '
+                             'keep their own cadence). 0 = no throttle, run every cycle '
+                             '--longterm-ps-file is set (default).')
     parser.add_argument('--reset-ps',        action='store_true',
                         help='Delete PS map so it is recomputed on the next cycle (ignored when --ps-file is set)')
     parser.add_argument('--skip-lora',       action='store_true',
@@ -883,7 +896,8 @@ def main():
         # ── 4b. Long-term Displacement (independent of --skip-ps) ────
         if args.longterm_ps_file:
             t4b = _step_start('Step 4b — Long-term Displacement')
-            run_longterm_monitoring(capture_dir, args.longterm_ps_file, history_file)
+            run_longterm_monitoring(capture_dir, args.longterm_ps_file, history_file,
+                                    args.longterm_interval_hours)
             _step_done('Step 4b — Long-term Displacement', t4b)
         else:
             _step('Step 4b — Long-term Displacement skipped (no --longterm-ps-file)')

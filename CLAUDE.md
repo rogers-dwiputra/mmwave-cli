@@ -78,7 +78,7 @@ mmwave-cli/                         ← this repo (runs on Raspberry Pi ~/mmwave
 │   ├── grafana-dashboard-v0.1.json ← importable Grafana dashboard
 │   └── telegraf/                   ← Telegraf config deployed on VPS
 │       ├── telegraf.conf
-│       ├── docker-compose.yml      ← running on root@148.230.102.157
+│       ├── docker-compose.yml      ← running on root@103.74.5.96
 │       └── .env.example
 └── ti/                             ← TI SDK headers and firmware (do not modify)
 
@@ -104,7 +104,7 @@ Step 2 — Transfer     SCP root@TDA:/mnt/ssd/<dir> → ~/IoSAR-EdgeProcessing/P
                       then: rm -rf /mnt/ssd/<dir> on TDA (auto-delete after transfer)
 Step 3 — Processing   [DEBUG only] mimo_processing.process_capture() → SLC.png, range-profile.png
 Step 4 — PS Monitor   ps_monitoring.run_ps_monitoring() → ps_metrics.json, displacement_timeseries.csv
-Step 5 — LoRa Uplink  lora_sender.send_lora() → 10-byte payload → Wio-E5 → TTN
+Step 5 — LoRa Uplink  lora_sender.send_lora() → variable-length payload (10-byte header + per-PS + temp) → Wio-E5 → TTN
 ```
 
 **Step 3 (SLC + range-profile) is SKIPPED by default** — only generated when `--debug` flag is passed.  
@@ -264,14 +264,20 @@ DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.
 
 ## LoRa Uplink (lora_sender.py)
 
-**Payload format — 10 bytes, big-endian:**
+**Payload format — variable length, big-endian (10-byte fixed header + optional per-PS block + optional trailing temperature byte):**
 
-| Byte | Field | Encoding | Resolution |
+| Byte(s) | Field | Encoding | Resolution |
 |------|-------|----------|------------|
 | 0–3 | Unix timestamp | uint32 | 1 s |
 | 4–5 | `dominant_frequency_hz` | uint16 × 100 | 0.01 Hz |
 | 6–7 | `displacement_rms_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
 | 8–9 | `max_deflection_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
+| 10 | `n_ps` — number of PS points that follow | uint8 | count (capped at 15) |
+| 11 + 4·i | PS `i` dominant frequency | uint16 × 100 | 0.01 Hz (0 = no peak detected) |
+| 13 + 4·i | PS `i` displacement RMS | uint16 × 1000 | 0.001 mm |
+| 11 + 4·n_ps | `module_temp_c` — Wio-E5 internal MCU temp via `AT+TEMP` (optional; present only when a live session was open at send time; diagnostic only, self-heating biased) | int8, signed | 1 °C |
+
+Max payload size = 11 + 15×4 + 1 = 72 bytes (n_ps capped at 15). Decoded by `dashboard/ttn-uplink-formatter.js` in the TTN Console.
 
 **AT command sequence:** `AT` → `AT+KEY=APPKEY,"<key>"` → `AT+JOIN` → `AT+MSGHEX="<hex>"`
 
@@ -293,7 +299,7 @@ Raspberry Pi → LoRa → TTN → MQTT → Telegraf → InfluxDB Cloud → Grafa
 | TTN MQTT host | `imrsl.as1.cloud.thethings.industries:8883` (TLS) |
 | TTN MQTT username | `iosar-imrsl@imrsl` |
 | TTN MQTT topic | `v3/iosar-imrsl@imrsl/devices/+/up` |
-| Telegraf | Docker on VPS `148.230.102.157`, at `/opt/telegraf-iosar/` |
+| Telegraf | Docker on VPS `103.74.5.96`, at `/opt/telegraf-iosar/` |
 | InfluxDB Cloud | `us-east-1-1.aws.cloud2.influxdata.com`, org `fa0efd0230808dbd`, bucket `iosar` |
 | InfluxDB measurement | `uplink`, tag `device_id=gb-sar-01` |
 | Grafana | `https://imrsl.grafana.net/` |
@@ -307,11 +313,12 @@ Raspberry Pi → LoRa → TTN → MQTT → Telegraf → InfluxDB Cloud → Grafa
 
 **Telegraf management on VPS:**
 ```bash
-ssh root@148.230.102.157
+ssh root@103.74.5.96
 cd /opt/telegraf-iosar
 docker compose logs -f          # monitor live
 docker compose restart          # restart after config change
 ```
+(Old VPS `148.230.102.157` was destroyed ~2026-08-31 — replaced by `103.74.5.96`. `.env` there holds `TTN_API_KEY`/`INFLUXDB_TOKEN`, chmod 600, not in git. Note: this is a **shared VPS** — other unrelated services also run here (e.g. `epresensi-adhibeton-web-1`), and disk was ~89% full (8.9 GB free) as of 2026-08-31 — keep an eye on space before adding anything else.)
 
 **InfluxDB Flux query template:**
 ```flux

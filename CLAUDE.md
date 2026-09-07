@@ -330,6 +330,7 @@ Raspberry Pi → LoRa → TTN → MQTT → Telegraf → InfluxDB Cloud → Grafa
 - `dominant_frequency_hz_2` — 2nd-highest gated peak, when the spectrum has more than one mode above threshold; `null` otherwise
 - `displacement_rms_mm` — RMS displacement across all PS candidates
 - `max_deflection_mm` — peak displacement over capture window
+- `n_phase`, `phase_rad_0`..`phase_rad_11` — coherent-mean phase (radians) at the fixed 12-point set (see "LoRa Uplink" phase-eval block above); present only when `--lora-phase-eval-file` is set. Offline APS evaluation only — intentionally not wired into any Grafana panel.
 
 **TTN Payload Formatter** at `dashboard/ttn-uplink-formatter.js` — paste into TTN Console > Applications > iosar-imrsl > Payload formatters > Uplink.
 

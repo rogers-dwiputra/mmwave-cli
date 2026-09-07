@@ -20,12 +20,14 @@
 #     Ground-Based MIMO Radar Interferometry") for direct comparability
 #     during calibration. Built-in default is 30 ms (33.33 Hz).
 #
-# Calibration file (use with this profile, NOT calibrateResults_BridgeSpan0602.mat):
-#   CalibTIDEP2MizumotoBridge100m_260901_195303.mat  (2026-09-01, current)
-#   (present on imrslpi5-02 at
-#    ~/IoSAR-EdgeProcessing/4chip_cascade_MIMO_example/main/cascade/input/)
-#   Supersedes the older calibrateResults_MizumotorBridge50mTIDEP2.mat --
-#   do not use that one for new captures.
+# Calibration file — use CalibTIDEP2MizumotoBridge100m_260901_195303.mat
+# (native match, verified 2026-09-02 -- Slope_MHzperus=11.008, Sampling_Rate_sps=8000000).
+# Present on imrslpi5-02 at ~/IoSAR-EdgeProcessing/ (repo root, NOT under
+# 4chip_cascade_MIMO_example/main/cascade/input/).
+# Do NOT use calibrateResults_MizumotorBridge50mTIDEP2.mat -- verified MISMATCHED
+# (its own embedded slope is 51.418 MHz/us, not 11 MHz/us). See
+# 260831-Pre-LongExperiment/CLAUDE.md '## Calibration' section for the full
+# investigation.
 #
 # Usage:
 #   python3 mimo.py --config config/mizumotobridge-100m-cfg.toml -t 20 --directory MyExp

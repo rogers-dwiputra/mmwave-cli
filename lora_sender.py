@@ -38,6 +38,7 @@ Decoder (gateway side):
 
 import argparse
 import json
+import math
 import os
 import struct
 import time
@@ -145,16 +146,26 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
         ts_unix = int(time.time())
 
     # ── Overall values (header) ───────────────────────────────────────
+    # NaN is truthy in Python (`nan or default` does NOT fall through), and
+    # int(round(nan)) raises ValueError -- a NaN anywhere here would crash
+    # the encode and silently drop the capture in lora_queue's try/except.
+    # Map non-finite values to the documented 0 = no-peak-detected sentinel.
     freq = float(metrics.get('dominant_frequency_hz')
                  or metrics.get('freq_mode_1_hz')
                  or metrics.get('natural_frequency_hz') or 0.0)
+    if not math.isfinite(freq):
+        freq = 0.0
     rms_mm = metrics.get('displacement_rms_mm')
     if rms_mm is None:
         rms_um = float(metrics.get('displacement_rms_um') or 0.0)
         rms_mm = rms_um / 1000.0
     else:
         rms_mm = float(rms_mm)
+    if not math.isfinite(rms_mm):
+        rms_mm = 0.0
     mdef = float(metrics.get('max_deflection_mm') or 0.0)
+    if not math.isfinite(mdef):
+        mdef = 0.0
 
     freq_int = min(int(round(freq   * 100)),  65535)
     rms_int  = min(int(round(rms_mm * 1000)), 65535)
@@ -171,6 +182,10 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
     for i, ps in enumerate(ps_details[:n_ps]):
         ps_freq = float(ps.get('dominant_frequency_hz') or 0.0)
         ps_rms  = float(ps.get('disp_rms_mm') or 0.0)
+        if not math.isfinite(ps_freq):
+            ps_freq = 0.0
+        if not math.isfinite(ps_rms):
+            ps_rms = 0.0
         pf_int  = min(int(round(ps_freq * 100)),  65535)
         pr_int  = min(int(round(ps_rms  * 1000)), 65535)
         ps_bytes += struct.pack('>HH', pf_int, pr_int)

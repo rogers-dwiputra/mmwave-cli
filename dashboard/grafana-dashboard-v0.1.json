@@ -1,1084 +1,1472 @@
 {
-  "annotations": [
-    {
-      "kind": "AnnotationQuery",
-      "spec": {
-        "builtIn": true,
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "query": {
-          "datasource": {
-            "name": "-- Grafana --"
-          },
-          "group": "grafana",
-          "kind": "DataQuery",
-          "spec": {},
-          "version": "v0"
-        }
-      }
-    }
-  ],
-  "cursorSync": "Crosshair",
-  "description": "IoSAR Bridge Structural Health Monitoring — v0.2 (per-PS metrics)",
-  "editable": true,
-  "elements": {
-    "panel-1": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": {
-                      "name": "fflzu9drwnwg0e"
-                    },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dominant_frequency_hz\")\n  |> last()"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "A"
-                }
-              }
-            ],
-            "queryOptions": {},
-            "transformations": []
-          }
-        },
-        "description": "",
-        "id": 1,
-        "links": [],
-        "title": "Dominant Frequency",
-        "vizConfig": {
-          "group": "stat",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "thresholds"
-                },
-                "decimals": 2,
-                "displayName": "Dominant Freq",
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "blue",
-                      "value": 0
-                    },
-                    {
-                      "color": "green",
-                      "value": 0.3
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 5
-                    }
-                  ]
-                },
-                "unit": "Hz"
-              },
-              "overrides": []
-            },
-            "options": {
-              "colorMode": "background",
-              "graphMode": "area",
-              "justifyMode": "center",
-              "orientation": "auto",
-              "percentChangeColorMode": "standard",
-              "reduceOptions": {
-                "calcs": [
-                  "lastNotNull"
-                ],
-                "fields": "",
-                "values": false
-              },
-              "showPercentChange": false,
-              "text": {
-                "titleSize": 16,
-                "valueSize": 40
-              },
-              "textMode": "auto",
-              "wideLayout": true
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    },
-    "panel-2": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": {
-                      "name": "fflzu9drwnwg0e"
-                    },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"max_deflection_mm\")\n  |> max()"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "A"
-                }
-              }
-            ],
-            "queryOptions": {},
-            "transformations": []
-          }
-        },
-        "description": "",
-        "id": 2,
-        "links": [],
-        "title": "Max Deflection (time window)",
-        "vizConfig": {
-          "group": "stat",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "thresholds"
-                },
-                "decimals": 3,
-                "displayName": "Max Deflection",
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 0.05
-                    },
-                    {
-                      "color": "orange",
-                      "value": 0.5
-                    },
-                    {
-                      "color": "red",
-                      "value": 2
-                    }
-                  ]
-                },
-                "unit": "mm"
-              },
-              "overrides": []
-            },
-            "options": {
-              "colorMode": "background",
-              "graphMode": "area",
-              "justifyMode": "center",
-              "orientation": "auto",
-              "percentChangeColorMode": "standard",
-              "reduceOptions": {
-                "calcs": [
-                  "max"
-                ],
-                "fields": "",
-                "values": false
-              },
-              "showPercentChange": false,
-              "text": {
-                "titleSize": 16,
-                "valueSize": 40
-              },
-              "textMode": "auto",
-              "wideLayout": true
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    },
-    "panel-3": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": {
-                      "name": "fflzu9drwnwg0e"
-                    },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_c\")\n  |> last()"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "A"
-                }
-              }
-            ],
-            "queryOptions": {},
-            "transformations": []
-          }
-        },
-        "description": "",
-        "id": 3,
-        "links": [],
-        "title": "Current Temperature",
-        "vizConfig": {
-          "group": "stat",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "thresholds"
-                },
-                "decimals": 1,
-                "displayName": "Temperature",
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "blue",
-                      "value": 0
-                    },
-                    {
-                      "color": "green",
-                      "value": 5
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 30
-                    },
-                    {
-                      "color": "red",
-                      "value": 45
-                    }
-                  ]
-                },
-                "unit": "celsius"
-              },
-              "overrides": []
-            },
-            "options": {
-              "colorMode": "background",
-              "graphMode": "area",
-              "justifyMode": "center",
-              "orientation": "auto",
-              "percentChangeColorMode": "standard",
-              "reduceOptions": {
-                "calcs": [
-                  "lastNotNull"
-                ],
-                "fields": "",
-                "values": false
-              },
-              "showPercentChange": false,
-              "text": {
-                "titleSize": 16,
-                "valueSize": 40
-              },
-              "textMode": "auto",
-              "wideLayout": true
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    },
-    "panel-4": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": {
-                      "name": "fflzu9drwnwg0e"
-                    },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_c\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "A"
-                }
-              }
-            ],
-            "queryOptions": {},
-            "transformations": [
-              {
-                "kind": "DataTransformerConfig",
-                "group": "grafana",
-                "spec": {
-                  "id": "organize",
-                  "options": {
-                    "excludeByName": {},
-                    "indexByName": {},
-                    "renameByName": {
-                      "temperature_c": "Temp"
-                    }
-                  }
-                },
-                "version": "v0"
-              }
-            ]
-          }
-        },
-        "description": "",
-        "id": 4,
-        "links": [],
-        "title": "Temperature Min / Max",
-        "vizConfig": {
-          "group": "stat",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "thresholds"
-                },
-                "decimals": 1,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "blue",
-                      "value": 0
-                    },
-                    {
-                      "color": "green",
-                      "value": 5
-                    },
-                    {
-                      "color": "yellow",
-                      "value": 30
-                    },
-                    {
-                      "color": "red",
-                      "value": 45
-                    }
-                  ]
-                },
-                "unit": "celsius"
-              },
-              "overrides": []
-            },
-            "options": {
-              "colorMode": "value",
-              "graphMode": "none",
-              "justifyMode": "auto",
-              "orientation": "horizontal",
-              "percentChangeColorMode": "standard",
-              "reduceOptions": {
-                "calcs": [
-                  "min",
-                  "max"
-                ],
-                "fields": "",
-                "values": false
-              },
-              "showPercentChange": false,
-              "text": {},
-              "textMode": "auto",
-              "wideLayout": true
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    },
-    "panel-5": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": {
-                      "name": "fflzu9drwnwg0e"
-                    },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"max_deflection_mm\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"max_deflection_mm\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "A"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": {
-                      "name": "fflzu9drwnwg0e"
-                    },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dominant_frequency_hz\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"dominant_frequency_hz\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "B"
-                }
-              }
-            ],
-            "queryOptions": {},
-            "transformations": []
-          }
-        },
-        "description": "max_deflection_mm dan dominant_frequency_hz per LoRa uplink cycle. Hover titik data untuk melihat kedua nilai sekaligus.",
-        "id": 5,
-        "links": [],
-        "title": "Displacement Time Series",
-        "vizConfig": {
-          "group": "timeseries",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 8,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 2,
-                  "pointSize": 6,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "always",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    }
-                  ]
-                }
-              },
-              "overrides": [
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "max_deflection_mm"
-                  },
-                  "properties": [
-                    { "id": "displayName", "value": "Max Deflection" },
-                    { "id": "unit", "value": "mm" },
-                    { "id": "decimals", "value": 3 },
-                    { "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } },
-                    { "id": "custom.axisPlacement", "value": "left" },
-                    { "id": "custom.axisLabel", "value": "Deflection (mm)" }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "dominant_frequency_hz"
-                  },
-                  "properties": [
-                    { "id": "displayName", "value": "Dominant Freq" },
-                    { "id": "unit", "value": "Hz" },
-                    { "id": "decimals", "value": 2 },
-                    { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } },
-                    { "id": "custom.axisPlacement", "value": "right" },
-                    { "id": "custom.axisLabel", "value": "Frequency (Hz)" },
-                    { "id": "custom.lineStyle", "value": { "dash": [6, 4], "fill": "dash" } },
-                    { "id": "custom.fillOpacity", "value": 0 }
-                  ]
-                }
-              ]
-            },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max",
-                  "min"
-                ],
-                "displayMode": "table",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    },
-    "panel-7": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps0\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "A"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps1\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "B"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps2\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "C"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps3\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps3\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "D"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps4\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps4\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "E"
-                }
-              }
-            ],
-            "queryOptions": {},
-            "transformations": []
-          }
-        },
-        "description": "Dominant frequency per PS point (PS0–PS4). Series only appear if the PS point exists.",
-        "id": 7,
-        "links": [],
-        "title": "Per-PS Dominant Frequency",
-        "vizConfig": {
-          "group": "timeseries",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {
-                "color": { "mode": "palette-classic" },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "Frequency (Hz)",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 5,
-                  "gradientMode": "none",
-                  "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 2,
-                  "pointSize": 6,
-                  "scaleDistribution": { "type": "linear" },
-                  "showPoints": "always",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": { "group": "A", "mode": "none" },
-                  "thresholdsStyle": { "mode": "off" }
-                },
-                "unit": "Hz",
-                "decimals": 2,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [{ "color": "green", "value": 0 }]
-                }
-              },
-              "overrides": [
-                { "matcher": { "id": "byName", "options": "freq_ps0" }, "properties": [{ "id": "displayName", "value": "PS 0" }] },
-                { "matcher": { "id": "byName", "options": "freq_ps1" }, "properties": [{ "id": "displayName", "value": "PS 1" }] },
-                { "matcher": { "id": "byName", "options": "freq_ps2" }, "properties": [{ "id": "displayName", "value": "PS 2" }] },
-                { "matcher": { "id": "byName", "options": "freq_ps3" }, "properties": [{ "id": "displayName", "value": "PS 3" }] },
-                { "matcher": { "id": "byName", "options": "freq_ps4" }, "properties": [{ "id": "displayName", "value": "PS 4" }] }
-              ]
-            },
-            "options": {
-              "legend": {
-                "calcs": ["lastNotNull", "max", "min"],
-                "displayMode": "table",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" }
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    },
-    "panel-8": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps0\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "A"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps1\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "B"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps2\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "C"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps3\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps3\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "D"
-                }
-              },
-              {
-                "kind": "PanelQuery",
-                "spec": {
-                  "hidden": false,
-                  "query": {
-                    "datasource": { "name": "fflzu9drwnwg0e" },
-                    "group": "influxdb",
-                    "kind": "DataQuery",
-                    "spec": {
-                      "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps4\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps4\")"
-                    },
-                    "version": "v0"
-                  },
-                  "refId": "E"
-                }
-              }
-            ],
-            "queryOptions": {},
-            "transformations": []
-          }
-        },
-        "description": "Displacement RMS per PS point (PS0–PS4). Unit: mm.",
-        "id": 8,
-        "links": [],
-        "title": "Per-PS Displacement RMS",
-        "vizConfig": {
-          "group": "timeseries",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {
-                "color": { "mode": "palette-classic" },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "RMS Displacement (mm)",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 5,
-                  "gradientMode": "none",
-                  "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 2,
-                  "pointSize": 6,
-                  "scaleDistribution": { "type": "linear" },
-                  "showPoints": "always",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": { "group": "A", "mode": "none" },
-                  "thresholdsStyle": { "mode": "off" }
-                },
-                "unit": "mm",
-                "decimals": 4,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [{ "color": "green", "value": 0 }]
-                }
-              },
-              "overrides": [
-                { "matcher": { "id": "byName", "options": "rms_ps0" }, "properties": [{ "id": "displayName", "value": "PS 0" }] },
-                { "matcher": { "id": "byName", "options": "rms_ps1" }, "properties": [{ "id": "displayName", "value": "PS 1" }] },
-                { "matcher": { "id": "byName", "options": "rms_ps2" }, "properties": [{ "id": "displayName", "value": "PS 2" }] },
-                { "matcher": { "id": "byName", "options": "rms_ps3" }, "properties": [{ "id": "displayName", "value": "PS 3" }] },
-                { "matcher": { "id": "byName", "options": "rms_ps4" }, "properties": [{ "id": "displayName", "value": "PS 4" }] }
-              ]
-            },
-            "options": {
-              "legend": {
-                "calcs": ["lastNotNull", "max", "min"],
-                "displayMode": "table",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" }
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    },
-    "panel-6": {
-      "kind": "Panel",
-      "spec": {
-        "data": {
-          "kind": "QueryGroup",
-          "spec": {
-            "queries": [],
-            "queryOptions": {},
-            "transformations": []
-          }
-        },
-        "description": "Current time in Asia/Tokyo timezone (JST, UTC+9). Updated every second.",
-        "id": 6,
-        "links": [],
-        "title": "Current Time (JST)",
-        "vizConfig": {
-          "group": "grafana-clock-panel",
-          "kind": "VizConfig",
-          "spec": {
-            "fieldConfig": {
-              "defaults": {},
-              "overrides": []
-            },
-            "options": {
-              "mode": "time",
-              "clockType": "24hour",
-              "timezone": "Asia/Tokyo",
-              "timezoneLabel": "JST (UTC+9)",
-              "refresh": "1s",
-              "fontModes": "custom",
-              "clockSettings": {
-                "showSeconds": true,
-                "fontSize": "36px",
-                "fontWeight": "bold"
-              },
-              "dateSettings": {
-                "showDate": true,
-                "dateFormat": "YYYY-MM-DD",
-                "fontSize": "14px",
-                "fontWeight": "normal"
-              },
-              "bgColor": ""
-            }
-          },
-          "version": "13.1.0-25723336850"
-        }
-      }
-    }
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "rorwm7x"
   },
-  "layout": {
-    "kind": "GridLayout",
-    "spec": {
-      "items": [
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-1"
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "builtIn": true,
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "query": {
+            "datasource": {
+              "name": "-- Grafana --"
             },
-            "height": 5,
-            "width": 5,
-            "x": 0,
-            "y": 0
-          }
-        },
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-2"
-            },
-            "height": 5,
-            "width": 5,
-            "x": 5,
-            "y": 0
-          }
-        },
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-3"
-            },
-            "height": 5,
-            "width": 5,
-            "x": 10,
-            "y": 0
-          }
-        },
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-4"
-            },
-            "height": 5,
-            "width": 5,
-            "x": 15,
-            "y": 0
-          }
-        },
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-6"
-            },
-            "height": 5,
-            "width": 4,
-            "x": 20,
-            "y": 0
-          }
-        },
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-5"
-            },
-            "height": 11,
-            "width": 24,
-            "x": 0,
-            "y": 5
-          }
-        },
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-7"
-            },
-            "height": 10,
-            "width": 12,
-            "x": 0,
-            "y": 16
-          }
-        },
-        {
-          "kind": "GridLayoutItem",
-          "spec": {
-            "element": {
-              "kind": "ElementReference",
-              "name": "panel-8"
-            },
-            "height": 10,
-            "width": 12,
-            "x": 12,
-            "y": 16
+            "group": "grafana",
+            "kind": "DataQuery",
+            "spec": {},
+            "version": "v0"
           }
         }
-      ]
-    }
-  },
-  "links": [],
-  "liveNow": false,
-  "preload": false,
-  "tags": [
-    "iosar",
-    "bridge",
-    "shm"
-  ],
-  "timeSettings": {
-    "autoRefresh": "5m",
-    "autoRefreshIntervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
+      }
     ],
-    "fiscalYearStartMonth": 0,
-    "from": "now-24h",
-    "hideTimepicker": false,
-    "timezone": "Asia/Tokyo",
-    "to": "now"
-  },
-  "title": "IoSAR Bridge Monitoring v0.2",
-  "variables": []
+    "cursorSync": "Crosshair",
+    "description": "IoSAR Bridge Structural Health Monitoring \u2014 v0.3 (per-PS metrics, split panels)",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dominant_frequency_hz\")\n  |> last()"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "",
+          "id": 1,
+          "links": [],
+          "title": "Dominant Frequency",
+          "vizConfig": {
+            "group": "stat",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "decimals": 2,
+                  "displayName": "Dominant Freq",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "blue",
+                        "value": 0
+                      },
+                      {
+                        "color": "green",
+                        "value": 0.3
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 5
+                      }
+                    ]
+                  },
+                  "unit": "Hz"
+                },
+                "overrides": []
+              },
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "text": {
+                  "titleSize": 16,
+                  "valueSize": 40
+                },
+                "textMode": "auto",
+                "wideLayout": true
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      },
+      "panel-10": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dominant_frequency_hz\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"dominant_frequency_hz\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dominant_frequency_hz_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"dominant_frequency_hz_2\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "B"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "dominant_frequency_hz (peak 1) and dominant_frequency_hz_2 (peak 2) per LoRa uplink cycle -- up to 2 local-maxima peaks that each independently clear the amplitude+coherence gate.",
+          "id": 10,
+          "links": [],
+          "title": "Dominant Frequency Time Series",
+          "vizConfig": {
+            "group": "timeseries",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "Frequency (Hz)",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 8,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 6,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  },
+                  "unit": "Hz"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "dominant_frequency_hz"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Dominant Freq"
+                      },
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "orange",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      },
+      "panel-2": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"max_deflection_mm\")\n  |> max()"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "",
+          "id": 2,
+          "links": [],
+          "title": "Max Deflection (time window)",
+          "vizConfig": {
+            "group": "stat",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "decimals": 3,
+                  "displayName": "Max Deflection",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 0.05
+                      },
+                      {
+                        "color": "orange",
+                        "value": 0.5
+                      },
+                      {
+                        "color": "red",
+                        "value": 2
+                      }
+                    ]
+                  },
+                  "unit": "mm"
+                },
+                "overrides": []
+              },
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "max"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "text": {
+                  "titleSize": 16,
+                  "valueSize": 40
+                },
+                "textMode": "auto",
+                "wideLayout": true
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      },
+      "panel-4": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature_c\")\n  |> last()"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "",
+          "id": 4,
+          "links": [],
+          "title": "Current Temperature",
+          "vizConfig": {
+            "group": "stat",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "decimals": 1,
+                  "displayName": "Temperature",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "blue",
+                        "value": 0
+                      },
+                      {
+                        "color": "green",
+                        "value": 5
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 30
+                      },
+                      {
+                        "color": "red",
+                        "value": 45
+                      }
+                    ]
+                  },
+                  "unit": "celsius"
+                },
+                "overrides": []
+              },
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "text": {
+                  "titleSize": 16,
+                  "valueSize": 40
+                },
+                "textMode": "auto",
+                "wideLayout": true
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      },
+      "panel-5": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"max_deflection_mm\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"max_deflection_mm\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "max_deflection_mm per LoRa uplink cycle.",
+          "id": 5,
+          "links": [],
+          "title": "Displacement Time Series",
+          "vizConfig": {
+            "group": "timeseries",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "Deflection (mm)",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 8,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 6,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "decimals": 3,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  },
+                  "unit": "mm"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "max_deflection_mm"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Max Deflection"
+                      },
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "blue",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      },
+      "panel-6": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "group": "",
+                      "kind": "DataQuery",
+                      "spec": {},
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "Current time in Asia/Tokyo timezone (JST, UTC+9). Updated every second.",
+          "id": 6,
+          "links": [],
+          "title": "Current Time (JST)",
+          "vizConfig": {
+            "group": "grafana-clock-panel",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              },
+              "options": {
+                "bgColor": "",
+                "clockSettings": {
+                  "fontSize": "48px",
+                  "fontWeight": "bold",
+                  "showSeconds": true
+                },
+                "clockType": "24hour",
+                "countdownSettings": {
+                  "endCountdownTime": "2026-05-26T19:12:59+09:00",
+                  "endText": "00:00:00",
+                  "invalidValueText": "invalid value",
+                  "noValueText": "no value found",
+                  "queryCalculation": "last",
+                  "source": "input"
+                },
+                "countupSettings": {
+                  "beginCountupTime": "2026-05-26T19:12:59+09:00",
+                  "beginText": "00:00:00",
+                  "invalidValueText": "invalid value",
+                  "noValueText": "no value found",
+                  "queryCalculation": "last",
+                  "source": "input"
+                },
+                "dateSettings": {
+                  "dateFormat": "dddd, YYYY-MM-DD",
+                  "fontSize": "16px",
+                  "fontWeight": "normal",
+                  "locale": "",
+                  "showDate": true
+                },
+                "descriptionSettings": {
+                  "descriptionText": "",
+                  "fontSize": "12px",
+                  "fontWeight": "normal",
+                  "noValueText": "no description found",
+                  "source": "none"
+                },
+                "digitalSettings": {
+                  "fillColor": "dark-blue",
+                  "glowSize": 12,
+                  "strokeColor": "dark-blue",
+                  "strokeWidth": 1
+                },
+                "fontModes": "custom",
+                "fontMono": true,
+                "mode": "time",
+                "refresh": "sec",
+                "style": "digital",
+                "timeSettings": {
+                  "fontSize": "12px",
+                  "fontWeight": "normal"
+                },
+                "timezone": "Asia/Tokyo",
+                "timezoneLabel": "JST (UTC+9)",
+                "timezoneSettings": {
+                  "fontSize": "14px",
+                  "fontWeight": "normal",
+                  "showTimezone": true,
+                  "zoneFormat": "offsetAbbv"
+                }
+              }
+            },
+            "version": "3.2.2"
+          }
+        }
+      },
+      "panel-7": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps0\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps1\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "B"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps2\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "C"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps3\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps3\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "D"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"freq_ps4\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"freq_ps4\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "E"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "Dominant frequency per PS point (PS0\u2013PS4). Series only appear if the PS point exists.",
+          "id": 7,
+          "links": [],
+          "title": "Per-PS Dominant Frequency",
+          "vizConfig": {
+            "group": "timeseries",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "Frequency (Hz)",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 5,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 6,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  },
+                  "unit": "Hz"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "freq_ps0"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 0"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "freq_ps1"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 1"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "freq_ps2"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 2"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "freq_ps3"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 3"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "freq_ps4"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 4"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      },
+      "panel-11": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "p0 = from(bucket: \"iosar\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\") |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\") |> filter(fn: (r) => r[\"_field\"] == \"rms_ps1\") |> last() |> map(fn: (r) => ({ _time: r._time, position_m: -7.03, label: \"PierLeft\", displacement_mm: -r._value }))\n\np1 = from(bucket: \"iosar\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\") |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\") |> filter(fn: (r) => r[\"_field\"] == \"rms_ps3\") |> last() |> map(fn: (r) => ({ _time: r._time, position_m: -3.66, label: \"MidLeft\", displacement_mm: -r._value }))\n\np2 = from(bucket: \"iosar\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\") |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\") |> filter(fn: (r) => r[\"_field\"] == \"rms_ps2\") |> last() |> map(fn: (r) => ({ _time: r._time, position_m: 0.36, label: \"MidSpan\", displacement_mm: -r._value }))\n\np3 = from(bucket: \"iosar\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\") |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\") |> filter(fn: (r) => r[\"_field\"] == \"rms_ps4\") |> last() |> map(fn: (r) => ({ _time: r._time, position_m: 2.50, label: \"MidRight\", displacement_mm: -r._value }))\n\np4 = from(bucket: \"iosar\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\") |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\") |> filter(fn: (r) => r[\"_field\"] == \"rms_ps0\") |> last() |> map(fn: (r) => ({ _time: r._time, position_m: 6.02, label: \"PierRight\", displacement_mm: -r._value }))\n\nunion(tables: [p0, p1, p2, p3, p4])\n  |> sort(columns: [\"position_m\"])\n  |> keep(columns: [\"_time\", \"position_m\", \"label\", \"displacement_mm\"])"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "Spatial displacement profile",
+          "id": 11,
+          "links": [],
+          "title": "Displacement Span (Pier-to-Pier)",
+          "vizConfig": {
+            "group": "xychart",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "Downward Deflection (mm)",
+                    "axisPlacement": "auto",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineStyle": {
+                      "fill": "solid"
+                    },
+                    "lineWidth": 2,
+                    "pointShape": "circle",
+                    "pointSize": {
+                      "fixed": 9
+                    },
+                    "pointStrokeWidth": 1,
+                    "show": "points+lines"
+                  },
+                  "decimals": 4,
+                  "unit": "mm"
+                },
+                "overrides": []
+              },
+              "options": {
+                "seriesMapping": "manual",
+                "series": [
+                  {
+                    "x": {
+                      "matcher": {
+                        "id": "byName",
+                        "options": "position_m"
+                      }
+                    },
+                    "y": {
+                      "matcher": {
+                        "id": "byName",
+                        "options": "displacement_mm"
+                      }
+                    },
+                    "pointColor": {
+                      "fixed": "blue"
+                    },
+                    "pointSize": {
+                      "fixed": 9
+                    }
+                  }
+                ],
+                "tooltip": {
+                  "mode": "single"
+                }
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      },
+      "panel-8": {
+        "kind": "Panel",
+        "spec": {
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps0\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps0\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "A"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps1\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "B"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps2\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "C"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps3\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps3\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "D"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "fflzu9drwnwg0e"
+                      },
+                      "group": "influxdb",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "query": "from(bucket: \"iosar\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uplink\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"gb-sar-01\")\n  |> filter(fn: (r) => r[\"_field\"] == \"rms_ps4\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"rms_ps4\")"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "E"
+                  }
+                }
+              ],
+              "queryOptions": {},
+              "transformations": []
+            }
+          },
+          "description": "Displacement Max per PS point (PS0\u2013PS4). Unit: mm.",
+          "id": 8,
+          "links": [],
+          "title": "Per-PS Max-Displacement",
+          "vizConfig": {
+            "group": "timeseries",
+            "kind": "VizConfig",
+            "spec": {
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "Max Displacement (mm)",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 5,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 6,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "decimals": 4,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      }
+                    ]
+                  },
+                  "unit": "mm"
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "rms_ps0"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 0"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "rms_ps1"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 1"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "rms_ps2"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 2"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "rms_ps3"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 3"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "rms_ps4"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "PS 4"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              }
+            },
+            "version": "13.3.0-32821810799"
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              },
+              "height": 5,
+              "width": 6,
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-2"
+              },
+              "height": 5,
+              "width": 6,
+              "x": 6,
+              "y": 0
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-4"
+              },
+              "height": 5,
+              "width": 6,
+              "x": 12,
+              "y": 0
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-6"
+              },
+              "height": 5,
+              "width": 6,
+              "x": 18,
+              "y": 0
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-5"
+              },
+              "height": 11,
+              "width": 12,
+              "x": 0,
+              "y": 5
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-10"
+              },
+              "height": 11,
+              "width": 12,
+              "x": 12,
+              "y": 5
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-7"
+              },
+              "height": 10,
+              "width": 12,
+              "x": 0,
+              "y": 16
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-8"
+              },
+              "height": 10,
+              "width": 12,
+              "x": 12,
+              "y": 16
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-11"
+              },
+              "height": 10,
+              "width": 24,
+              "x": 0,
+              "y": 26
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [
+      "iosar",
+      "bridge",
+      "shm"
+    ],
+    "timeSettings": {
+      "autoRefresh": "5m",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "fiscalYearStartMonth": 0,
+      "from": "now-3h",
+      "hideTimepicker": false,
+      "timezone": "Asia/Tokyo",
+      "to": "now"
+    },
+    "title": "IoSAR IMRSL",
+    "variables": []
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "capture_reference": "7 references identical to ps_manual_lora_phase_eval.json (subset of ps_manual_stable_longterm.json) + 5 bridge targets updated to match ps_manual_span5.json (latest analysis, 2026-09-07) -- R_m/x_m/y_m derived from angle_bin/range_bin via the verified bin->metre fit (R_m = 0.0532670*range_bin + 0.26636, sin_theta = 1 - angle_bin/128), NOT independently checked against a real _SLC.mat power reading -- recommend verifying with tools/csv_to_ps_json.py assert_bin_mapping() or equivalent before relying on this for a paper-grade result.",
+  "capture_reference": "corrected 2026-09-08: 7 references identical to ps_manual_lora_phase_eval.json (subset of ps_manual_stable_longterm.json) + 5 bridge targets REVERTED to the original pier_kiri/quarter_kiri/midspan/quarter_kanan/pier_kanan coordinates (labels kept as PierLeft/MidLeft/MidSpan/MidRight/PierRight) -- a 102-capture, 3-day amplitude comparison (2026-09-04..07) showed the intermediate span5 coordinates were dimmer at 4/5 points and 3 had drifted ~3.4-3.7m from this original analysis, not a refinement of it. R_m/x_m/y_m are the ORIGINAL ps_aps_points/ps_span_points CSV values, not curve-fit estimates.",
   "references": [
     {
       "label": "aps_3_fence + concrete (right)",
@@ -67,49 +67,49 @@
   ],
   "targets": [
     {
-      "label": "PierRight",
-      "angle_bin": 111,
-      "range_bin": 846,
-      "R_m": 45.3302,
-      "x_m": 6.0204,
-      "y_m": 44.9287,
-      "power_db_csv": null
-    },
-    {
       "label": "PierLeft",
-      "angle_bin": 147,
-      "range_bin": 884,
-      "R_m": 47.3544,
-      "x_m": -7.0292,
-      "y_m": 46.8298,
-      "power_db_csv": null
-    },
-    {
-      "label": "MidSpan",
-      "angle_bin": 127,
-      "range_bin": 859,
-      "R_m": 46.0227,
-      "x_m": 0.3596,
-      "y_m": 46.0213,
-      "power_db_csv": null
+      "angle_bin": 156,
+      "range_bin": 899,
+      "R_m": 48.1534,
+      "x_m": -10.5336,
+      "y_m": 46.9872,
+      "power_db_csv": 109.5
     },
     {
       "label": "MidLeft",
-      "angle_bin": 138,
-      "range_bin": 874,
-      "R_m": 46.8217,
-      "x_m": -3.6579,
-      "y_m": 46.6786,
-      "power_db_csv": null
+      "angle_bin": 147,
+      "range_bin": 883,
+      "R_m": 47.3011,
+      "x_m": -7.0213,
+      "y_m": 46.7771,
+      "power_db_csv": 112.2
+    },
+    {
+      "label": "MidSpan",
+      "angle_bin": 137,
+      "range_bin": 876,
+      "R_m": 46.9283,
+      "x_m": -3.2996,
+      "y_m": 46.8121,
+      "power_db_csv": 113.3
     },
     {
       "label": "MidRight",
-      "angle_bin": 121,
-      "range_bin": 854,
-      "R_m": 45.7564,
-      "x_m": 2.5023,
-      "y_m": 45.6879,
-      "power_db_csv": null
+      "angle_bin": 122,
+      "range_bin": 845,
+      "R_m": 45.277,
+      "x_m": 2.1224,
+      "y_m": 45.2272,
+      "power_db_csv": 112.3
+    },
+    {
+      "label": "PierRight",
+      "angle_bin": 112,
+      "range_bin": 850,
+      "R_m": 45.5433,
+      "x_m": 5.6929,
+      "y_m": 45.1861,
+      "power_db_csv": 128.4
     }
   ]
 }

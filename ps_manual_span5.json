@@ -1,0 +1,30 @@
+{
+  "capture_reference": "corrected 2026-09-08: reverted to the original ps_aps_points_260903_recommended.csv/ps_span_points_260903_night.csv analysis (indices 22-26) after a 102-capture, 3-day amplitude comparison (2026-09-04..07) showed the intermediate 'span5' coordinates were dimmer at 4/5 points and 3 of the 5 (PierLeft/MidLeft/MidSpan) had drifted ~3.4-3.7m from the original analysis -- not a refinement. Labels kept as PierLeft/MidLeft/MidSpan/MidRight/PierRight for continuity with existing tooling; coordinates are the original pier_kiri/quarter_kiri/midspan/quarter_kanan/pier_kanan bins.",
+  "ps_points": [
+    {
+      "label": "PierLeft",
+      "angle_bin": 156,
+      "range_bin": 899
+    },
+    {
+      "label": "MidLeft",
+      "angle_bin": 147,
+      "range_bin": 883
+    },
+    {
+      "label": "MidSpan",
+      "angle_bin": 137,
+      "range_bin": 876
+    },
+    {
+      "label": "MidRight",
+      "angle_bin": 122,
+      "range_bin": 845
+    },
+    {
+      "label": "PierRight",
+      "angle_bin": 112,
+      "range_bin": 850
+    }
+  ]
+}

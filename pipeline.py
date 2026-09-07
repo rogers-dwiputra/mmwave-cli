@@ -759,6 +759,14 @@ def main():
                         default=os.path.join(EDGE_DIR, 'SLC_Export'),
                         help='Output directory for --export-slc .mat files '
                              '(default: ~/IoSAR-EdgeProcessing/SLC_Export)')
+    parser.add_argument('--slc-export-external', action='store_true',
+                        help='Skip the --longterm-at-hour / --export-slc pairing check: a '
+                             'separate process (e.g. batch_slc_export.py run as its own '
+                             'systemd service) writes the .mat files to --slc-export-dir '
+                             'independently, so Step 3b does not run inline and does not '
+                             'count against the cycle-period budget. Step 4b\'s own '
+                             '2-hour anchor retry window absorbs the export lag as long as '
+                             'the external process keeps pace with capture rate.')
     parser.add_argument('--slc-calib-file',  type=str, default=None,
                         help='Calibration .mat file for --export-slc (required if --export-slc '
                              'is set). Must match the chirp profile actually used for capture -- '
@@ -892,9 +900,13 @@ def main():
     if args.lora_phase_eval_file and not os.path.isfile(args.lora_phase_eval_file):
         parser.error(f'--lora-phase-eval-file: file not found: {args.lora_phase_eval_file}')
 
-    if args.longterm_at_hour is not None and not args.export_slc:
+    if (args.longterm_at_hour is not None and not args.export_slc
+            and not args.slc_export_external):
         parser.error('--longterm-at-hour requires --export-slc (Step 4b reads the .mat '
-                     'export written by Step 3b, never raw ADC)')
+                     'export written by Step 3b, never raw ADC) -- or pass '
+                     '--slc-export-external if a separate process produces the .mat '
+                     'files (e.g. a decoupled batch_slc_export.py service, so Step 3b '
+                     'does not block the cycle-period budget)')
 
     if args.export_slc:
         if not args.slc_calib_file:

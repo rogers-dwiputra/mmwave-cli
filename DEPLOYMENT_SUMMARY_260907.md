@@ -2,6 +2,20 @@
 
 Summary of the phase-eval feature build + production swap done in this session, before a ~12-day unattended run on `imrslpi5-02`.
 
+## ⚠️ PENDING FIX — do this first when reconnected (2026-09-08, not yet deployed)
+
+A post-swap amplitude comparison (102 real `_SLC.mat` files, 2026-09-04..07) found the live `ps_manual_span5.json` target coordinates are worse than the original analysis: dimmer at 4/5 points, and 3 of 5 (PierLeft/MidLeft/MidSpan) had drifted ~3.4–3.7 m from the original `pier_kiri`/`quarter_kiri`/`midspan`/`quarter_kanan`/`pier_kanan` points — not a refinement. The fix is committed (`422eca9`, `feat/finite-num-frames`) but **not deployed** — no RPi access since 2026-09-07 ~22:00 JST.
+
+**Steps, in this order:**
+1. `cd ~/mmwave-cli && git pull`
+2. `cp ps_manual_span5.json ~/ps_manual_span5.json` (overwrites the RPi-local copy the pipeline actually reads)
+3. **Archive, don't just leave, the long-term history before restarting:**
+   `mv ~/IoSAR-EdgeProcessing/longterm_history/MizumotoBridgeContinuousMonitoring_longterm.jsonl ~/IoSAR-EdgeProcessing/longterm_history/MizumotoBridgeContinuousMonitoring_longterm.jsonl.pre-coord-fix`
+   (entries logged since 2026-09-07 used the old, wrong target R_m — diffing across the coordinate change would silently corrupt the APS fit, not error out)
+4. `sudo systemctl restart mizumoto-pipeline.service`
+5. Confirm: `tail -f ~/mizumoto_pipeline.log`, wait for one full cycle, check the "PS source" / "Loaded 5 PS" line shows `PierLeft (156,899)` etc., not `(147,884)`
+6. Everything logged between 2026-09-07 ~21:00 and this fix used the wrong target coordinates — treat that window's `ps_metrics.json`/InfluxDB data as using the weaker point set, not invalid, just not the final one.
+
 ## What's running now
 
 **Two independent systemd services on the RPi (`imrsl@imrslpi5-02`), both `enabled` (autostart on boot):**

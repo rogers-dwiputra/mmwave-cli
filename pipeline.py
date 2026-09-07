@@ -580,14 +580,20 @@ def _load_ps_monitoring():
 
 
 def run_ps_monitoring(capture_dir: str, ps_map_file: str,
-                      ps_file: str = None, aps_ref_file: str = None) -> dict:
+                      ps_file: str = None, aps_ref_file: str = None,
+                      lora_phase_eval_file: str = None) -> dict:
     """Run PS-based structural health monitoring for one capture directory.
 
     aps_ref_file, when set, feeds the amplitude-spectrum gate's coherence
     test (gate 2 -- rejects the ~2.6 Hz common-mode line); pass
     --longterm-ps-file here so Step 4's own vibration-frequency gate and
     Step 4b's 03:00 vehicle-detection retry read the exact same computation
-    (see SPEC_vibration_threshold_NaN.md)."""
+    (see SPEC_vibration_threshold_NaN.md).
+
+    lora_phase_eval_file, when set, extracts coherent-mean phase at a fixed
+    set of points every capture (sensei's 7 reference + 5 target points),
+    for offline APS evaluation only -- sent via LoRa, never shown on the
+    Grafana dashboard (see ps_monitoring._compute_phase_eval)."""
     _banner(f'STEP 4 — PS Monitoring  ({capture_dir})')
 
     data_folder = os.path.join(POSTPROC_DIR, capture_dir)
@@ -597,7 +603,8 @@ def run_ps_monitoring(capture_dir: str, ps_map_file: str,
 
     try:
         mod = _load_ps_monitoring()
-        return mod.run_ps_monitoring(data_folder, ps_map_file, ps_file, aps_ref_file)
+        return mod.run_ps_monitoring(data_folder, ps_map_file, ps_file, aps_ref_file,
+                                     lora_phase_eval_file=lora_phase_eval_file)
     except Exception as exc:
         import traceback
         print(f'[PIPELINE] ERROR during PS monitoring: {exc}')
@@ -779,6 +786,14 @@ def main():
                              'PS...]}, each entry carrying angle_bin/range_bin/R_m (see '
                              'tools/csv_to_ps_json.py). Independent of --ps-file/--skip-ps. '
                              'No fallback: PS selection is manual only. Unset = disabled.')
+    parser.add_argument('--lora-phase-eval-file', type=str, default=None,
+                        help='Path to a small fixed PS JSON (e.g. '
+                             'ps_manual_lora_phase_eval.json -- 7 hand-picked reference '
+                             'points + 5 bridge targets). When set, coherent-mean phase '
+                             '(radians) is extracted at every point, every capture, and sent '
+                             'via LoRa for offline APS evaluation only -- never shown on the '
+                             'Grafana dashboard. Independent of --ps-file/--longterm-ps-file. '
+                             'Unset = disabled (no extra processing cost).')
     parser.add_argument('--longterm-interval-hours', type=float, default=0.0,
                         help='Legacy throttle: Step 4b runs at most once per this many '
                              'hours, independent of --cycle-period. Superseded by '
@@ -874,6 +889,9 @@ def main():
     if args.longterm_ps_file and not os.path.isfile(args.longterm_ps_file):
         parser.error(f'--longterm-ps-file: file not found: {args.longterm_ps_file}')
 
+    if args.lora_phase_eval_file and not os.path.isfile(args.lora_phase_eval_file):
+        parser.error(f'--lora-phase-eval-file: file not found: {args.lora_phase_eval_file}')
+
     if args.longterm_at_hour is not None and not args.export_slc:
         parser.error('--longterm-at-hour requires --export-slc (Step 4b reads the .mat '
                      'export written by Step 3b, never raw ADC)')
@@ -933,6 +951,8 @@ def main():
             print(f'  Long-term anchor : {args.longterm_at_hour:.1f}:00 JST (once/day, APS-corrected)')
         else:
             print(f'  Long-term anchor : elapsed-time mode (--longterm-interval-hours {args.longterm_interval_hours})')
+    if args.lora_phase_eval_file:
+        print(f'  LoRa phase eval  : {args.lora_phase_eval_file}')
     print(f'  Debug mode       : {"ON (SLC + range-profile enabled)" if args.debug else "OFF (PS metrics only)"}')
     print(f'  SLC export       : {f"ON -> {args.slc_export_dir}" if args.export_slc else "OFF (add --export-slc to enable)"}')
     print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
@@ -1066,7 +1086,8 @@ def main():
         # ── 4. PS Monitoring ────────────────────────────────────────
         if not args.skip_ps:
             t4 = _step_start('Step 4 — PS Monitoring')
-            run_ps_monitoring(capture_dir, ps_map_file, args.ps_file, args.longterm_ps_file)
+            run_ps_monitoring(capture_dir, ps_map_file, args.ps_file, args.longterm_ps_file,
+                              lora_phase_eval_file=args.lora_phase_eval_file)
             _step_done('Step 4 — PS Monitoring', t4)
         else:
             _step('Step 4 — PS Monitoring skipped (--skip-ps)')

@@ -104,7 +104,7 @@ Step 2 — Transfer     SCP root@TDA:/mnt/ssd/<dir> → ~/IoSAR-EdgeProcessing/P
                       then: rm -rf /mnt/ssd/<dir> on TDA (auto-delete after transfer)
 Step 3 — Processing   [DEBUG only] mimo_processing.process_capture() → SLC.png, range-profile.png
 Step 4 — PS Monitor   ps_monitoring.run_ps_monitoring() → ps_metrics.json, displacement_timeseries.csv
-Step 5 — LoRa Uplink  lora_sender.send_lora() → variable-length payload (10-byte header + per-PS + temp) → Wio-E5 → TTN
+Step 5 — LoRa Uplink  lora_sender.send_lora() → variable-length payload (12-byte header + per-PS + phase-eval + temp) → Wio-E5 → TTN
 ```
 
 **Step 3 (SLC + range-profile) is SKIPPED by default** — only generated when `--debug` flag is passed.  
@@ -163,6 +163,7 @@ tail -f ~/pipeline_*.log
 | `-i` / `--interval` | `0.0` | Wait between cycles (s) |
 | `--debug` | off | Enable SLC + range-profile image generation (Step 3) |
 | `--ps-file` | None | Manual PS JSON from select_ps_manual.m (skips ADI) |
+| `--lora-phase-eval-file` | None | Fixed PS JSON (e.g. `ps_manual_lora_phase_eval.json`) — coherent-mean phase extracted at every point, every capture, sent via LoRa for offline APS evaluation only (never shown on the Grafana dashboard). Independent of `--ps-file`/`--longterm-ps-file`. |
 | `--reset-ps` | off | Delete ps_map.json to force ADI recomputation |
 | `--skip-transfer` | off | Skip SCP transfer |
 | `--skip-ps` | off | Skip PS monitoring |
@@ -279,7 +280,7 @@ DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.
 
 ## LoRa Uplink (lora_sender.py)
 
-**Payload format — variable length, big-endian (12-byte fixed header + optional per-PS block + optional trailing temperature byte):**
+**Payload format — variable length, big-endian (12-byte fixed header + per-PS block + phase-eval block + optional trailing temperature byte):**
 
 | Byte(s) | Field | Encoding | Resolution |
 |------|-------|----------|------------|
@@ -291,9 +292,13 @@ DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.
 | 12 | `n_ps` — number of PS points that follow | uint8 | count (capped at 15) |
 | 13 + 4·i | PS `i` dominant frequency (single peak) | uint16 × 100 | 0.01 Hz (0 = no peak detected) |
 | 15 + 4·i | PS `i` displacement RMS | uint16 × 1000 | 0.001 mm |
-| 13 + 4·n_ps | `module_temp_c` — Wio-E5 internal MCU temp via `AT+TEMP` (optional; present only when a live session was open at send time; diagnostic only, self-heating biased) | int8, signed | 1 °C |
+| 13 + 4·n_ps | `n_phase` — number of fixed phase-eval points that follow | uint8 | count (0 unless `--lora-phase-eval-file` set; capped at 20, deployed set is 12) |
+| 14 + 4·n_ps + 2·j | Phase-eval point `j` coherent-mean phase | int16 × 1000 | 0.001 rad (signed, range ±π) |
+| 14 + 4·n_ps + 2·n_phase | `module_temp_c` — Wio-E5 internal MCU temp via `AT+TEMP` (optional; present only when a live session was open at send time; diagnostic only, self-heating biased) | int8, signed | 1 °C |
 
-Max payload size = 13 + 15×4 + 1 = 74 bytes (n_ps capped at 15). Decoded by `dashboard/ttn-uplink-formatter.js` in the TTN Console. Two frequency slots because the amplitude-spectrum gate (`SPEC_vibration_threshold_NaN.md`) reports up to `MAX_PEAKS_REPORTED = 2` local-maxima peaks from the aggregate spectrum, each independently gated — per-PS frequencies stay single-peak.
+Max payload size = 13 + 15×4 + 1 + 20×2 + 1 = 115 bytes (n_ps capped at 15, n_phase capped at 20). Decoded by `dashboard/ttn-uplink-formatter.js` in the TTN Console. Two frequency slots because the amplitude-spectrum gate (`SPEC_vibration_threshold_NaN.md`) reports up to `MAX_PEAKS_REPORTED = 2` local-maxima peaks from the aggregate spectrum, each independently gated — per-PS frequencies stay single-peak.
+
+**Phase-eval block:** coherent-mean phase (radians) at a small fixed set of points (`ps_manual_lora_phase_eval.json` — 7 hand-picked reference points + 5 bridge targets, sensei's selection 2026-09-07), extracted every capture by `ps_monitoring._compute_phase_eval()` when `pipeline.py --lora-phase-eval-file` is set. Purely for offline APS evaluation/post-processing (a phase DIFFERENCE computed later between two captures' stored angles reproduces what the `.mat`-based A1 fit already uses) — stored in InfluxDB only, deliberately **not** wired into any Grafana panel. `n_phase` is always emitted (0 when the feature is disabled), so the trailing temperature byte's offset is unambiguous either way.
 
 **AT command sequence:** `AT` → `AT+KEY=APPKEY,"<key>"` → `AT+JOIN` → `AT+MSGHEX="<hex>"`
 

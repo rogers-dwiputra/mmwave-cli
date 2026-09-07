@@ -17,9 +17,18 @@
 //   Bytes 13+ : Per-PS data, 4 bytes each (single peak per PS):
 //                 uint16 : ps_i freq × 100   (0 = no peak -- decoded to `null`)
 //                 uint16 : ps_i rms_mm × 1000
-//   Byte 13+4×N_PS : module_temp_c (int8, signed) — Wio-E5 internal MCU temp
-//                     via AT+TEMP, present only when a live session was open
-//                     at send time. Diagnostic only (self-heating biased).
+//   Byte 13+4×N_PS : N_PHASE count (uint8) — number of fixed phase-eval
+//                     points (0 unless --lora-phase-eval-file was set; see
+//                     ps_monitoring._compute_phase_eval). Sensei's hand-picked
+//                     7 reference + 5 bridge-target points, for offline APS
+//                     evaluation only -- InfluxDB storage only, intentionally
+//                     NOT wired into any Grafana panel.
+//   Bytes 14+4×N_PS+ : Per-point coherent-mean phase, 2 bytes each:
+//                 int16 : phase_rad × 1000 (signed, milliradians)
+//   Byte 14+4×N_PS+2×N_PHASE : module_temp_c (int8, signed) — Wio-E5
+//                     internal MCU temp via AT+TEMP, present only when a
+//                     live session was open at send time. Diagnostic only
+//                     (self-heating biased).
 
 function decodeUplink(input) {
   var b = input.bytes;
@@ -57,7 +66,8 @@ function decodeUplink(input) {
     temperature_c:           null,   // filled in below when the trailing byte is present
     latitude:                43.8156,
     longitude:               140.9723,
-    n_ps:                    0
+    n_ps:                    0,
+    n_phase:                 0
   };
 
   // ── Per-PS section (byte 12+) ─────────────────────────────────────────────
@@ -80,8 +90,26 @@ function decodeUplink(input) {
       out["rms_um_ps" + i]  = Math.round(ps_rms_mm * 1000);
     }
 
+    // ── Phase-eval section (fixed points, offline APS evaluation only --
+    // InfluxDB storage only, deliberately not surfaced on any Grafana panel) ──
+    var phaseOffset = 13 + n_ps * 4;
+    var n_phase = 0;
+    if (b.length > phaseOffset) {
+      n_phase = b[phaseOffset];
+      out.n_phase = n_phase;
+
+      for (var j = 0; j < n_phase; j++) {
+        var pOffset = phaseOffset + 1 + j * 2;
+        if (pOffset + 1 >= b.length) break;   // guard against truncated payload
+
+        var rawPhase = (b[pOffset] << 8) | b[pOffset + 1];
+        if (rawPhase > 32767) rawPhase -= 65536;   // int16 sign extend
+        out["phase_rad_" + j] = rawPhase / 1000.0;
+      }
+    }
+
     // ── Trailing module temperature byte (signed int8) ────────────────────
-    var tempOffset = 13 + n_ps * 4;
+    var tempOffset = phaseOffset + 1 + n_phase * 2;
     if (b.length > tempOffset) {
       var rawTemp = b[tempOffset];
       out.temperature_c = rawTemp > 127 ? rawTemp - 256 : rawTemp;

@@ -24,11 +24,23 @@ Payload format (variable length, big-endian):
                   uint16 : ps_i dominant_frequency_hz × 100  (0 = no peak)
                   uint16 : ps_i disp_rms_mm × 1000
 
-  Trailing byte (present when a live Wio-E5 session was available at send time):
-    Byte 13+4×N_PS : module_temp_c  (int8, signed, whole °C — Wio-E5 internal
-                      MCU temp via AT+TEMP; diagnostic only, self-heating biased)
+  Phase-eval section (always present -- byte offset depends on N_PS above;
+    N_PHASE is 0 unless run_ps_monitoring() was given --lora-phase-eval-file,
+    see ps_monitoring._compute_phase_eval. Fixed 7-reference + 5-target point
+    set, for offline APS evaluation only -- never shown on the Grafana
+    dashboard, InfluxDB storage only):
+    Byte 13+4×N_PS   : N_PHASE (uint8, number of phase points, 0 = disabled)
+    Byte 14+4×N_PS+  : Per-point coherent-mean phase, 2 bytes each:
+                  int16 : phase_rad × 1000  (signed, milliradians; range
+                          ±π rad ≈ ±3142 -- comfortably within int16)
 
-  Example: 5 PS points + temp → total 13 + 5×4 + 1 = 34 bytes (within SF7 AS923 limit)
+  Trailing byte (present when a live Wio-E5 session was available at send time):
+    Byte 14+4×N_PS+2×N_PHASE : module_temp_c  (int8, signed, whole °C —
+                      Wio-E5 internal MCU temp via AT+TEMP; diagnostic only,
+                      self-heating biased)
+
+  Example: 5 PS + 12 phase points + temp → 13 + 5×4 + 1 + 12×2 + 1 = 59 bytes
+           (within SF7 AS923 limit)
 
 Decoder (gateway side):
   ts        = struct.unpack('>I', byte[0:4])[0]   # Unix timestamp
@@ -40,7 +52,12 @@ Decoder (gateway side):
   for i in range(n_ps):
       freq_i = struct.unpack('>H', byte[13+4*i:15+4*i])[0] / 100.0
       rms_i  = struct.unpack('>H', byte[15+4*i:17+4*i])[0] / 1000.0
-  temp_off = 13 + 4 * n_ps
+  phase_off  = 13 + 4 * n_ps
+  n_phase    = byte[phase_off] if len(byte) > phase_off else 0
+  for i in range(n_phase):
+      off_i    = phase_off + 1 + 2 * i
+      phase_i  = struct.unpack('>h', byte[off_i:off_i+2])[0] / 1000.0
+  temp_off = phase_off + 1 + 2 * n_phase
   temp_c   = struct.unpack('>b', byte[temp_off:temp_off+1])[0] if len(byte) > temp_off else None
 """
 
@@ -206,7 +223,21 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
         ps_bytes += struct.pack('>HH', pf_int, pr_int)
         ps_log.append(f'PS{i}:{ps_freq:.2f}Hz/{ps_rms*1e3:.1f}μm')
 
-    payload = header + struct.pack('>B', n_ps) + ps_bytes
+    # ── Phase-eval section (fixed points, offline APS evaluation only --
+    # see ps_monitoring._compute_phase_eval / --lora-phase-eval-file) ─────
+    phase_eval = metrics.get('phase_eval') or []
+    n_phase = min(len(phase_eval), 20)   # sanity cap (deployed set is 12)
+
+    phase_bytes = b''
+    for pe in phase_eval[:n_phase]:
+        phase_rad = float(pe.get('phase_rad') or 0.0)
+        if not math.isfinite(phase_rad):
+            phase_rad = 0.0
+        phase_int = max(-32768, min(32767, int(round(phase_rad * 1000))))
+        phase_bytes += struct.pack('>h', phase_int)
+
+    payload = header + struct.pack('>B', n_ps) + ps_bytes \
+            + struct.pack('>B', n_phase) + phase_bytes
 
     # ── Optional trailing module temperature ────────────────────────────
     temp_log = ''
@@ -219,7 +250,8 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
 
     ts_fmt = datetime.fromtimestamp(ts_unix).strftime('%Y-%m-%d %H:%M:%S')
     _log(f'Encode → ts={ts_fmt}  freq={freq:.2f} Hz  freq2={freq2:.2f} Hz  '
-         f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm  n_ps={n_ps}{temp_log}')
+         f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm  n_ps={n_ps}  '
+         f'n_phase={n_phase}{temp_log}')
     if ps_log:
         _log(f'Per-PS → {" | ".join(ps_log)}')
     _log(f'Payload hex ({len(payload)} bytes): {hex_str}')

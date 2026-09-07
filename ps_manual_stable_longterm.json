@@ -1,0 +1,241 @@
+{
+  "capture_reference": "ps_aps_points_260903_recommended.csv + ps_span_points_260903_night.csv (analysis/24,25 validated)",
+  "references": [
+    {
+      "label": "aps_1_fence + concrete (right)",
+      "angle_bin": 38,
+      "range_bin": 99,
+      "R_m": 5.5398,
+      "x_m": 3.8952,
+      "y_m": 3.9391,
+      "power_db_csv": 125.4
+    },
+    {
+      "label": "aps_2_fence + concrete (right)",
+      "angle_bin": 49,
+      "range_bin": 117,
+      "R_m": 6.4986,
+      "x_m": 4.0108,
+      "y_m": 5.1132,
+      "power_db_csv": 118.5
+    },
+    {
+      "label": "aps_3_fence + concrete (right)",
+      "angle_bin": 69,
+      "range_bin": 148,
+      "R_m": 8.1499,
+      "x_m": 3.7566,
+      "y_m": 7.2324,
+      "power_db_csv": 126.0
+    },
+    {
+      "label": "aps_4_fence + concrete (right)",
+      "angle_bin": 51,
+      "range_bin": 149,
+      "R_m": 8.2031,
+      "x_m": 4.9347,
+      "y_m": 6.5529,
+      "power_db_csv": 120.6
+    },
+    {
+      "label": "aps_5_fence + concrete (right)",
+      "angle_bin": 73,
+      "range_bin": 169,
+      "R_m": 9.2685,
+      "x_m": 3.9825,
+      "y_m": 8.3692,
+      "power_db_csv": 118.4
+    },
+    {
+      "label": "aps_6_fence + concrete (right)",
+      "angle_bin": 47,
+      "range_bin": 178,
+      "R_m": 9.7479,
+      "x_m": 6.1686,
+      "y_m": 7.5478,
+      "power_db_csv": 104.4
+    },
+    {
+      "label": "aps_7_fence + concrete (right)",
+      "angle_bin": 79,
+      "range_bin": 190,
+      "R_m": 10.3871,
+      "x_m": 3.9763,
+      "y_m": 9.5958,
+      "power_db_csv": 114.1
+    },
+    {
+      "label": "aps_8_fence + concrete (right)",
+      "angle_bin": 86,
+      "range_bin": 234,
+      "R_m": 12.7308,
+      "x_m": 4.1773,
+      "y_m": 12.026,
+      "power_db_csv": 115.5
+    },
+    {
+      "label": "aps_9_fence + concrete (right)",
+      "angle_bin": 98,
+      "range_bin": 238,
+      "R_m": 12.9439,
+      "x_m": 3.0337,
+      "y_m": 12.5834,
+      "power_db_csv": 117.0
+    },
+    {
+      "label": "aps_10_fence + concrete (right)",
+      "angle_bin": 67,
+      "range_bin": 245,
+      "R_m": 13.3168,
+      "x_m": 6.3463,
+      "y_m": 11.7073,
+      "power_db_csv": 113.8
+    },
+    {
+      "label": "aps_11_fence + concrete (right)",
+      "angle_bin": 77,
+      "range_bin": 247,
+      "R_m": 13.4233,
+      "x_m": 5.3483,
+      "y_m": 12.3118,
+      "power_db_csv": 119.5
+    },
+    {
+      "label": "aps_12_mid-range structures",
+      "angle_bin": 197,
+      "range_bin": 449,
+      "R_m": 24.1832,
+      "x_m": -13.0363,
+      "y_m": 20.3687,
+      "power_db_csv": 103.0
+    },
+    {
+      "label": "aps_13_mid-range structures",
+      "angle_bin": 190,
+      "range_bin": 487,
+      "R_m": 26.2074,
+      "x_m": -12.6942,
+      "y_m": 22.9278,
+      "power_db_csv": 106.3
+    },
+    {
+      "label": "aps_14_mid-range structures",
+      "angle_bin": 103,
+      "range_bin": 571,
+      "R_m": 30.6818,
+      "x_m": 5.9925,
+      "y_m": 30.0909,
+      "power_db_csv": 99.2
+    },
+    {
+      "label": "aps_15_mid-range structures",
+      "angle_bin": 178,
+      "range_bin": 579,
+      "R_m": 31.108,
+      "x_m": -12.1515,
+      "y_m": 28.6364,
+      "power_db_csv": 99.9
+    },
+    {
+      "label": "aps_16_pier corner (left)",
+      "angle_bin": 156,
+      "range_bin": 804,
+      "R_m": 43.093,
+      "x_m": -9.4266,
+      "y_m": 42.0494,
+      "power_db_csv": 101.1
+    },
+    {
+      "label": "aps_17_pier corner (right)",
+      "angle_bin": 105,
+      "range_bin": 804,
+      "R_m": 43.093,
+      "x_m": 7.7433,
+      "y_m": 42.3916,
+      "power_db_csv": 118.0
+    },
+    {
+      "label": "aps_18_pier corner (right)",
+      "angle_bin": 114,
+      "range_bin": 805,
+      "R_m": 43.1463,
+      "x_m": 4.7191,
+      "y_m": 42.8875,
+      "power_db_csv": 114.3
+    },
+    {
+      "label": "aps_19_pier corner (right)",
+      "angle_bin": 110,
+      "range_bin": 805,
+      "R_m": 43.1463,
+      "x_m": 6.0674,
+      "y_m": 42.7176,
+      "power_db_csv": 126.1
+    },
+    {
+      "label": "aps_20_pier corner (left)",
+      "angle_bin": 159,
+      "range_bin": 807,
+      "R_m": 43.2528,
+      "x_m": -10.4753,
+      "y_m": 41.9652,
+      "power_db_csv": 99.5
+    },
+    {
+      "label": "aps_21_pier corner (right)",
+      "angle_bin": 101,
+      "range_bin": 813,
+      "R_m": 43.5724,
+      "x_m": 9.1911,
+      "y_m": 42.592,
+      "power_db_csv": 108.9
+    }
+  ],
+  "targets": [
+    {
+      "label": "pier_kiri",
+      "angle_bin": 156,
+      "range_bin": 899,
+      "R_m": 48.1534,
+      "x_m": -10.5336,
+      "y_m": 46.9872,
+      "power_db_csv": 109.5
+    },
+    {
+      "label": "quarter_kiri",
+      "angle_bin": 147,
+      "range_bin": 883,
+      "R_m": 47.3011,
+      "x_m": -7.0213,
+      "y_m": 46.7771,
+      "power_db_csv": 112.2
+    },
+    {
+      "label": "midspan",
+      "angle_bin": 137,
+      "range_bin": 876,
+      "R_m": 46.9283,
+      "x_m": -3.2996,
+      "y_m": 46.8121,
+      "power_db_csv": 113.3
+    },
+    {
+      "label": "quarter_kanan",
+      "angle_bin": 122,
+      "range_bin": 845,
+      "R_m": 45.277,
+      "x_m": 2.1224,
+      "y_m": 45.2272,
+      "power_db_csv": 112.3
+    },
+    {
+      "label": "pier_kanan",
+      "angle_bin": 112,
+      "range_bin": 850,
+      "R_m": 45.5433,
+      "x_m": 5.6929,
+      "y_m": 45.1861,
+      "power_db_csv": 128.4
+    }
+  ]
+}

@@ -93,7 +93,8 @@ def _free_gb(path: str) -> float:
     return st.f_bavail * st.f_frsize / 1e9
 
 
-def _auto_cleanup(postproc_dir: str, label: str, min_free_gb: float) -> None:
+def _auto_cleanup(postproc_dir: str, label: str, min_free_gb: float,
+                  protect: set = None) -> None:
     """
     Delete oldest capture directories whose name starts with `label`
     under `postproc_dir` until free disk space >= min_free_gb.
@@ -101,16 +102,23 @@ def _auto_cleanup(postproc_dir: str, label: str, min_free_gb: float) -> None:
     so alphabetical order = chronological order).
     Skips deletion if fewer than 2 matching directories exist (keep at
     least the most recent one for reference).
+
+    `protect` -- capture dir names (basenames) that must never be deleted
+    regardless of age, e.g. the 03:00 anchor Step 4b needs tomorrow night
+    to fit A1 against. Still counts toward "keep the newest one" via the
+    normal candidate list otherwise.
     """
     free = _free_gb(postproc_dir)
     if free >= min_free_gb:
         return
 
+    protect = protect or set()
     # Collect matching dirs sorted oldest-first (name order = time order)
     candidates = sorted([
         os.path.join(postproc_dir, d)
         for d in os.listdir(postproc_dir)
         if d.startswith(label) and os.path.isdir(os.path.join(postproc_dir, d))
+        and d not in protect
     ])
 
     if len(candidates) < 2:
@@ -141,6 +149,29 @@ def _auto_cleanup(postproc_dir: str, label: str, min_free_gb: float) -> None:
               f'consider manual cleanup of {postproc_dir}')
     else:
         print(f'[CLEANUP] Done — free space now {free:.1f} GB')
+
+
+def _protected_longterm_captures(history_file: str, n: int = 2) -> set:
+    """Capture dir names that Step 4b's APS fit needs to keep -- the last
+    `n` logged anchors (today's + the nearest prior day's), read from the
+    JSONL history's tail. Returns an empty set if the history doesn't exist
+    yet or a line is unreadable (auto-cleanup then just falls back to its
+    normal oldest-first behavior for those unprotected dirs)."""
+    if not os.path.isfile(history_file):
+        return set()
+    names = []
+    with open(history_file) as fh:
+        for raw in fh:
+            raw = raw.strip()
+            if not raw:
+                continue
+            try:
+                entry = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            if entry.get('capture_b'):
+                names.append(entry['capture_b'])
+    return set(names[-n:])
 
 
 def _do_idle_sleep(seconds: float, use_suspend: bool) -> None:
@@ -479,6 +510,55 @@ def run_processing(capture_dir: str) -> bool:
 
 
 # ─────────────────────────────────────────────
+# Step 3b — Compact SLC Export (cropped, coherently-averaged, complex .mat)
+# ─────────────────────────────────────────────
+# Independent of --debug's SLC.png (that's a plot; this is data, ~4MB vs
+# ~1.5GB raw, meant to be pulled over a slow/remote link e.g. Tailscale
+# without ever touching the raw .bin capture). See
+# 260831-Pre-LongExperiment session notes, 2026-09-05, for the size/timing
+# rationale (~200-250s per ~400-frame capture on a Mac; budget more on the
+# Pi's ARM CPU against the cycle period).
+
+_slc_export_mod = None
+
+def _load_slc_export():
+    global _slc_export_mod
+    if _slc_export_mod is not None:
+        return _slc_export_mod
+    mod_path = os.path.join(EDGE_DIR, 'slc_export.py')
+    if not os.path.isfile(mod_path):
+        raise FileNotFoundError(f'slc_export.py not found at {mod_path}')
+    spec = importlib.util.spec_from_file_location('slc_export', mod_path)
+    mod  = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    _slc_export_mod = mod
+    return mod
+
+
+def run_slc_export(capture_dir: str, calib_file: str, out_dir: str,
+                    slope_calib: float, fs_calib: float,
+                    x_lim: tuple, y_lim: tuple) -> bool:
+    """Export a compact, cropped, coherently-averaged complex SLC (.mat) for
+    a single capture directory. Raw .bin data is untouched."""
+    _banner(f'STEP 3b — Compact SLC Export  ({capture_dir})')
+
+    data_folder = os.path.join(POSTPROC_DIR, capture_dir)
+    if not os.path.isdir(data_folder):
+        print(f'[PIPELINE] ERROR: Capture directory not found: {data_folder}')
+        return False
+
+    try:
+        mod = _load_slc_export()
+        mod.export_slc(data_folder, calib_file, out_dir, slope_calib, fs_calib, x_lim, y_lim)
+        return True
+    except Exception as exc:
+        import traceback
+        print(f'[PIPELINE] ERROR during SLC export: {exc}')
+        traceback.print_exc()
+        return False
+
+
+# ─────────────────────────────────────────────
 # Step 4 — PS Monitoring (Dominant Frequency)
 # ─────────────────────────────────────────────
 
@@ -540,13 +620,18 @@ def _load_longterm_monitoring():
 
 
 def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
-                            history_file: str, longterm_interval_hours: float = 0.0) -> dict:
-    """Run cross-capture cumulative displacement tracking for one capture directory.
+                            history_file: str, longterm_interval_hours: float = 0.0,
+                            longterm_at_hour: float = None,
+                            slc_export_dir: str = None) -> dict:
+    """Run the once-per-night APS-corrected long-term displacement for one
+    capture directory.
 
-    longterm_interval_hours throttles how often the (expensive) radar-data
-    read actually happens, independent of --cycle-period: 0 = no throttle
-    (run every cycle, prior behavior); >0 = skip cycles until that many
-    hours have elapsed since the last successful long-term append."""
+    longterm_at_hour (JST, e.g. 3.0 for 03:00) is the recommended mode: fire
+    once per calendar day on the capture nearest that hour. longterm_interval_hours
+    is the legacy elapsed-time throttle, kept for backward compatibility when
+    longterm_at_hour is not set. slc_export_dir is required whenever
+    longterm_at_hour is set -- Step 4b now reads the Step 3b .mat export,
+    never raw ADC (see longterm_monitoring.py module docstring)."""
     _banner(f'STEP 4b — Long-term Displacement  ({capture_dir})')
 
     data_folder = os.path.join(POSTPROC_DIR, capture_dir)
@@ -556,10 +641,17 @@ def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
 
     try:
         mod = _load_longterm_monitoring()
-        if not mod.should_run_longterm(history_file, longterm_interval_hours):
-            print(f'  Not due yet (--longterm-interval-hours {longterm_interval_hours}) — skipping')
+        if not mod.should_run_longterm(history_file, longterm_interval_hours,
+                                       target_hour_jst=longterm_at_hour,
+                                       capture_name=capture_dir):
+            if longterm_at_hour is not None:
+                print(f'  Not the {longterm_at_hour:.1f}:00 JST anchor (or already '
+                      f'logged today) — skipping')
+            else:
+                print(f'  Not due yet (--longterm-interval-hours {longterm_interval_hours}) — skipping')
             return {}
-        return mod.run_longterm_monitoring(data_folder, longterm_ps_file, history_file)
+        return mod.run_longterm_monitoring(data_folder, longterm_ps_file, history_file,
+                                           slc_export_dir)
     except Exception as exc:
         import traceback
         print(f'[PIPELINE] ERROR during long-term monitoring: {exc}')
@@ -643,6 +735,30 @@ def main():
                         help='Debug mode: also generate SLC image and range-profile plots '
                              'after transfer. Without this flag, only PS metrics are computed '
                              '(faster, recommended for long monitoring sessions).')
+    parser.add_argument('--export-slc',      action='store_true',
+                        help='Export a compact, cropped, coherently-averaged complex SLC '
+                             '(.mat, MATLAB-compatible variable names: comp_data_static, X, Y) '
+                             'per capture to --slc-export-dir. ~4MB vs ~1.5GB raw -- meant for '
+                             'pulling over a slow/remote link (Tailscale) without the raw .bin '
+                             'data. Independent of --debug (that generates a plot; this exports '
+                             'data). Requires --slc-calib-file.')
+    parser.add_argument('--slc-export-dir',  type=str,
+                        default=os.path.join(EDGE_DIR, 'SLC_Export'),
+                        help='Output directory for --export-slc .mat files '
+                             '(default: ~/IoSAR-EdgeProcessing/SLC_Export)')
+    parser.add_argument('--slc-calib-file',  type=str, default=None,
+                        help='Calibration .mat file for --export-slc (required if --export-slc '
+                             'is set). Must match the chirp profile actually used for capture -- '
+                             'see 260831-Pre-LongExperiment/CLAUDE.md "Calibration" section.')
+    parser.add_argument('--slc-slope-calib', type=float, default=11.008e12,
+                        help='Calibration file\'s own native chirp slope, Hz/s (default: '
+                             '11.008 MHz/us, the verified 100m/TIDEP2 calibration)')
+    parser.add_argument('--slc-fs-calib',    type=float, default=8.0e6,
+                        help='Calibration file\'s own native sampling rate, Hz (default: 8 MHz)')
+    parser.add_argument('--slc-xlim',        type=float, nargs=2, default=[-25, 25],
+                        help='Crop bounds for --export-slc, lateral X in meters (default: -25 25)')
+    parser.add_argument('--slc-ylim',        type=float, nargs=2, default=[0, 55],
+                        help='Crop bounds for --export-slc, forward-range Y in meters (default: 0 55)')
     parser.add_argument('--skip-transfer',   action='store_true',
                         help='Skip SCP transfer step (useful for testing processing only)')
     parser.add_argument('--skip-ps',         action='store_true',
@@ -651,15 +767,23 @@ def main():
                         help='Path to manually-selected PS JSON (from select_ps_manual.m). '
                              'Skips ADI computation — use after first manual PS selection.')
     parser.add_argument('--longterm-ps-file', type=str, default=None,
-                        help='Path to manually-selected STABLE (off-bridge) PS JSON for '
-                             'cross-capture cumulative displacement tracking. Independent '
-                             'of --ps-file/--skip-ps — runs its own Step 4b when set. '
+                        help='Path to a manually-selected PS JSON for cross-capture '
+                             'APS-corrected displacement tracking (Step 4b). Unified schema: '
+                             '{"references": [...atmosphere pool...], "targets": [...bridge '
+                             'PS...]}, each entry carrying angle_bin/range_bin/R_m (see '
+                             'tools/csv_to_ps_json.py). Independent of --ps-file/--skip-ps. '
                              'No fallback: PS selection is manual only. Unset = disabled.')
     parser.add_argument('--longterm-interval-hours', type=float, default=0.0,
-                        help='Throttle Step 4b to run at most once per this many hours, '
-                             'independent of --cycle-period (capture/vibration monitoring '
-                             'keep their own cadence). 0 = no throttle, run every cycle '
-                             '--longterm-ps-file is set (default).')
+                        help='Legacy throttle: Step 4b runs at most once per this many '
+                             'hours, independent of --cycle-period. Superseded by '
+                             '--longterm-at-hour when that is set. 0 = no throttle.')
+    parser.add_argument('--longterm-at-hour', type=float, default=None,
+                        help='JST hour (e.g. 3.0 for 03:00) — Step 4b fires once per '
+                             'calendar day, on the capture nearest this hour, and diffs it '
+                             'against the nearest prior day\'s anchor to fit the atmospheric '
+                             'screen (see 260903_MizumotoBridge/analysis/24,25). Recommended '
+                             'mode. Requires --export-slc (Step 4b reads the .mat export, '
+                             'never raw ADC — see longterm_monitoring.py module docstring).')
     parser.add_argument('--postproc-dir', type=str, default=None,
                         help='Override where raw captures are stored (default: SD card, '
                              '~/IoSAR-EdgeProcessing/PostProc/). Must resolve to a separately '
@@ -744,6 +868,17 @@ def main():
     if args.longterm_ps_file and not os.path.isfile(args.longterm_ps_file):
         parser.error(f'--longterm-ps-file: file not found: {args.longterm_ps_file}')
 
+    if args.longterm_at_hour is not None and not args.export_slc:
+        parser.error('--longterm-at-hour requires --export-slc (Step 4b reads the .mat '
+                     'export written by Step 3b, never raw ADC)')
+
+    if args.export_slc:
+        if not args.slc_calib_file:
+            parser.error('--export-slc requires --slc-calib-file (no default -- calibration '
+                         'must match the profile actually in use, see CLAUDE.md "Calibration")')
+        if not os.path.isfile(args.slc_calib_file):
+            parser.error(f'--slc-calib-file: file not found: {args.slc_calib_file}')
+
     if args.postproc_dir:
         global POSTPROC_DIR
         ancestor = os.path.abspath(args.postproc_dir)
@@ -788,7 +923,12 @@ def main():
     if args.longterm_ps_file:
         print(f'  Long-term PS     : {args.longterm_ps_file}')
         print(f'  Long-term history: {history_file}')
+        if args.longterm_at_hour is not None:
+            print(f'  Long-term anchor : {args.longterm_at_hour:.1f}:00 JST (once/day, APS-corrected)')
+        else:
+            print(f'  Long-term anchor : elapsed-time mode (--longterm-interval-hours {args.longterm_interval_hours})')
     print(f'  Debug mode       : {"ON (SLC + range-profile enabled)" if args.debug else "OFF (PS metrics only)"}')
+    print(f'  SLC export       : {f"ON -> {args.slc_export_dir}" if args.export_slc else "OFF (add --export-slc to enable)"}')
     print(f'  LoRa port        : {"disabled (--skip-lora)" if args.skip_lora else args.lora_port}')
     print(f'  Capture mode     : {"PERSISTENT (init once)" if args.persistent else "spawn mimo.py per cycle"}')
     if args.config:
@@ -904,6 +1044,19 @@ def main():
         if shutdown_flag:
             break
 
+        # ── 3b. Compact SLC Export (independent of --debug) ──────────
+        if args.export_slc:
+            t3b = _step_start('Step 3b — Compact SLC Export')
+            run_slc_export(capture_dir, args.slc_calib_file, args.slc_export_dir,
+                           args.slc_slope_calib, args.slc_fs_calib,
+                           tuple(args.slc_xlim), tuple(args.slc_ylim))
+            _step_done('Step 3b — Compact SLC Export', t3b)
+        else:
+            _step('Step 3b — Compact SLC Export skipped (add --export-slc to enable)')
+
+        if shutdown_flag:
+            break
+
         # ── 4. PS Monitoring ────────────────────────────────────────
         if not args.skip_ps:
             t4 = _step_start('Step 4 — PS Monitoring')
@@ -916,10 +1069,14 @@ def main():
             break
 
         # ── 4b. Long-term Displacement (independent of --skip-ps) ────
+        longterm_entry = {}
         if args.longterm_ps_file:
             t4b = _step_start('Step 4b — Long-term Displacement')
-            run_longterm_monitoring(capture_dir, args.longterm_ps_file, history_file,
-                                    args.longterm_interval_hours)
+            longterm_entry = run_longterm_monitoring(
+                capture_dir, args.longterm_ps_file, history_file,
+                args.longterm_interval_hours,
+                longterm_at_hour=args.longterm_at_hour,
+                slc_export_dir=args.slc_export_dir)
             _step_done('Step 4b — Long-term Displacement', t4b)
         else:
             _step('Step 4b — Long-term Displacement skipped (no --longterm-ps-file)')
@@ -935,7 +1092,8 @@ def main():
 
         # ── Auto-cleanup (disk space management) ────────────────────
         if args.min_free_gb > 0:
-            _auto_cleanup(POSTPROC_DIR, args.label, args.min_free_gb)
+            protect = _protected_longterm_captures(history_file) if args.longterm_ps_file else None
+            _auto_cleanup(POSTPROC_DIR, args.label, args.min_free_gb, protect=protect)
 
         elapsed = time.time() - t_start
         print(f'\n{"─"*60}')

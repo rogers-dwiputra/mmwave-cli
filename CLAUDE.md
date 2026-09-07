@@ -219,9 +219,11 @@ SLC image axes: `[257 angle bins, 3992 range bins]`
 
 **Displacement:** `d = (λ/4π) × unwrap(angle(ps_series))`, then `scipy.signal.detrend(type='linear')`
 
-**Dominant frequency (amplitude-spectrum gate, per sensei's request — see `SPEC_vibration_threshold_NaN.md`):** Average single-sided amplitude spectrum (µm, not power) across all PS in `[1.0, 8.0] Hz` → take the single highest-amplitude bin. Reported only when **both** gates pass, otherwise `dominant_frequency_hz` is `null` (propagated as a real gap in Grafana, never 0):
+**Dominant frequency (amplitude-spectrum gate, per sensei's request — see `SPEC_vibration_threshold_NaN.md`):** Single-sided amplitude spectrum (µm, not power) across all PS in `[1.0, 8.0] Hz`. Peaks are found via **local-maxima detection** (`scipy.signal.find_peaks`, matching sensei's own paper method — not a single global argmax; see his illustration: a spectrum can show two labelled modes, e.g. ~2.5 Hz and ~5.5 Hz, both worth reporting), with the true global max always included as a candidate too (so a peak sitting right at the band edge, e.g. a vehicle-crossing peak at 1.02–1.05 Hz, is never lost to `find_peaks`' boundary limitation). Every candidate peak is gated **independently**; up to `MAX_PEAKS_REPORTED = 2` that pass **both** gates are reported (highest-amplitude first), otherwise `dominant_frequency_hz`/`_2` are `null` (propagated as a real gap in Grafana, never 0):
 - **Gate 1 — amplitude:** peak ≥ `AMPLITUDE_GATE_UM = 4.0` µm. Calibrated against `analysis/14_car_vs_nocar_260526.py`: quiet max 3.09 µm, vehicle-crossing min 7.17 µm — clean separation, 4 µm is the gap's midpoint.
-- **Gate 2 — coherence:** γ (phase coherence across the APS reference pool, at the peak bin) `< COHERENCE_GATE_MAX = 0.60`. Rejects a ~2.6 Hz common-mode line the radar mount itself injects (equal amplitude+phase at every range — not a structural mode). Skipped (gate 1 alone applies) when no reference pool (`--longterm-ps-file`) is configured.
+- **Gate 2 — coherence:** γ (phase coherence across the APS reference pool, at that peak's own bin) `< COHERENCE_GATE_MAX = 0.60`. Rejects a ~2.6 Hz common-mode line the radar mount itself injects (equal amplitude+phase at every range — not a structural mode). Skipped (gate 1 alone applies) when no reference pool (`--longterm-ps-file`) is configured.
+
+Per-PS frequencies (`ps_details[i].dominant_frequency_hz`) stay single-peak — multi-peak reporting is aggregate-only (feeds the GUI's main Dominant Frequency panels, not the 5 individual PS series).
 
 Old band was `[0.3, 10] Hz` (or `[1.5, 10]` in a later stale revision) with a *relative* threshold (2× local median power) — both superseded; the old band cut off most vehicle-crossing peaks (they sit at 1.02–1.05 Hz) and the relative threshold reported a number on essentially every capture.
 
@@ -232,8 +234,10 @@ ADI_THRESHOLD  = 0.3
 AMP_PERCENTILE = 95
 MAX_PS_COUNT   = 50
 FREQ_MIN, FREQ_MAX = 1.0, 8.0     # Hz — see SPEC_vibration_threshold_NaN.md
-AMPLITUDE_GATE_UM  = 4.0          # Gate 1
-COHERENCE_GATE_MAX = 0.60         # Gate 2
+AMPLITUDE_GATE_UM      = 4.0      # Gate 1
+COHERENCE_GATE_MAX     = 0.60     # Gate 2
+MIN_PEAK_SEPARATION_HZ = 0.3      # local-maxima separation floor
+MAX_PEAKS_REPORTED     = 2        # top-2 gated peaks, aggregate spectrum only
 DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.json per capture
 ```
 
@@ -248,6 +252,11 @@ DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.
   "capture": "RPI_python_bridge_260525_080012",
   "timestamp": "2026-05-25T08:05:30.000000",
   "dominant_frequency_hz": 2.034,
+  "dominant_frequency_hz_2": 5.481,
+  "peak_amplitude_um": 7.52,
+  "coherence": 0.31,
+  "peak_amplitude_um_2": 5.9,
+  "coherence_2": 0.22,
   "displacement_rms_mm": 0.000842,
   "displacement_rms_um": 0.842,
   "max_deflection_mm": 0.002156,
@@ -270,20 +279,21 @@ DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.
 
 ## LoRa Uplink (lora_sender.py)
 
-**Payload format — variable length, big-endian (10-byte fixed header + optional per-PS block + optional trailing temperature byte):**
+**Payload format — variable length, big-endian (12-byte fixed header + optional per-PS block + optional trailing temperature byte):**
 
 | Byte(s) | Field | Encoding | Resolution |
 |------|-------|----------|------------|
 | 0–3 | Unix timestamp | uint32 | 1 s |
-| 4–5 | `dominant_frequency_hz` | uint16 × 100 | 0.01 Hz |
-| 6–7 | `displacement_rms_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
-| 8–9 | `max_deflection_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
-| 10 | `n_ps` — number of PS points that follow | uint8 | count (capped at 15) |
-| 11 + 4·i | PS `i` dominant frequency | uint16 × 100 | 0.01 Hz (0 = no peak detected) |
-| 13 + 4·i | PS `i` displacement RMS | uint16 × 1000 | 0.001 mm |
-| 11 + 4·n_ps | `module_temp_c` — Wio-E5 internal MCU temp via `AT+TEMP` (optional; present only when a live session was open at send time; diagnostic only, self-heating biased) | int8, signed | 1 °C |
+| 4–5 | `dominant_frequency_hz` (peak 1) | uint16 × 100 | 0.01 Hz (0 = no peak) |
+| 6–7 | `dominant_frequency_hz_2` (peak 2) | uint16 × 100 | 0.01 Hz (0 = no 2nd peak) |
+| 8–9 | `displacement_rms_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
+| 10–11 | `max_deflection_mm` | uint16 × 1000 | 0.001 mm (1 μm) |
+| 12 | `n_ps` — number of PS points that follow | uint8 | count (capped at 15) |
+| 13 + 4·i | PS `i` dominant frequency (single peak) | uint16 × 100 | 0.01 Hz (0 = no peak detected) |
+| 15 + 4·i | PS `i` displacement RMS | uint16 × 1000 | 0.001 mm |
+| 13 + 4·n_ps | `module_temp_c` — Wio-E5 internal MCU temp via `AT+TEMP` (optional; present only when a live session was open at send time; diagnostic only, self-heating biased) | int8, signed | 1 °C |
 
-Max payload size = 11 + 15×4 + 1 = 72 bytes (n_ps capped at 15). Decoded by `dashboard/ttn-uplink-formatter.js` in the TTN Console.
+Max payload size = 13 + 15×4 + 1 = 74 bytes (n_ps capped at 15). Decoded by `dashboard/ttn-uplink-formatter.js` in the TTN Console. Two frequency slots because the amplitude-spectrum gate (`SPEC_vibration_threshold_NaN.md`) reports up to `MAX_PEAKS_REPORTED = 2` local-maxima peaks from the aggregate spectrum, each independently gated — per-PS frequencies stay single-peak.
 
 **AT command sequence:** `AT` → `AT+KEY=APPKEY,"<key>"` → `AT+JOIN` → `AT+MSGHEX="<hex>"`
 
@@ -311,7 +321,8 @@ Raspberry Pi → LoRa → TTN → MQTT → Telegraf → InfluxDB Cloud → Grafa
 | Grafana | `https://imrsl.grafana.net/` |
 
 **Key InfluxDB fields** (written by TTN formatter → Telegraf):
-- `dominant_frequency_hz` — highest-power vibration peak in 0.3–10 Hz band
+- `dominant_frequency_hz` — highest-amplitude gated peak in 1.0–8.0 Hz band (amplitude ≥4µm + coherence <0.60, `SPEC_vibration_threshold_NaN.md`); `null` when nothing clears both gates
+- `dominant_frequency_hz_2` — 2nd-highest gated peak, when the spectrum has more than one mode above threshold; `null` otherwise
 - `displacement_rms_mm` — RMS displacement across all PS candidates
 - `max_deflection_mm` — peak displacement over capture window
 

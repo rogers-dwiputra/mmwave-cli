@@ -5,34 +5,42 @@ Reads ps_metrics.json → encodes payload → sends via Wio-E5 AT commands
 
 Payload format (variable length, big-endian):
 
-  Header (10 bytes, always present — unchanged from v1):
-    Byte 0-3 : Unix timestamp              (uint32, seconds since epoch)
-    Byte 4-5 : dominant_frequency_hz × 100 (uint16, 0.01 Hz, max 655.35 Hz)
-    Byte 6-7 : displacement_rms_mm × 1000  (uint16, 0.001 mm, max 65.535 mm)
-    Byte 8-9 : max_deflection_mm × 1000    (uint16, 0.001 mm, max 65.535 mm)
+  Header (12 bytes, always present):
+    Byte 0-3  : Unix timestamp                (uint32, seconds since epoch)
+    Byte 4-5  : dominant_frequency_hz × 100   (uint16, 0.01 Hz, 0 = no peak)
+    Byte 6-7  : dominant_frequency_hz_2 × 100 (uint16, 0.01 Hz, 0 = no 2nd peak --
+                the amplitude-spectrum gate reports up to MAX_PEAKS_REPORTED=2
+                local maxima that each independently clear both gates, e.g. a
+                spectrum with two real modes above 4 um; see
+                SPEC_vibration_threshold_NaN.md and ps_monitoring.py's
+                _find_peaks_in_band/_gated_peaks_multi)
+    Byte 8-9  : displacement_rms_mm × 1000    (uint16, 0.001 mm, max 65.535 mm)
+    Byte 10-11: max_deflection_mm × 1000      (uint16, 0.001 mm, max 65.535 mm)
 
   Per-PS section (present when ps_details available in ps_metrics.json):
-    Byte 10   : N_PS  (uint8, number of PS points, 0 = no per-PS data)
-    Byte 11+  : Per-PS data, 4 bytes per PS point:
+    Byte 12   : N_PS  (uint8, number of PS points, 0 = no per-PS data)
+    Byte 13+  : Per-PS data, 4 bytes per PS point (single peak per PS --
+                multi-peak is aggregate-only, see above):
                   uint16 : ps_i dominant_frequency_hz × 100  (0 = no peak)
                   uint16 : ps_i disp_rms_mm × 1000
 
   Trailing byte (present when a live Wio-E5 session was available at send time):
-    Byte 11+4×N_PS : module_temp_c  (int8, signed, whole °C — Wio-E5 internal
+    Byte 13+4×N_PS : module_temp_c  (int8, signed, whole °C — Wio-E5 internal
                       MCU temp via AT+TEMP; diagnostic only, self-heating biased)
 
-  Example: 5 PS points + temp → total 11 + 5×4 + 1 = 32 bytes (within SF7 AS923 limit)
+  Example: 5 PS points + temp → total 13 + 5×4 + 1 = 34 bytes (within SF7 AS923 limit)
 
 Decoder (gateway side):
-  ts       = struct.unpack('>I', byte[0:4])[0]   # Unix timestamp
-  freq_hz  = struct.unpack('>H', byte[4:6])[0] / 100.0
-  rms_mm   = struct.unpack('>H', byte[6:8])[0] / 1000.0
-  max_mm   = struct.unpack('>H', byte[8:10])[0] / 1000.0
-  n_ps     = byte[10] if len(byte) > 10 else 0
+  ts        = struct.unpack('>I', byte[0:4])[0]   # Unix timestamp
+  freq_hz   = struct.unpack('>H', byte[4:6])[0] / 100.0
+  freq2_hz  = struct.unpack('>H', byte[6:8])[0] / 100.0
+  rms_mm    = struct.unpack('>H', byte[8:10])[0] / 1000.0
+  max_mm    = struct.unpack('>H', byte[10:12])[0] / 1000.0
+  n_ps      = byte[12] if len(byte) > 12 else 0
   for i in range(n_ps):
-      freq_i = struct.unpack('>H', byte[11+4*i:13+4*i])[0] / 100.0
-      rms_i  = struct.unpack('>H', byte[13+4*i:15+4*i])[0] / 1000.0
-  temp_off = 11 + 4 * n_ps
+      freq_i = struct.unpack('>H', byte[13+4*i:15+4*i])[0] / 100.0
+      rms_i  = struct.unpack('>H', byte[15+4*i:17+4*i])[0] / 1000.0
+  temp_off = 13 + 4 * n_ps
   temp_c   = struct.unpack('>b', byte[temp_off:temp_off+1])[0] if len(byte) > temp_off else None
 """
 
@@ -155,6 +163,12 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
                  or metrics.get('natural_frequency_hz') or 0.0)
     if not math.isfinite(freq):
         freq = 0.0
+    # 2nd gated peak (sensei: report more than one mode when the spectrum
+    # has more than one above the 4 um gate) -- no legacy fallback fields,
+    # this is new with the multi-peak gate.
+    freq2 = float(metrics.get('dominant_frequency_hz_2') or 0.0)
+    if not math.isfinite(freq2):
+        freq2 = 0.0
     rms_mm = metrics.get('displacement_rms_mm')
     if rms_mm is None:
         rms_um = float(metrics.get('displacement_rms_um') or 0.0)
@@ -167,15 +181,16 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
     if not math.isfinite(mdef):
         mdef = 0.0
 
-    freq_int = min(int(round(freq   * 100)),  65535)
-    rms_int  = min(int(round(rms_mm * 1000)), 65535)
-    def_int  = min(int(round(mdef   * 1000)), 65535)
+    freq_int  = min(int(round(freq   * 100)),  65535)
+    freq2_int = min(int(round(freq2  * 100)),  65535)
+    rms_int   = min(int(round(rms_mm * 1000)), 65535)
+    def_int   = min(int(round(mdef   * 1000)), 65535)
 
-    header = struct.pack('>IHHH', ts_unix, freq_int, rms_int, def_int)
+    header = struct.pack('>IHHHH', ts_unix, freq_int, freq2_int, rms_int, def_int)
 
     # ── Per-PS section ────────────────────────────────────────────────
     ps_details = metrics.get('ps_details', [])
-    n_ps = min(len(ps_details), 15)   # cap at 15 PS (max payload 11+15×4=71 bytes)
+    n_ps = min(len(ps_details), 15)   # cap at 15 PS (max payload 13+15×4=73 bytes)
 
     ps_bytes = b''
     ps_log   = []
@@ -203,7 +218,7 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
     hex_str = payload.hex().upper()
 
     ts_fmt = datetime.fromtimestamp(ts_unix).strftime('%Y-%m-%d %H:%M:%S')
-    _log(f'Encode → ts={ts_fmt}  freq={freq:.2f} Hz  '
+    _log(f'Encode → ts={ts_fmt}  freq={freq:.2f} Hz  freq2={freq2:.2f} Hz  '
          f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm  n_ps={n_ps}{temp_log}')
     if ps_log:
         _log(f'Per-PS → {" | ".join(ps_log)}')

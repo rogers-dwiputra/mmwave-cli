@@ -4,12 +4,13 @@
 //
 // Payload layout:
 //   Byte 0-3  : Unix timestamp (uint32)
-//   Byte 4-5  : dominant_frequency_hz × 100 (uint16)
+//   Byte 4-5  : dominant_frequency_hz × 100 (uint16, 0 = no peak / below the
+//               amplitude+coherence gate -- decoded to `null`, not 0)
 //   Byte 6-7  : displacement_rms_mm × 1000 (uint16)
 //   Byte 8-9  : max_deflection_mm × 1000 (uint16)
 //   Byte 10   : N_PS count (uint8) — number of PS points
 //   Bytes 11+ : Per-PS data, 4 bytes each:
-//                 uint16 : ps_i freq × 100   (0 = no peak detected)
+//                 uint16 : ps_i freq × 100   (0 = no peak -- decoded to `null`)
 //                 uint16 : ps_i rms_mm × 1000
 //   Byte 11+4×N_PS : module_temp_c (int8, signed) — Wio-E5 internal MCU temp
 //                     via AT+TEMP, present only when a live session was open
@@ -26,7 +27,11 @@ function decodeUplink(input) {
   var rms_raw    = (b[6] << 8) | b[7];
   var defl_raw   = (b[8] << 8) | b[9];
 
-  var freq_hz        = freq_raw  / 100.0;
+  // 0 is the "no peak / below the amplitude+coherence gate" sentinel
+  // (SPEC_vibration_threshold_NaN.md) -- decode it to null so a Grafana
+  // panel with "Connect null values: Never" draws a real gap instead of
+  // dipping to a spurious 0 Hz.
+  var freq_hz        = freq_raw === 0 ? null : freq_raw / 100.0;
   var disp_rms_mm    = rms_raw   / 1000.0;
   var max_defl_mm    = defl_raw  / 1000.0;
 
@@ -59,7 +64,7 @@ function decodeUplink(input) {
       var ps_freq_raw = (b[offset]     << 8) | b[offset + 1];
       var ps_rms_raw  = (b[offset + 2] << 8) | b[offset + 3];
 
-      var ps_freq_hz = ps_freq_raw / 100.0;   // 0.0 = no peak detected
+      var ps_freq_hz = ps_freq_raw === 0 ? null : ps_freq_raw / 100.0;
       var ps_rms_mm  = ps_rms_raw  / 1000.0;
 
       out["freq_ps" + i]    = ps_freq_hz;

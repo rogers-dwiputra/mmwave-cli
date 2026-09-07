@@ -219,7 +219,11 @@ SLC image axes: `[257 angle bins, 3992 range bins]`
 
 **Displacement:** `d = (λ/4π) × unwrap(angle(ps_series))`, then `scipy.signal.detrend(type='linear')`
 
-**Dominant frequency:** Average power spectrum across all PS → `scipy.signal.find_peaks` → pick the **single highest-power peak** in `[0.3, 10] Hz`. This is the dominant frequency (consistent with MATLAB supervisor approach).
+**Dominant frequency (amplitude-spectrum gate, per sensei's request — see `SPEC_vibration_threshold_NaN.md`):** Average single-sided amplitude spectrum (µm, not power) across all PS in `[1.0, 8.0] Hz` → take the single highest-amplitude bin. Reported only when **both** gates pass, otherwise `dominant_frequency_hz` is `null` (propagated as a real gap in Grafana, never 0):
+- **Gate 1 — amplitude:** peak ≥ `AMPLITUDE_GATE_UM = 4.0` µm. Calibrated against `analysis/14_car_vs_nocar_260526.py`: quiet max 3.09 µm, vehicle-crossing min 7.17 µm — clean separation, 4 µm is the gap's midpoint.
+- **Gate 2 — coherence:** γ (phase coherence across the APS reference pool, at the peak bin) `< COHERENCE_GATE_MAX = 0.60`. Rejects a ~2.6 Hz common-mode line the radar mount itself injects (equal amplitude+phase at every range — not a structural mode). Skipped (gate 1 alone applies) when no reference pool (`--longterm-ps-file`) is configured.
+
+Old band was `[0.3, 10] Hz` (or `[1.5, 10]` in a later stale revision) with a *relative* threshold (2× local median power) — both superseded; the old band cut off most vehicle-crossing peaks (they sit at 1.02–1.05 Hz) and the relative threshold reported a number on essentially every capture.
 
 **Key constants:**
 ```python
@@ -227,7 +231,9 @@ WARMUP_FRAMES  = 5        # skip first 5 frames (RF settling transient)
 ADI_THRESHOLD  = 0.3
 AMP_PERCENTILE = 95
 MAX_PS_COUNT   = 50
-FREQ_MIN, FREQ_MAX = 0.3, 10.0   # Hz
+FREQ_MIN, FREQ_MAX = 1.0, 8.0     # Hz — see SPEC_vibration_threshold_NaN.md
+AMPLITUDE_GATE_UM  = 4.0          # Gate 1
+COHERENCE_GATE_MAX = 0.60         # Gate 2
 DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.json per capture
 ```
 

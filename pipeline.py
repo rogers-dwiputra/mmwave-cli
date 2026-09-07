@@ -580,8 +580,14 @@ def _load_ps_monitoring():
 
 
 def run_ps_monitoring(capture_dir: str, ps_map_file: str,
-                      ps_file: str = None) -> dict:
-    """Run PS-based structural health monitoring for one capture directory."""
+                      ps_file: str = None, aps_ref_file: str = None) -> dict:
+    """Run PS-based structural health monitoring for one capture directory.
+
+    aps_ref_file, when set, feeds the amplitude-spectrum gate's coherence
+    test (gate 2 -- rejects the ~2.6 Hz common-mode line); pass
+    --longterm-ps-file here so Step 4's own vibration-frequency gate and
+    Step 4b's 03:00 vehicle-detection retry read the exact same computation
+    (see SPEC_vibration_threshold_NaN.md)."""
     _banner(f'STEP 4 — PS Monitoring  ({capture_dir})')
 
     data_folder = os.path.join(POSTPROC_DIR, capture_dir)
@@ -591,7 +597,7 @@ def run_ps_monitoring(capture_dir: str, ps_map_file: str,
 
     try:
         mod = _load_ps_monitoring()
-        return mod.run_ps_monitoring(data_folder, ps_map_file, ps_file)
+        return mod.run_ps_monitoring(data_folder, ps_map_file, ps_file, aps_ref_file)
     except Exception as exc:
         import traceback
         print(f'[PIPELINE] ERROR during PS monitoring: {exc}')
@@ -1060,7 +1066,7 @@ def main():
         # ── 4. PS Monitoring ────────────────────────────────────────
         if not args.skip_ps:
             t4 = _step_start('Step 4 — PS Monitoring')
-            run_ps_monitoring(capture_dir, ps_map_file, args.ps_file)
+            run_ps_monitoring(capture_dir, ps_map_file, args.ps_file, args.longterm_ps_file)
             _step_done('Step 4 — PS Monitoring', t4)
         else:
             _step('Step 4 — PS Monitoring skipped (--skip-ps)')

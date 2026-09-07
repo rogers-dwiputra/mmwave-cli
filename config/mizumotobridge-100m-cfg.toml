@@ -1,0 +1,43 @@
+# Mizumoto Bridge — ~100 m max-range profile (APS study)
+#
+# Field-verified radar parameters: read back from the .mmwave.json of the
+# 260701_APS_MizumotoBridge experiment (2026-07-01), which is ground truth for
+# what mimo.py actually programmed into the radar that day. The companion
+# 20260525_MizumotoBridge.lua (mmWave Studio script) in that experiment folder
+# was edited after the fact (frequencySlope/numLoops/framePeriodicity no
+# longer match) — do not use it as the source for these values.
+#
+# Setup:
+#   - Max range   ~ 109 m   (R_max = c*Fs/(2*S), Fs=8000 ksps, S=11 MHz/us)
+#   - Range res   ~ 21.3 cm (BW = S * numAdcSamples/Fs = 704 MHz)
+#   - fc ~ 77.42 GHz, lambda ~ 3.875 mm, sensitivity ~ 0.308 mm/rad
+#   - [mimo.channel] intentionally omitted below — this profile uses the same
+#     values as the built-in default (rxChannelEn=0xF, txChannelEn=0x7), so
+#     nothing to override there.
+#   - [mimo.frame].framePeriodicity is overridden to 50 ms (20 Hz) below,
+#     matching the sampling rate used in Izumi et al. 2026 (IEEE Access,
+#     "Dynamic Displacement Monitoring of Bridges using Dual Monostatic
+#     Ground-Based MIMO Radar Interferometry") for direct comparability
+#     during calibration. Built-in default is 30 ms (33.33 Hz).
+#
+# Calibration file (use with this profile, NOT calibrateResults_BridgeSpan0602.mat):
+#   CalibTIDEP2MizumotoBridge100m_260901_195303.mat  (2026-09-01, current)
+#   (present on imrslpi5-02 at
+#    ~/IoSAR-EdgeProcessing/4chip_cascade_MIMO_example/main/cascade/input/)
+#   Supersedes the older calibrateResults_MizumotorBridge50mTIDEP2.mat --
+#   do not use that one for new captures.
+#
+# Usage:
+#   python3 mimo.py --config config/mizumotobridge-100m-cfg.toml -t 20 --directory MyExp
+#   python3 pipeline.py --config config/mizumotobridge-100m-cfg.toml --cycle-period 1800 ...
+
+[mimo.profile]
+frequencySlope       = 11      # MHz/us  (default 90)
+idleTime             = 5       # us      (default 3.5)
+adcStartTime         = 6       # us      (default 4.45)
+rampEndTime          = 75      # us      (default 23.65)
+numAdcSamples        = 512     # samples (default 120)
+adcSamplingFrequency = 8000    # ksps    (default 6500)
+
+[mimo.frame]
+framePeriodicity     = 50      # ms  (default 30) -> Fs = 20 Hz, matches Izumi et al. 2026

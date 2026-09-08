@@ -1,15 +1,15 @@
 {
-  "capture_reference": "corrected 2026-09-08: reverted to the original ps_aps_points_260903_recommended.csv/ps_span_points_260903_night.csv analysis (indices 22-26) after a 102-capture, 3-day amplitude comparison (2026-09-04..07) showed the intermediate 'span5' coordinates were dimmer at 4/5 points and 3 of the 5 (PierLeft/MidLeft/MidSpan) had drifted ~3.4-3.7m from the original analysis -- not a refinement. Labels kept as PierLeft/MidLeft/MidSpan/MidRight/PierRight for continuity with existing tooling; coordinates are the original pier_kiri/quarter_kiri/midspan/quarter_kanan/pier_kanan bins.",
+  "capture_reference": "corrected 2026-09-08: reverted to the original ps_aps_points_260903_recommended.csv/ps_span_points_260903_night.csv analysis (indices 22-26) after a 102-capture, 3-day amplitude comparison (2026-09-04..07) showed the intermediate 'span5' coordinates were dimmer at 4/5 points and 3 of the 5 (PierLeft/MidLeft/MidSpan) had drifted ~3.4-3.7m from the original analysis -- not a refinement. Labels kept as PierLeft/MidLeft/MidSpan/MidRight/PierRight for continuity with existing tooling; coordinates are the original pier_kiri/quarter_kiri/midspan/quarter_kanan/pier_kanan bins. Point ORDER preserved as PierRight/PierLeft/MidSpan/MidLeft/MidRight (index 0-4) to match the Grafana dashboard's hardcoded rms_ps0..rms_ps4 -> label mapping (panel-11 'Displacement Span') -- do not reorder this list without also updating that panel's Flux query.",
   "ps_points": [
+    {
+      "label": "PierRight",
+      "angle_bin": 112,
+      "range_bin": 850
+    },
     {
       "label": "PierLeft",
       "angle_bin": 156,
       "range_bin": 899
-    },
-    {
-      "label": "MidLeft",
-      "angle_bin": 147,
-      "range_bin": 883
     },
     {
       "label": "MidSpan",
@@ -17,14 +17,14 @@
       "range_bin": 876
     },
     {
+      "label": "MidLeft",
+      "angle_bin": 147,
+      "range_bin": 883
+    },
+    {
       "label": "MidRight",
       "angle_bin": 122,
       "range_bin": 845
-    },
-    {
-      "label": "PierRight",
-      "angle_bin": 112,
-      "range_bin": 850
     }
   ]
 }

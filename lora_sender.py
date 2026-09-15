@@ -239,6 +239,40 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
     payload = header + struct.pack('>B', n_ps) + ps_bytes \
             + struct.pack('>B', n_phase) + phase_bytes
 
+    # ── Long-term displacement section (Step 4b, ~once/night at 3AM JST) ──
+    # Populated only when longterm_monitoring.py actually completed a
+    # correction this cycle -- absent (n_longterm=0) on the other ~47
+    # cycles/day, on anchor-only nights (capture_a is None), and on
+    # guard-rejected nights (wrap signature / leg too long, see
+    # longterm_monitoring.py A1_GUARD_MAX_RAD_PER_M) -- so Grafana never
+    # shows a night that's known to be an artefact.
+    longterm = metrics.get('longterm') or {}
+    send_longterm = (bool(longterm) and longterm.get('capture_a') is not None
+                      and longterm.get('status') != 'guard_rejected')
+    lt_targets = longterm.get('targets') or [] if send_longterm else []
+    n_longterm = len(lt_targets)
+
+    lt_bytes = b''
+    lt_log = []
+    for t in lt_targets:
+        cor_um = t.get('corrected_um')
+        if cor_um is None or not math.isfinite(cor_um):
+            lt_int = -32768   # sentinel: this one target non-finite this pair
+            lt_log.append(f'{t.get("label")}:—')
+        else:
+            lt_int = max(-32767, min(32767, int(round(cor_um))))
+            lt_log.append(f'{t.get("label")}:{lt_int}μm')
+        lt_bytes += struct.pack('>h', lt_int)
+
+    payload += struct.pack('>B', n_longterm) + lt_bytes
+    if n_longterm:
+        a1 = longterm.get('A1_rad_per_m') or 0.0
+        coh = longterm.get('coherence') or 0.0
+        a1_int = max(-32768, min(32767, int(round(a1 * 1e5))))
+        coh_int = max(0, min(255, int(round(coh * 255))))
+        payload += struct.pack('>hB', a1_int, coh_int)
+        _log(f'Long-term → {" | ".join(lt_log)}  A1={a1:+.5f} rad/m  coh={coh:.3f}')
+
     # ── Optional trailing module temperature ────────────────────────────
     temp_log = ''
     if module_temp_c is not None:
@@ -251,7 +285,7 @@ def encode_payload(metrics: dict, module_temp_c: float | None = None) -> str:
     ts_fmt = datetime.fromtimestamp(ts_unix).strftime('%Y-%m-%d %H:%M:%S')
     _log(f'Encode → ts={ts_fmt}  freq={freq:.2f} Hz  freq2={freq2:.2f} Hz  '
          f'rms={rms_mm*1e3:.3f} μm  max={mdef*1e3:.3f} μm  n_ps={n_ps}  '
-         f'n_phase={n_phase}{temp_log}')
+         f'n_phase={n_phase}  n_longterm={n_longterm}{temp_log}')
     if ps_log:
         _log(f'Per-PS → {" | ".join(ps_log)}')
     _log(f'Payload hex ({len(payload)} bytes): {hex_str}')

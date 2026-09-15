@@ -25,10 +25,25 @@
 //                     NOT wired into any Grafana panel.
 //   Bytes 14+4×N_PS+ : Per-point coherent-mean phase, 2 bytes each:
 //                 int16 : phase_rad × 1000 (signed, milliradians)
-//   Byte 14+4×N_PS+2×N_PHASE : module_temp_c (int8, signed) — Wio-E5
+//   Byte 14+4×N_PS+2×N_PHASE : N_LONGTERM count (uint8) — number of
+//                     long-term displacement targets that follow (0 on the
+//                     ~47/day cycles that aren't the ~3AM JST run, and on
+//                     anchor-only/guard-rejected nights -- see
+//                     longterm_monitoring.py A1_GUARD_MAX_RAD_PER_M/
+//                     HOURS_BETWEEN_GUARD_MAX). When >0, target order/count
+//                     matches the active --longterm-ps-file (currently v2:
+//                     PierLeft, MidLeft, MidSpan, MidRight, PierRight).
+//   +1..+2×N_LT : per target, int16 corrected_um × 1 (µm, signed;
+//                     -32768 = this one target non-finite this pair, not
+//                     the whole capture)
+//   +1 (only when N_LONGTERM>0) : A1_rad_per_m × 1e5 (int16, signed)
+//   +1 (only when N_LONGTERM>0) : coherence × 255 (uint8)
+//   Last byte, if present : module_temp_c (int8, signed) — Wio-E5
 //                     internal MCU temp via AT+TEMP, present only when a
 //                     live session was open at send time. Diagnostic only
 //                     (self-heating biased).
+
+var LONGTERM_LABELS = ["PierLeft", "MidLeft", "MidSpan", "MidRight", "PierRight"];
 
 function decodeUplink(input) {
   var b = input.bytes;
@@ -108,8 +123,37 @@ function decodeUplink(input) {
       }
     }
 
+    // ── Long-term displacement section ────────────────────────────────────
+    var ltOffset = phaseOffset + 1 + n_phase * 2;
+    var n_longterm = 0;
+    var ltEnd = ltOffset;
+    if (b.length > ltOffset) {
+      n_longterm = b[ltOffset];
+      out.n_longterm = n_longterm;
+      ltEnd = ltOffset + 1;
+
+      for (var k = 0; k < n_longterm; k++) {
+        var ltOff = ltOffset + 1 + k * 2;
+        if (ltOff + 1 >= b.length) break;   // guard against truncated payload
+
+        var rawLt = (b[ltOff] << 8) | b[ltOff + 1];
+        if (rawLt > 32767) rawLt -= 65536;   // int16 sign extend
+        var label = LONGTERM_LABELS[k] || ("longterm_" + k);
+        out["longterm_" + label + "_um"] = rawLt === -32768 ? null : rawLt;
+        ltEnd = ltOff + 2;
+      }
+
+      if (n_longterm > 0 && ltEnd + 2 < b.length) {
+        var rawA1 = (b[ltEnd] << 8) | b[ltEnd + 1];
+        if (rawA1 > 32767) rawA1 -= 65536;   // int16 sign extend
+        out.longterm_A1_rad_per_m = rawA1 / 1e5;
+        out.longterm_coherence    = b[ltEnd + 2] / 255.0;
+        ltEnd = ltEnd + 3;
+      }
+    }
+
     // ── Trailing module temperature byte (signed int8) ────────────────────
-    var tempOffset = phaseOffset + 1 + n_phase * 2;
+    var tempOffset = ltEnd;
     if (b.length > tempOffset) {
       var rawTemp = b[tempOffset];
       out.temperature_c = rawTemp > 127 ? rawTemp - 256 : rawTemp;

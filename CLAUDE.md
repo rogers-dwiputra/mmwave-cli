@@ -294,9 +294,15 @@ DT_DEFAULT     = 0.05             # 20 Hz fallback; actual dt read from .mmwave.
 | 15 + 4·i | PS `i` displacement RMS | uint16 × 1000 | 0.001 mm |
 | 13 + 4·n_ps | `n_phase` — number of fixed phase-eval points that follow | uint8 | count (0 unless `--lora-phase-eval-file` set; capped at 20, deployed set is 12) |
 | 14 + 4·n_ps + 2·j | Phase-eval point `j` coherent-mean phase | int16 × 1000 | 0.001 rad (signed, range ±π) |
-| 14 + 4·n_ps + 2·n_phase | `module_temp_c` — Wio-E5 internal MCU temp via `AT+TEMP` (optional; present only when a live session was open at send time; diagnostic only, self-heating biased) | int8, signed | 1 °C |
+| 14 + 4·n_ps + 2·n_phase | `n_longterm` — number of long-term displacement targets that follow (0 on the ~47/day cycles that aren't the ~3AM JST run, and on anchor-only/guard-rejected nights) | uint8 | count (5, matching the active `--longterm-ps-file`'s target order) |
+| +1 + 2·k | Long-term target `k` `corrected_um` | int16 × 1 | 1 µm (signed; −32768 = this one target non-finite this pair) |
+| +1 + 2·n_longterm (only when n_longterm>0) | `A1_rad_per_m` (APS fit slope used for this correction) | int16 × 1e5 | 1e-5 rad/m |
+| +1 (only when n_longterm>0) | `coherence` (fit quality, 0-1) | uint8 × 255 | 1/255 |
+| last byte, if present | `module_temp_c` — Wio-E5 internal MCU temp via `AT+TEMP` (optional; present only when a live session was open at send time; diagnostic only, self-heating biased) | int8, signed | 1 °C |
 
-Max payload size = 13 + 15×4 + 1 + 20×2 + 1 = 115 bytes (n_ps capped at 15, n_phase capped at 20). Decoded by `dashboard/ttn-uplink-formatter.js` in the TTN Console. Two frequency slots because the amplitude-spectrum gate (`SPEC_vibration_threshold_NaN.md`) reports up to `MAX_PEAKS_REPORTED = 2` local-maxima peaks from the aggregate spectrum, each independently gated — per-PS frequencies stay single-peak.
+Max payload size = 13 + 15×4 + 1 + 20×2 + 1 + 5×2 + 3 = 128 bytes (n_ps capped at 15, n_phase capped at 20, n_longterm currently 5). Decoded by `dashboard/ttn-uplink-formatter.js` in the TTN Console. Two frequency slots because the amplitude-spectrum gate (`SPEC_vibration_threshold_NaN.md`) reports up to `MAX_PEAKS_REPORTED = 2` local-maxima peaks from the aggregate spectrum, each independently gated — per-PS frequencies stay single-peak.
+
+**Long-term displacement block:** populated by Step 4b (`run_longterm_monitoring()` in edgeprocessing's `longterm_monitoring.py`) only when it actually completes a non-wrapped APS correction that cycle — i.e. `capture_a` is set (a valid prior-night anchor existed) and `status != 'guard_rejected'` (the fit didn't rail at the grid edge, `|A1| > 0.07` rad/m, and the leg wasn't `> 26h` — see `A1_GUARD_MAX_RAD_PER_M`/`HOURS_BETWEEN_GUARD_MAX`). Absent (`n_longterm=0`, no extra bytes) on anchor-only nights, guard-rejected nights, and all non-3AM cycles, so a known-bad night never reaches Grafana as if it were real displacement. Uses whichever `--longterm-ps-file` target/pool set is currently wired in (v2 as of 2026-09-15 for the live 24h direct-pair scheme — see STATUS-MizumotoBridge.md; v3 is reserved for a future 30-min-chaining scheme, since it wraps on 2/5 targets at 24h baseline).
 
 **Phase-eval block:** coherent-mean phase (radians) at a small fixed set of points (`ps_manual_lora_phase_eval.json` — 7 hand-picked reference points + 5 bridge targets, sensei's selection 2026-09-07), extracted every capture by `ps_monitoring._compute_phase_eval()` when `pipeline.py --lora-phase-eval-file` is set. Purely for offline APS evaluation/post-processing (a phase DIFFERENCE computed later between two captures' stored angles reproduces what the `.mat`-based A1 fit already uses) — stored in InfluxDB only, deliberately **not** wired into any Grafana panel. `n_phase` is always emitted (0 when the feature is disabled), so the trailing temperature byte's offset is unambiguous either way.
 
@@ -331,6 +337,7 @@ Raspberry Pi → LoRa → TTN → MQTT → Telegraf → InfluxDB Cloud → Grafa
 - `displacement_rms_mm` — RMS displacement across all PS candidates
 - `max_deflection_mm` — peak displacement over capture window
 - `n_phase`, `phase_rad_0`..`phase_rad_11` — coherent-mean phase (radians) at the fixed 12-point set (see "LoRa Uplink" phase-eval block above); present only when `--lora-phase-eval-file` is set. Offline APS evaluation only — intentionally not wired into any Grafana panel.
+- `n_longterm`, `longterm_PierLeft_um`/`longterm_MidLeft_um`/`longterm_MidSpan_um`/`longterm_MidRight_um`/`longterm_PierRight_um`, `longterm_A1_rad_per_m`, `longterm_coherence` — long-term APS-corrected displacement (µm) at the 5 bridge target points, plus the fit slope/quality used; present only on the ~once/day cycle where Step 4b completed a trusted correction (see "Long-term displacement block" under "LoRa Uplink" above). This IS the long-term monitoring panel's data source.
 
 **TTN Payload Formatter** at `dashboard/ttn-uplink-formatter.js` — paste into TTN Console > Applications > iosar-imrsl > Payload formatters > Uplink.
 
@@ -370,6 +377,8 @@ from(bucket: "iosar")
 | Soft `reboot` never rebooted the TDA | `reboot` lives in `/sbin` (not on the non-interactive SSH PATH) → rc 127 no-op; and `systemctl reboot` HALTS the TDA2XX (no autonomous return, needs power-cycle) — field-verified 2026-07-13 | Ladder uses `systemctl reboot -i` (+fallbacks) and gates the reboot rung behind `--power-cycle-cmd`; hardware recovery needs the power-cycle relay (LR7843 MOSFET, planned) |
 | ~48% capture failure outdoors (STATUS -8) | Full re-init every cycle (3× -8 chances) | `--persistent` init-once mode + recovery ladder (`tda_recovery.py`) |
 | Uplinks lost when gateway/modem down | Unconfirmed send, no retry | Store-and-forward spool + confirmed uplink (`lora_queue.py`) |
+| Step 4b long-term correction silently never ran (100% failure 12–15 Sep) | Read its own just-taken capture's `.mat`, which the decoupled exporter (Step 3b service, ~19-21 min lag) hadn't produced yet | `_find_ready_longterm_capture()` in `pipeline.py` walks back to the most recent capture whose `.mat` export already exists |
+| Long-term APS fit occasionally wraps silently (coherence up to 0.988 on a pair off by 1.2mm) | Legs > ~24h exceed the λ/4 phase-ambiguity margin; A1 rails at the grid edge but coherence alone doesn't catch it | Guard clause in `longterm_monitoring.py`: reject (`status='guard_rejected'`, targets null) when `\|A1\| > 0.07` rad/m or leg > 26h |
 | TDA rootfs fills with Trace_TDA_*.txt → total failure | apps.out busy-loop logging | Pre-flight auto-cleanup (`--min-tda-free-mb`) |
 
 ---

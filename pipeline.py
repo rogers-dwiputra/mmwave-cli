@@ -730,10 +730,15 @@ def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
 # ─────────────────────────────────────────────
 
 def run_lora_step(capture_dir: str, port: str, appkey: str,
-                  skip_send: bool = False) -> bool:
+                  skip_send: bool = False, longterm_entry: dict | None = None) -> bool:
     """Enqueue this cycle's metrics, then drain the spool (oldest-first,
     confirmed uplinks). Enqueue always happens — even with --skip-lora —
     so no data is ever lost. Returns True when the spool is empty afterwards.
+
+    `longterm_entry` (Step 4b's return value, {} on nights it didn't run/
+    log a correction) is merged in under metrics['longterm'] so it rides
+    the same spool file — lora_sender.encode_payload() decides from its
+    own contents (capture_a/status) whether there's anything to send.
 
     The whole body is guarded — a LoRa/queue failure (disk full, truncated
     JSON, serial error) must never crash an unattended pipeline run
@@ -748,6 +753,8 @@ def run_lora_step(capture_dir: str, port: str, appkey: str,
         if os.path.isfile(metrics_path):
             with open(metrics_path) as fh:
                 metrics = json.load(fh)
+            if longterm_entry:
+                metrics['longterm'] = longterm_entry
             spooled = lora_queue.enqueue(metrics)
             _step(f'Queued → {os.path.basename(spooled)}')
         else:
@@ -1179,7 +1186,7 @@ def main():
         # ── 5. LoRa uplink (store-and-forward) ──────────────────────
         t5 = _step_start('Step 5 — LoRa Uplink')
         run_lora_step(capture_dir, args.lora_port, args.lora_appkey,
-                      skip_send=args.skip_lora)
+                      skip_send=args.skip_lora, longterm_entry=longterm_entry)
         _step_done('Step 5 — LoRa Uplink', t5)
 
         # ── Auto-cleanup (disk space management) ────────────────────

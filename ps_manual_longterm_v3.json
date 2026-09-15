@@ -1,0 +1,111 @@
+{
+  "capture_reference": "v3 -- D-optimal 8-ref pool + re-selected 5 deck targets (RANSAC deck-line fit, thermal-sensitivity classification), from independent re-analysis Evaluasi-260914, confirmed by STATUS-MizumotoBridge.md 2026-09-15 (2 independent selections agree: gamma 0.949 vs 0.947, rms 141 vs 136 um). Wider APS pool spread than v2 (7.9-43.4m vs 16m) gives better held-out accuracy (75 vs 99 um).",
+  "references": [
+    {
+      "label": "aps_R43.15",
+      "angle_bin": 46,
+      "range_bin": 805,
+      "R_m": 43.1463,
+      "x_m": 27.6406,
+      "y_m": 33.1301
+    },
+    {
+      "label": "aps_R38.57",
+      "angle_bin": 107,
+      "range_bin": 719,
+      "R_m": 38.5653,
+      "x_m": 6.3271,
+      "y_m": 38.0428
+    },
+    {
+      "label": "aps_R34.57",
+      "angle_bin": 105,
+      "range_bin": 644,
+      "R_m": 34.5703,
+      "x_m": 6.2119,
+      "y_m": 34.0076
+    },
+    {
+      "label": "aps_R19.87",
+      "angle_bin": 227,
+      "range_bin": 368,
+      "R_m": 19.8686,
+      "x_m": -15.3671,
+      "y_m": 12.5942
+    },
+    {
+      "label": "aps_R31.11",
+      "angle_bin": 104,
+      "range_bin": 579,
+      "R_m": 31.108,
+      "x_m": 5.8327,
+      "y_m": 30.5562
+    },
+    {
+      "label": "aps_R09.96",
+      "angle_bin": 76,
+      "range_bin": 182,
+      "R_m": 9.9609,
+      "x_m": 4.0466,
+      "y_m": 9.1019
+    },
+    {
+      "label": "aps_R13.10",
+      "angle_bin": 99,
+      "range_bin": 241,
+      "R_m": 13.1037,
+      "x_m": 2.9688,
+      "y_m": 12.763
+    },
+    {
+      "label": "aps_R21.41",
+      "angle_bin": 231,
+      "range_bin": 397,
+      "R_m": 21.4134,
+      "x_m": -17.2311,
+      "y_m": 12.7131
+    }
+  ],
+  "targets": [
+    {
+      "label": "D1",
+      "angle_bin": 181,
+      "range_bin": 1000,
+      "R_m": 53.5334,
+      "x_m": -22.1662,
+      "y_m": 48.7287
+    },
+    {
+      "label": "D2",
+      "angle_bin": 149,
+      "range_bin": 880,
+      "R_m": 47.1413,
+      "x_m": -7.7341,
+      "y_m": 46.5026
+    },
+    {
+      "label": "D3",
+      "angle_bin": 128,
+      "range_bin": 836,
+      "R_m": 44.7976,
+      "x_m": -0.0,
+      "y_m": 44.7976
+    },
+    {
+      "label": "D4",
+      "angle_bin": 105,
+      "range_bin": 834,
+      "R_m": 44.6911,
+      "x_m": 8.0304,
+      "y_m": 43.9636
+    },
+    {
+      "label": "D5",
+      "angle_bin": 81,
+      "range_bin": 864,
+      "R_m": 46.2891,
+      "x_m": 16.9968,
+      "y_m": 43.0556
+    }
+  ]
+}

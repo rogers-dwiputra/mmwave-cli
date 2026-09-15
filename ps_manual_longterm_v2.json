@@ -1,0 +1,112 @@
+{
+  "capture_reference": "v2 pool+targets, STATUS-MizumotoBridge.md 2026-09-15 decision 2.2: correct choice for the CURRENT 03:00-vs-03:00 direct-pair scheme (24h baseline). v3 (wider span, D-optimal pool) was found to WRAP on 2/5 targets at 24h baseline (D1, D5 off by exactly lambda/2) and is reserved for the future 30-min chaining scheme -- do not swap to v3 until that chaining is implemented.",
+  "references": [
+    {
+      "label": "aps_R07.94",
+      "angle_bin": 65,
+      "range_bin": 144,
+      "R_m": 7.9368,
+      "x_m": 3.9064,
+      "y_m": 6.9089
+    },
+    {
+      "label": "aps_R09.27",
+      "angle_bin": 73,
+      "range_bin": 169,
+      "R_m": 9.2685,
+      "x_m": 3.9825,
+      "y_m": 8.3692
+    },
+    {
+      "label": "aps_R13.05",
+      "angle_bin": 98,
+      "range_bin": 240,
+      "R_m": 13.0504,
+      "x_m": 3.0587,
+      "y_m": 12.6869
+    },
+    {
+      "label": "aps_R19.76",
+      "angle_bin": 227,
+      "range_bin": 366,
+      "R_m": 19.7621,
+      "x_m": -15.2847,
+      "y_m": 12.5266
+    },
+    {
+      "label": "aps_R23.33",
+      "angle_bin": 232,
+      "range_bin": 433,
+      "R_m": 23.331,
+      "x_m": -18.9564,
+      "y_m": 13.601
+    },
+    {
+      "label": "aps_R31.05",
+      "angle_bin": 102,
+      "range_bin": 578,
+      "R_m": 31.0547,
+      "x_m": 6.308,
+      "y_m": 30.4073
+    },
+    {
+      "label": "aps_R34.57",
+      "angle_bin": 105,
+      "range_bin": 644,
+      "R_m": 34.5703,
+      "x_m": 6.2119,
+      "y_m": 34.0076
+    },
+    {
+      "label": "aps_R43.36",
+      "angle_bin": 100,
+      "range_bin": 809,
+      "R_m": 43.3594,
+      "x_m": 9.4849,
+      "y_m": 42.3092
+    }
+  ],
+  "targets": [
+    {
+      "label": "PierLeft",
+      "angle_bin": 156,
+      "range_bin": 899,
+      "R_m": 48.1534,
+      "x_m": -10.5336,
+      "y_m": 46.9872
+    },
+    {
+      "label": "MidLeft",
+      "angle_bin": 148,
+      "range_bin": 881,
+      "R_m": 47.1946,
+      "x_m": -7.3742,
+      "y_m": 46.6149
+    },
+    {
+      "label": "MidSpan",
+      "angle_bin": 137,
+      "range_bin": 857,
+      "R_m": 45.9162,
+      "x_m": -3.2285,
+      "y_m": 45.8026
+    },
+    {
+      "label": "MidRight",
+      "angle_bin": 120,
+      "range_bin": 867,
+      "R_m": 46.4489,
+      "x_m": 2.9031,
+      "y_m": 46.3581
+    },
+    {
+      "label": "PierRight",
+      "angle_bin": 112,
+      "range_bin": 833,
+      "R_m": 44.6378,
+      "x_m": 5.5797,
+      "y_m": 44.2877
+    }
+  ],
+  "note": "Usulan hasil evaluasi 2026-09-11. BELUM diterapkan -- menunggu review. Lihat README.md."
+}

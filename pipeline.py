@@ -632,6 +632,41 @@ def _load_longterm_monitoring():
     return mod
 
 
+def _find_ready_longterm_capture(capture_dir: str, slc_export_dir: str,
+                                 max_lookback: int = 10) -> str:
+    """Find the most recent capture (<= capture_dir, same label) whose .mat has
+    already been exported.
+
+    The SLC exporter (mizumoto-slc-export.service) is decoupled and runs
+    ~15-20 min behind a freshly-transferred capture (measured 2026-09-15:
+    consistent ~19-21 min lag, not a growing backlog). Step 4b runs
+    synchronously in the SAME cycle as capture_dir's own transfer, so
+    capture_dir's own .mat is NEVER ready yet at that point -- every anchor
+    attempt failed with FileNotFoundError for 4 straight nights (2026-09-12
+    through 09-15) because of this, regardless of the 2h retry window (widening
+    the window does not help: each attempt checks a brand-new capture that is
+    always ~0 min old, never one old enough to be exported). Using the latest
+    ALREADY-exported capture instead fixes this for any export lag, not just
+    the currently-measured ~20 min.
+
+    Returns capture_dir itself if not found there but its own .mat exists in
+    the very common case; None if nothing within max_lookback is ready yet.
+    """
+    label_prefix = capture_dir.rsplit('_', 2)[0]
+    try:
+        all_captures = sorted(
+            d for d in os.listdir(POSTPROC_DIR)
+            if d.startswith(label_prefix) and os.path.isdir(os.path.join(POSTPROC_DIR, d))
+        )
+    except OSError:
+        all_captures = [capture_dir]
+    candidates = [d for d in all_captures if d <= capture_dir] or [capture_dir]
+    for name in reversed(candidates[-max_lookback:]):
+        if os.path.isfile(os.path.join(slc_export_dir, f'{name}_SLC.mat')):
+            return name
+    return None
+
+
 def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
                             history_file: str, longterm_interval_hours: float = 0.0,
                             longterm_at_hour: float = None,
@@ -644,7 +679,14 @@ def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
     is the legacy elapsed-time throttle, kept for backward compatibility when
     longterm_at_hour is not set. slc_export_dir is required whenever
     longterm_at_hour is set -- Step 4b now reads the Step 3b .mat export,
-    never raw ADC (see longterm_monitoring.py module docstring)."""
+    never raw ADC (see longterm_monitoring.py module docstring).
+
+    The anchor-window GATE (should_run_longterm) still keys off capture_dir's
+    own timestamp -- that decides whether "now" is eligible at all. Which
+    capture's DATA actually gets read is a separate decision
+    (_find_ready_longterm_capture): the exporter lags behind a fresh capture,
+    so capture_dir's own .mat is essentially never ready yet -- see that
+    function's docstring."""
     _banner(f'STEP 4b — Long-term Displacement  ({capture_dir})')
 
     data_folder = os.path.join(POSTPROC_DIR, capture_dir)
@@ -663,6 +705,17 @@ def run_longterm_monitoring(capture_dir: str, longterm_ps_file: str,
             else:
                 print(f'  Not due yet (--longterm-interval-hours {longterm_interval_hours}) — skipping')
             return {}
+
+        ready_capture = _find_ready_longterm_capture(capture_dir, slc_export_dir)
+        if ready_capture is None:
+            print(f'  No exported .mat ready yet (exporter lag) within lookback — '
+                  f'skipping this attempt, will retry next cycle in the anchor window')
+            return {}
+        if ready_capture != capture_dir:
+            print(f'  Using {ready_capture} (already exported) instead of {capture_dir} '
+                  f'(exporter has not caught up to it yet)')
+            data_folder = os.path.join(POSTPROC_DIR, ready_capture)
+
         return mod.run_longterm_monitoring(data_folder, longterm_ps_file, history_file,
                                            slc_export_dir)
     except Exception as exc:
